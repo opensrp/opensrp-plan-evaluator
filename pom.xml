@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.smartregister</groupId>
+	
+	<artifactId>opensrp-plan-evaluator</artifactId>
+	<packaging>jar</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>OpenSRP  Plan Evaluator</name>
+	<description>OpenSRP  Plan Evaluator Library</description>
+	<url>https://github.com/OpenSRP/opensrp-plan-evaluator</url>
+	
+	<properties>
+		<fhir.version>4.2.3</fhir.version>
+		<lombok.version>1.18.12</lombok.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>ibm-fhir</id>
+			<url>https://dl.bintray.com/ibm-watson-health/ibm-fhir-server-releases</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.ibm.fhir</groupId>
+			<artifactId>fhir-path</artifactId>
+			<version>${fhir.version}</version>
+		</dependency>
+
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>7</source>
+					<target>7</target>
+					<encoding>UTF-8</encoding>
+					<!-- <annotationProcessorPaths> <path> <groupId>org.projectlombok</groupId> 
+						<artifactId>lombok</artifactId> <version>${lombok.version}</version> </path> 
+						</annotationProcessorPaths> -->
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
