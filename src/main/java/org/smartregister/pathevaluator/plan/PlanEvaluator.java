@@ -1,7 +1,9 @@
-package org.smartregister.pathevaluator;
+package org.smartregister.pathevaluator.plan;
 
 import java.util.Collection;
 
+import com.ibm.fhir.model.resource.Encounter;
+import com.ibm.fhir.model.resource.PlanDefinition;
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathNode;
@@ -25,9 +27,28 @@ public class PlanEvaluator {
 			return nodes != null ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean() : false;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
 			return false;
 		}
+		
+	}
+	
+	/**
+	 * Evaluates plan after plan is saved on updated
+	 * 
+	 * @param planDefinition the new Plan definition
+	 * @param existingPlanDefinition the existing plan definition
+	 */
+	public void evaluatePlan(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
+		
+	}
+	
+	/**
+	 * Evaluates a plan if an encounter is submitted
+	 * 
+	 * @param planDefinition the plan being evaluated
+	 * @param encounter the encounter that has just been submitted
+	 */
+	public void evaluatePlan(PlanDefinition planDefinition, Encounter encounter) {
 		
 	}
 	
