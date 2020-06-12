@@ -25,7 +25,7 @@ import com.ibm.fhir.model.type.code.ObservationStatus;
  */
 public class PlanEvaluatorTest {
 	
-	private PlanEvaluator planEvaluator;
+	private PlanEvaluator planEvaluator= new PlanEvaluator();
 	
 	private static Patient patient;
 	
