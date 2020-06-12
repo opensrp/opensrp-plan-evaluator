@@ -8,6 +8,7 @@ import org.smartregister.pathevaluator.utils.PlanHelper;
 import com.ibm.fhir.model.resource.Encounter;
 import com.ibm.fhir.model.resource.PlanDefinition;
 import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathNode;
 import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
@@ -43,8 +44,8 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
 		TriggerEvent triggerEvent = PlanHelper.evaluatePlanModification(planDefinition, existingPlanDefinition);
-		if (triggerEvent != null) {
-			evaluatePlan(planDefinition);
+		if (triggerEvent != null) {//TODO implement the correct logic
+			evaluatePlan(planDefinition, triggerEvent);
 		}
 		
 	}
@@ -63,7 +64,36 @@ public class PlanEvaluator {
 	 * 
 	 * @param planDefinition the plan being evaluated
 	 */
-	private void evaluatePlan(PlanDefinition planDefinition) {
+	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent) {
+		for (CodeableConcept jurisdiction : planDefinition.getJurisdiction()) {
+			evaluatePlan(planDefinition, triggerEvent, jurisdiction);
+		}
+	}
+	
+	/**
+	 * Evaluates a plan for task generation
+	 * 
+	 * @param planDefinition the plan being evaluated
+	 */
+	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, CodeableConcept jurisdiction) {
+		/**@formatter:off 
+		for (Action action : planDefinition.getAction()) {
+			
+			//TODO @Ronald to add this
+			if (TriggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent)) {
+				
+				////Compute a loop variable (resource) ;get the subject which is a list of resources
+				List<Resource> resources = ActionHelper.getSubject(action.getSubject(), jurisdiction.getId());
+				
+				for (Resource resource : resources) {
+					
+					if (ConditionHelper.evaluateActionConditions(resource, action.getCondition())) {
+						TaskHelper.generateTask(resource, action);
+					}
+				}
+			}
+		}
+		 @formatter:on**/
 		
 	}
 	

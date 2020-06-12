@@ -24,7 +24,7 @@ public class PlanHelper {
 		if (existingPlanDefinition == null && planDefinition.getStatus().equals(PublicationStatus.ACTIVE)) {
 			return TriggerEvent.PLAN_ACTIVATION;
 		}
-		//TODO implement rest of logic
+		//TODO implement rest of logic  @Ronald to add this
 		return null;
 	}
 	
