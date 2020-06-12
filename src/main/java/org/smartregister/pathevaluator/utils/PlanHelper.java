@@ -20,10 +20,11 @@ public class PlanHelper {
 	 * @param existingPlanDefinition the existing plan definition
 	 * @return the Trigger event
 	 */
-	public TriggerEvent evaluatePlanModification(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
+	public static TriggerEvent evaluatePlanModification(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
 		if (existingPlanDefinition == null && planDefinition.getStatus().equals(PublicationStatus.ACTIVE)) {
 			return TriggerEvent.PLAN_ACTIVATION;
 		}
+		//TODO implement rest of logic
 		return null;
 	}
 	

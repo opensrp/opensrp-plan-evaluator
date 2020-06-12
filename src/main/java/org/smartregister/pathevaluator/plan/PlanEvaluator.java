@@ -2,6 +2,9 @@ package org.smartregister.pathevaluator.plan;
 
 import java.util.Collection;
 
+import org.smartregister.pathevaluator.TriggerEvent;
+import org.smartregister.pathevaluator.utils.PlanHelper;
+
 import com.ibm.fhir.model.resource.Encounter;
 import com.ibm.fhir.model.resource.PlanDefinition;
 import com.ibm.fhir.model.resource.Resource;
@@ -39,6 +42,10 @@ public class PlanEvaluator {
 	 * @param existingPlanDefinition the existing plan definition
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
+		TriggerEvent triggerEvent = PlanHelper.evaluatePlanModification(planDefinition, existingPlanDefinition);
+		if (triggerEvent != null) {
+			evaluatePlan(planDefinition);
+		}
 		
 	}
 	
@@ -49,6 +56,14 @@ public class PlanEvaluator {
 	 * @param encounter the encounter that has just been submitted
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, Encounter encounter) {
+	}
+	
+	/**
+	 * Evaluates a plan for task generation
+	 * 
+	 * @param planDefinition the plan being evaluated
+	 */
+	private void evaluatePlan(PlanDefinition planDefinition) {
 		
 	}
 	
