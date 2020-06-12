@@ -8,6 +8,6 @@ package org.smartregister.pathevaluator;
  */
 public enum TriggerEvent {
 	PLAN_ACTIVATION,
-	PLAN_JURSIDICTION_CHANGE,
-	EVENT_SUMITTED
+	PLAN_JURISDICTION_CHANGE,
+	EVENT_SUBMISSION
 }
