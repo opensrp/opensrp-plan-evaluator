@@ -14,6 +14,7 @@
 	<properties>
 		<fhir.version>4.2.3</fhir.version>
 		<lombok.version>1.18.12</lombok.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
 
 		<jacoco.maven.plugin.version>0.8.5</jacoco.maven.plugin.version>
