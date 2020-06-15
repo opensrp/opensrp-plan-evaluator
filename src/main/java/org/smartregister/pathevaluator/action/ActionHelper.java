@@ -57,4 +57,31 @@ public class ActionHelper {
 				return null;
 		}
 	}
+	
+	/**
+	 * Gets the subject resources of the resource id that tasks should be generated against
+	 * 
+	 * @param action
+	 * @param id the resource id
+	 * @return resources that tasks should be generated against
+	 */
+	public List<? extends Resource> getSubjectResources(Action action, String id) {
+		ResourceType resourceType = getResourceType(action);
+		switch (resourceType) {
+			case JURISDICTION:
+				return PathEvaluatorLibrary.getInstance().getLocationDao().getJurisdictions(id);
+			
+			case LOCATION:
+				return PathEvaluatorLibrary.getInstance().getLocationDao().getLocations(id);
+			
+			case FAMILY:
+				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(id);
+			
+			case FAMILY_MEMBER:
+				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(id);
+			
+			default:
+				return null;
+		}
+	}
 }

@@ -1,6 +1,5 @@
 package org.smartregister.pathevaluator.plan;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.smartregister.domain.Action;
@@ -14,9 +13,6 @@ import org.smartregister.pathevaluator.utils.PlanHelper;
 
 import com.ibm.fhir.model.resource.Encounter;
 import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.path.FHIRPathBooleanValue;
-import com.ibm.fhir.path.FHIRPathNode;
-import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
 
 /**
  * 
@@ -27,8 +23,6 @@ import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
  */
 public class PlanEvaluator {
 	
-	private FHIRPathEvaluator fhirPathEvaluator;
-	
 	private ActionHelper actionHelper;
 	
 	private ConditionHelper conditionHelper;
@@ -36,22 +30,9 @@ public class PlanEvaluator {
 	private TaskHelper taskHelper;
 	
 	public PlanEvaluator() {
-		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 		actionHelper = new ActionHelper();
-		conditionHelper = new ConditionHelper();
+		conditionHelper = new ConditionHelper(actionHelper);
 		taskHelper = new TaskHelper();
-	}
-	
-	public boolean evaluateBooleanExpression(Resource resource, String expression) {
-		
-		try {
-			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, expression);
-			return nodes != null ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean() : false;
-		}
-		catch (Exception e) {
-			return false;
-		}
-		
 	}
 	
 	/**
@@ -104,7 +85,7 @@ public class PlanEvaluator {
 			List<? extends Resource> resources = actionHelper.getSubjectResources(action, jurisdiction);
 			
 			for (Resource resource : resources) {
-				if (conditionHelper.evaluateActionConditions(resource, action.getConditions())) {
+				if (conditionHelper.evaluateActionConditions(resource, action)) {
 					taskHelper.generateTask(resource, action);
 				}
 			}
