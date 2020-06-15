@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.RelatedPerson;
+import com.ibm.fhir.model.resource.Resource;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -28,5 +29,21 @@ public interface ClientDao {
 	 * @return family members in a jurisdiction
 	 */
 	List<Patient> getFamilyMembers(String jurisdiction);
+	
+	/**
+	 * Gets the families associated with a resource
+	 * 
+	 * @param resource a resource
+	 * @return families associated with a resource
+	 */
+	List<RelatedPerson> getFamilies(Resource resource);
+	
+	/**
+	 * Gets the family members associated with a resource
+	 * 
+	 * @param resource a resource
+	 * @return family members associated with a resource
+	 */
+	List<Patient> getFamilyMembers(Resource resource);
 	
 }

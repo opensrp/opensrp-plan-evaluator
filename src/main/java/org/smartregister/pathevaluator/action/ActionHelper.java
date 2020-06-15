@@ -6,6 +6,7 @@ package org.smartregister.pathevaluator.action;
 import java.util.List;
 
 import org.smartregister.domain.Action;
+import org.smartregister.domain.Condition;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
@@ -60,25 +61,27 @@ public class ActionHelper {
 	
 	/**
 	 * Gets the subject resources of the resource id that tasks should be generated against
-	 * 
-	 * @param action
+	 *
+	 * @param condition
+	 * @param subjectCodableConcept
 	 * @param id the resource id
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends Resource> getSubjectResources(Action action, String id) {
-		ResourceType resourceType = getResourceType(action);
+	public List<? extends Resource> getSubjectResources(Condition condition, String subjectCodableConcept,
+	        Resource resource) {
+		ResourceType resourceType = ResourceType.from(subjectCodableConcept);
 		switch (resourceType) {
 			case JURISDICTION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getJurisdictions(id);
+				return PathEvaluatorLibrary.getInstance().getLocationDao().getJurisdictions(resource);
 			
 			case LOCATION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getLocations(id);
+				return PathEvaluatorLibrary.getInstance().getLocationDao().getLocations(resource);
 			
 			case FAMILY:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(id);
+				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(resource);
 			
 			case FAMILY_MEMBER:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(id);
+				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(resource);
 			
 			default:
 				return null;
