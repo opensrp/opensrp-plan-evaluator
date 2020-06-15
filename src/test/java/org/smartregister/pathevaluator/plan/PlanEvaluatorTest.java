@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.smartregister.pathevaluator;
+package org.smartregister.pathevaluator.plan;
 
 import static com.ibm.fhir.model.type.String.of;
 import static org.junit.Assert.assertFalse;
@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.smartregister.pathevaluator.plan.PlanEvaluator;
 
 import com.ibm.fhir.model.resource.Observation;
 import com.ibm.fhir.model.resource.Patient;
