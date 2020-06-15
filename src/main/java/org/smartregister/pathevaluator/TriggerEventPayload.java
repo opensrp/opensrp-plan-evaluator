@@ -1,6 +1,5 @@
 package org.smartregister.pathevaluator;
 
-import jdk.internal.jline.internal.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +20,5 @@ public class TriggerEventPayload {
 
 	private TriggerEvent triggerEvent;
 
-	@Nullable
 	private List<Jurisdiction> jurisdictions;
 }
