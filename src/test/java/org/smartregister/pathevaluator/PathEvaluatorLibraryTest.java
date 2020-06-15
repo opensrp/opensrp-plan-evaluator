@@ -1,13 +1,13 @@
 /**
  * 
  */
-package org.smartregister.pathevaluator.plan;
+package org.smartregister.pathevaluator;
 
 import static com.ibm.fhir.model.type.String.of;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.fhir.model.resource.Observation;
@@ -22,14 +22,16 @@ import com.ibm.fhir.model.type.code.ObservationStatus;
 /**
  * @author Samuel Githengi created on 06/10/20
  */
-public class PlanEvaluatorTest {
+public class PathEvaluatorLibraryTest {
 	
-	private PlanEvaluator planEvaluator= new PlanEvaluator();
+	private PathEvaluatorLibrary pathEvaluatorLibrary;
 	
-	private static Patient patient;
+	private Patient patient;
 	
-	@BeforeClass
-	public static void startUp() {
+	@Before
+	public void startUp() {
+		PathEvaluatorLibrary.init();
+		pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
 		patient = Patient.builder().id("12345").birthDate(Date.of("1990-12-19"))
 		        .identifier(Identifier.builder().id("1234").value(of("1212313")).build())
 		        .name(HumanName.builder().family(of("John")).given(of("Doe")).build()).build();
@@ -44,17 +46,17 @@ public class PlanEvaluatorTest {
 	
 	@Test
 	public void testWhere() {
-		assertFalse(planEvaluator.evaluateBooleanExpression(patient, "Patient.where(name.given = 'Does').exists()"));
-		assertTrue(planEvaluator.evaluateBooleanExpression(patient, "Patient.where(name.given = 'Doe').exists()"));
-		assertTrue(planEvaluator.evaluateBooleanExpression(patient, "Patient.exists()"));
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.where(name.given = 'Does').exists()"));
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.where(name.given = 'Doe').exists()"));
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.exists()"));
 		
 	}
 	
 	@Test
 	public void testExpressions() {
-		assertFalse(planEvaluator.evaluateBooleanExpression(patient, "Patient.name.family = 'Kelvin'"));
-		assertTrue(planEvaluator.evaluateBooleanExpression(patient, "Patient.name.family = 'John'"));
-		assertTrue(planEvaluator.evaluateBooleanExpression(patient, "Patient.birthDate >= @1990-12-19"));
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.name.family = 'Kelvin'"));
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.name.family = 'John'"));
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.birthDate >= @1990-12-19"));
 	}
 	
 }
