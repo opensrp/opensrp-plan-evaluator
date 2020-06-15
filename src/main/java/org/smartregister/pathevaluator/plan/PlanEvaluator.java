@@ -8,6 +8,8 @@ import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.TriggerEvent;
 import org.smartregister.pathevaluator.action.ActionHelper;
+import org.smartregister.pathevaluator.condition.ConditionHelper;
+import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.utils.PlanHelper;
 
 import com.ibm.fhir.model.resource.Encounter;
@@ -29,9 +31,15 @@ public class PlanEvaluator {
 	
 	private ActionHelper actionHelper;
 	
+	private ConditionHelper conditionHelper;
+	
+	private TaskHelper taskHelper;
+	
 	public PlanEvaluator() {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 		actionHelper = new ActionHelper();
+		conditionHelper = new ConditionHelper();
+		taskHelper = new TaskHelper();
 	}
 	
 	public boolean evaluateBooleanExpression(Resource resource, String expression) {
@@ -92,15 +100,13 @@ public class PlanEvaluator {
 			//TODO @Ronald to add this
 			//if (TriggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent)) {
 			
-			//Compute a loop variable (resource) ;get the subject which is a list of resources
+			//get the subject resources
 			List<? extends Resource> resources = actionHelper.getSubjectResources(action, jurisdiction);
 			
 			for (Resource resource : resources) {
-				
-				/*if (ConditionHelper.evaluateActionConditions(resource, action.getCondition())) {
-					TaskHelper.generateTask(resource, action);
-				}*/
-				
+				if (conditionHelper.evaluateActionConditions(resource, action.getConditions())) {
+					taskHelper.generateTask(resource, action);
+				}
 			}
 			
 		}
