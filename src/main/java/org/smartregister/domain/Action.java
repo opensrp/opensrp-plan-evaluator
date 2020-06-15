@@ -137,7 +137,7 @@ public class Action {
         this.definitionUri = definitionUri;
     }
 
-    static class SubjectConcept {
+    public static class SubjectConcept {
         private String text;
 
         public String getText() {
