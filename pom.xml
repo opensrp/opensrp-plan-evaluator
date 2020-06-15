@@ -20,7 +20,7 @@
 
 		<jacoco.maven.plugin.version>0.8.5</jacoco.maven.plugin.version>
 		<coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
-		<opensrp.common.version>2.0.0-SNAPSHOT</opensrp.common.version>
+		<opensrp.common.version>2.0.2-SNAPSHOT</opensrp.common.version>
 	</properties>
 
 	<distributionManagement>
