@@ -82,6 +82,9 @@ public class ActionHelper {
 			
 			case FAMILY_MEMBER:
 				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(resource);
+				
+			case TASK:
+				return PathEvaluatorLibrary.getInstance().getTaskDao().getTasks(resource);
 			
 			default:
 				return null;

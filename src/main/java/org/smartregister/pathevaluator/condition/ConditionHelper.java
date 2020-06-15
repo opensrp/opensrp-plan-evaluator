@@ -39,7 +39,8 @@ public class ConditionHelper {
 		for (Condition condition : action.getConditions()) {
 			SubjectConcept concept = condition.getExpression().getSubjectConcept();
 			if (concept != null) {
-				List<? extends Resource> resources = actionHelper.getSubjectResources(condition,concept.getText(), resource);
+				List<? extends Resource> resources = actionHelper.getSubjectResources(condition, concept.getText(),
+				    resource);
 				if (resources != null) {
 					isValid = resources.stream().anyMatch(r -> pathEvaluatorLibrary.evaluateBooleanExpression(resource,
 					    condition.getExpression().getExpression()));

@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.TaskDao;
 
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
@@ -30,6 +31,8 @@ public class PathEvaluatorLibrary {
 	private LocationDao locationDao;
 	
 	private ClientDao clientDao;
+	
+	private TaskDao taskDao;
 	
 	private PathEvaluatorLibrary() {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
