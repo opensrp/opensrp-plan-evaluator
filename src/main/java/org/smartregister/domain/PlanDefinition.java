@@ -208,13 +208,13 @@ public class PlanDefinition {
 		 */
 		UNKNOWN("unknown");
 		
-		private final java.lang.String value;
+		private final String value;
 		
-		PlanStatus(java.lang.String value) {
+		PlanStatus(String value) {
 			this.value = value;
 		}
 		
-		public java.lang.String value() {
+		public String value() {
 			return value;
 		}
 		

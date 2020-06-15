@@ -1,10 +1,13 @@
 package org.smartregister.pathevaluator.plan;
 
 import java.util.Collection;
+import java.util.List;
 
+import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.TriggerEvent;
+import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.utils.PlanHelper;
 
 import com.ibm.fhir.model.resource.Encounter;
@@ -22,7 +25,14 @@ import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
  */
 public class PlanEvaluator {
 	
-	private FHIRPathEvaluator fhirPathEvaluator = FHIRPathEvaluator.evaluator();
+	private FHIRPathEvaluator fhirPathEvaluator;
+	
+	private ActionHelper actionHelper;
+	
+	public PlanEvaluator() {
+		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
+		actionHelper = new ActionHelper();
+	}
 	
 	public boolean evaluateBooleanExpression(Resource resource, String expression) {
 		
@@ -76,25 +86,24 @@ public class PlanEvaluator {
 	 * @param planDefinition the plan being evaluated
 	 */
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, Jurisdiction jurisdiction) {
-		/**@formatter:off 
-		for (Action action : planDefinition.getAction()) {
+		
+		for (Action action : planDefinition.getActions()) {
 			
 			//TODO @Ronald to add this
-			if (TriggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent)) {
+			//if (TriggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent)) {
+			
+			//Compute a loop variable (resource) ;get the subject which is a list of resources
+			List<? extends Resource> resources = actionHelper.getSubjectResources(action, jurisdiction);
+			
+			for (Resource resource : resources) {
 				
-				////Compute a loop variable (resource) ;get the subject which is a list of resources
-				List<Resource> resources = ActionHelper.getSubject(action.getSubject(), jurisdiction.getId());
+				/*if (ConditionHelper.evaluateActionConditions(resource, action.getCondition())) {
+					TaskHelper.generateTask(resource, action);
+				}*/
 				
-				for (Resource resource : resources) {
-					
-					if (ConditionHelper.evaluateActionConditions(resource, action.getCondition())) {
-						TaskHelper.generateTask(resource, action);
-					}
-				}
 			}
+			
 		}
-		 @formatter:on**/
-		
 	}
 	
 }
