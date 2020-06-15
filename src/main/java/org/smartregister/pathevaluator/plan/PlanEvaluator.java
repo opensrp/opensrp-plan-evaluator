@@ -2,13 +2,13 @@ package org.smartregister.pathevaluator.plan;
 
 import java.util.Collection;
 
+import org.smartregister.domain.Jurisdiction;
+import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.TriggerEvent;
 import org.smartregister.pathevaluator.utils.PlanHelper;
 
 import com.ibm.fhir.model.resource.Encounter;
-import com.ibm.fhir.model.resource.PlanDefinition;
 import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathNode;
 import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
@@ -65,7 +65,7 @@ public class PlanEvaluator {
 	 * @param planDefinition the plan being evaluated
 	 */
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent) {
-		for (CodeableConcept jurisdiction : planDefinition.getJurisdiction()) {
+		for (Jurisdiction jurisdiction : planDefinition.getJurisdiction()) {
 			evaluatePlan(planDefinition, triggerEvent, jurisdiction);
 		}
 	}
@@ -75,7 +75,7 @@ public class PlanEvaluator {
 	 * 
 	 * @param planDefinition the plan being evaluated
 	 */
-	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, CodeableConcept jurisdiction) {
+	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, Jurisdiction jurisdiction) {
 		/**@formatter:off 
 		for (Action action : planDefinition.getAction()) {
 			
