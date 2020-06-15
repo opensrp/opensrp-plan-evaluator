@@ -176,6 +176,7 @@ public class PlanDefinition {
 		 * This resource is still under development and is not yet considered to be ready for normal
 		 * use.
 		 */
+		@SerializedName("draft")
 		DRAFT("draft"),
 		
 		/**
@@ -183,6 +184,7 @@ public class PlanDefinition {
 		 * <p>
 		 * This resource is ready for normal use.
 		 */
+		@SerializedName("active")
 		ACTIVE("active"),
 		
 		/**
@@ -190,6 +192,7 @@ public class PlanDefinition {
 		 * <p>
 		 * This resource has been withdrawn or superseded and should no longer be used.
 		 */
+		@SerializedName("retired")
 		RETIRED("retired"),
 		
 		/**
@@ -197,6 +200,7 @@ public class PlanDefinition {
 		 * <p>
 		 * This resource is completed for normal use.
 		 */
+		@SerializedName("completed")
 		COMPLETED("completed"),
 		
 		/**
@@ -206,6 +210,7 @@ public class PlanDefinition {
 		 * resource. Note: This concept is not to be used for "other" - one of the listed statuses
 		 * is presumed to apply, it's just not known which one.
 		 */
+		@SerializedName("unknown")
 		UNKNOWN("unknown");
 		
 		private final String value;
