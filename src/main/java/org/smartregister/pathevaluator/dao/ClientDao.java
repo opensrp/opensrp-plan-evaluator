@@ -5,6 +5,8 @@ package org.smartregister.pathevaluator.dao;
 
 import java.util.List;
 
+import org.smartregister.pathevaluator.ResourceType;
+
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.RelatedPerson;
 import com.ibm.fhir.model.resource.Resource;
@@ -34,16 +36,18 @@ public interface ClientDao {
 	 * Gets the families associated with a resource
 	 * 
 	 * @param resource a resource
+	 * @param fromResourceType 
 	 * @return families associated with a resource
 	 */
-	List<RelatedPerson> getFamilies(Resource resource);
+	List<RelatedPerson> getFamilies(Resource resource, ResourceType fromResourceType);
 	
 	/**
 	 * Gets the family members associated with a resource
 	 * 
 	 * @param resource a resource
+	 * @param fromResourceType 
 	 * @return family members associated with a resource
 	 */
-	List<Patient> getFamilyMembers(Resource resource);
+	List<Patient> getFamilyMembers(Resource resource, ResourceType fromResourceType);
 	
 }

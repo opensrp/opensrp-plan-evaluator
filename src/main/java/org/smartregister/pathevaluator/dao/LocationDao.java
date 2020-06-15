@@ -5,6 +5,8 @@ package org.smartregister.pathevaluator.dao;
 
 import java.util.List;
 
+import org.smartregister.pathevaluator.ResourceType;
+
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Resource;
 
@@ -33,16 +35,18 @@ public interface LocationDao {
 	 * Gets the jurisdictions associated with a resource
 	 * 
 	 * @param resource a resource
+	 * @param fromResourceType 
 	 * @return jurisdictions associated with a resource
 	 */
-	List<Location> getJurisdictions(Resource resource);
+	List<Location> getJurisdictions(Resource resource, ResourceType fromResourceType);
 	
 	/**
 	 * Gets the structures associated with a resource
 	 * 
 	 * @param resource a resource
+	 * @param fromResourceType 
 	 * @return structures associated with a resource
 	 */
-	List<Location> getLocations(Resource resource);
+	List<Location> getLocations(Resource resource, ResourceType fromResourceType);
 	
 }

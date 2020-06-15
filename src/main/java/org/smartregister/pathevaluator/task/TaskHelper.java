@@ -12,9 +12,9 @@ import com.ibm.fhir.model.resource.Resource;
  */
 public class TaskHelper {
 
-	/**
-	 * @param resource
-	 * @param action
+	/** Generates task for an action and target resource
+	 * @param resource entity task is being generated for 
+	 * @param action  entity used to create the task
 	 */
 	public void generateTask(Resource resource, Action action) {
 		// TODO Auto-generated method stub

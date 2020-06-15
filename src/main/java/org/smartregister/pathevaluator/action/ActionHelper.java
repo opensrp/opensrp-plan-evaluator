@@ -63,31 +63,32 @@ public class ActionHelper {
 	 * Gets the subject resources of the resource id that tasks should be generated against
 	 *
 	 * @param condition
-	 * @param subjectCodableConcept
+	 * @param action
 	 * @param id the resource id
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends Resource> getSubjectResources(Condition condition, String subjectCodableConcept,
-	        Resource resource) {
-		ResourceType resourceType = ResourceType.from(subjectCodableConcept);
-		switch (resourceType) {
+	public List<? extends Resource> getConditionSubjectResources(Condition condition, Action action, Resource resource) {
+		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectConcept());
+		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
+		switch (conditionResourceType) {
 			case JURISDICTION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getJurisdictions(resource);
+				return PathEvaluatorLibrary.getInstance().getLocationDao().getJurisdictions(resource, actionResourceType);
 			
 			case LOCATION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getLocations(resource);
+				return PathEvaluatorLibrary.getInstance().getLocationDao().getLocations(resource, actionResourceType);
 			
 			case FAMILY:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(resource);
+				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(resource, actionResourceType);
 			
 			case FAMILY_MEMBER:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(resource);
-				
+				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(resource, actionResourceType);
+			
 			case TASK:
-				return PathEvaluatorLibrary.getInstance().getTaskDao().getTasks(resource);
+				return PathEvaluatorLibrary.getInstance().getTaskDao().getTasks(resource, actionResourceType);
 			
 			default:
 				return null;
 		}
 	}
+	
 }
