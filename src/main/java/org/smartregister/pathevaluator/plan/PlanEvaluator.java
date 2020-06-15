@@ -1,17 +1,23 @@
 package org.smartregister.pathevaluator.plan;
 
-import java.util.Collection;
-
-import org.smartregister.domain.Jurisdiction;
-import org.smartregister.domain.PlanDefinition;
-import org.smartregister.pathevaluator.TriggerEvent;
-import org.smartregister.pathevaluator.utils.PlanHelper;
-
 import com.ibm.fhir.model.resource.Encounter;
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathNode;
 import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
+import org.smartregister.domain.Action;
+import org.smartregister.domain.Jurisdiction;
+import org.smartregister.domain.PlanDefinition;
+import org.smartregister.pathevaluator.TriggerEvent;
+import org.smartregister.pathevaluator.TriggerEventPayload;
+import org.smartregister.pathevaluator.utils.ActionHelper;
+import org.smartregister.pathevaluator.utils.ConditionHelper;
+import org.smartregister.pathevaluator.utils.PlanHelper;
+import org.smartregister.pathevaluator.utils.TaskHelper;
+import org.smartregister.pathevaluator.utils.TriggerHelper;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 
@@ -43,9 +49,12 @@ public class PlanEvaluator {
 	 * @param existingPlanDefinition the existing plan definition
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
-		TriggerEvent triggerEvent = PlanHelper.evaluatePlanModification(planDefinition, existingPlanDefinition);
-		if (triggerEvent != null) {//TODO implement the correct logic
-			evaluatePlan(planDefinition, triggerEvent);
+		TriggerEventPayload triggerEvent = PlanHelper.evaluatePlanModification(planDefinition, existingPlanDefinition);
+		if (triggerEvent != null  && (
+				triggerEvent.getTriggerEvent().equals(TriggerEvent.PLAN_ACTIVATION) ||
+				triggerEvent.getTriggerEvent().equals(TriggerEvent.PLAN_JURISDICTION_CHANGE))
+		) {
+			evaluatePlan(planDefinition, triggerEvent.getTriggerEvent(), triggerEvent.getJurisdictions());
 		}
 		
 	}
@@ -58,16 +67,16 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, Encounter encounter) {
 	}
-	
+
 	/**
-	 * Evaluates a plan for task generation
-	 * 
+	 *  Evaluates a plan for task generation
+	 *
 	 * @param planDefinition the plan being evaluated
+	 * @param triggerEvent
+	 * @param jurisdictions
 	 */
-	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent) {
-		for (Jurisdiction jurisdiction : planDefinition.getJurisdiction()) {
-			evaluatePlan(planDefinition, triggerEvent, jurisdiction);
-		}
+	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, List<Jurisdiction> jurisdictions) {
+		jurisdictions.forEach(jurisdiction-> evaluatePlan(planDefinition, triggerEvent, jurisdiction));
 	}
 	
 	/**
@@ -76,25 +85,17 @@ public class PlanEvaluator {
 	 * @param planDefinition the plan being evaluated
 	 */
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, Jurisdiction jurisdiction) {
-		/**@formatter:off 
-		for (Action action : planDefinition.getAction()) {
-			
-			//TODO @Ronald to add this
-			if (TriggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent)) {
-				
-				////Compute a loop variable (resource) ;get the subject which is a list of resources
-				List<Resource> resources = ActionHelper.getSubject(action.getSubject(), jurisdiction.getId());
-				
-				for (Resource resource : resources) {
-					
-					if (ConditionHelper.evaluateActionConditions(resource, action.getCondition())) {
+
+		planDefinition.getActions().forEach(action -> {
+			if (TriggerHelper.evaluateTrigger(action.getTriggers(), triggerEvent)) {
+				// // if the jurisdiction contains a list of  resources generate a list of objects
+				ActionHelper.getSubject(action, jurisdiction).ifPresent( resources -> resources.forEach(resource -> {
+					if (ConditionHelper.evaluateActionConditions(resource, action.getConditions())) {
 						TaskHelper.generateTask(resource, action);
 					}
-				}
+				}));
 			}
-		}
-		 @formatter:on**/
-		
+		});
 	}
-	
+
 }
