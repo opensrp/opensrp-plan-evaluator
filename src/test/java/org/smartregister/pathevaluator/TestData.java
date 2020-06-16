@@ -16,9 +16,13 @@ import org.smartregister.utils.TaskDateTimeTypeConverter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.resource.Task;
+import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Date;
 import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
+import com.ibm.fhir.model.type.code.TaskIntent;
+import com.ibm.fhir.model.type.code.TaskStatus;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -38,5 +42,11 @@ public class TestData {
 		return Patient.builder().id(UUID.randomUUID().toString()).birthDate(Date.of("1990-12-19"))
 		        .identifier(Identifier.builder().id("1234").value(of("1212313")).build())
 		        .name(HumanName.builder().family(of("John")).given(of("Doe")).build()).build();
+	}
+	
+	public static Task createTask() {
+		return Task.builder().id(UUID.randomUUID().toString())
+		        .businessStatus(CodeableConcept.builder().text(of("Completed")).build()).status(TaskStatus.COMPLETED)
+		        .intent(TaskIntent.PLAN).code(CodeableConcept.builder().text(of("MDA_Round_1")).build()).build();
 	}
 }
