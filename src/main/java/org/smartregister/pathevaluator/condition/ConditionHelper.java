@@ -35,7 +35,7 @@ public class ConditionHelper {
 	 * @return result of condition evaluation
 	 */
 	public boolean evaluateActionConditions(Resource resource, Action action) {
-		boolean isValid = false;
+		boolean isValid = true;
 		for (Condition condition : action.getConditions()) {
 			SubjectConcept concept = condition.getExpression().getSubjectConcept();
 			if (concept != null) {
@@ -51,7 +51,7 @@ public class ConditionHelper {
 				isValid = pathEvaluatorLibrary.evaluateBooleanExpression(resource,
 				    condition.getExpression().getExpression());
 			}
-			if (isValid) {
+			if (!isValid) {
 				return isValid;
 			}
 		}
