@@ -17,9 +17,6 @@ public class TaskConverter {
 		Identifier identifier = Identifier.builder()
 				.system(Uri.builder().id("identifier").value(domainTask.getIdentifier()).build())
 				.build();
-		Identifier planIdentifier = Identifier.builder()
-				.system(Uri.builder().id("planIdentifier").value(domainTask.getPlanIdentifier()).build())
-				.build();
 		Identifier groupIdentifier = Identifier.builder()
 				.system(Uri.builder().id("groupIdentifier").value(domainTask.getGroupIdentifier()).build())
 				.build();
@@ -78,7 +75,10 @@ public class TaskConverter {
 		DateTime end = DateTime.builder().value(endStart).build();
 		Period period = Period.builder().start(start).end(end).build();
 
-		Task fihrTask = Task.builder().identifier(identifier, planIdentifier, groupIdentifier).status(taskStatus)
+		Reference planIdentifier = Reference.builder().reference(String.builder().value(domainTask.getPlanIdentifier()).build())
+				.build();
+
+		Task fihrTask = Task.builder().identifier(identifier).status(taskStatus)
 				.businessStatus(businessStatus).
 						location(referenceLocation).
 						priority(priority).
@@ -93,6 +93,8 @@ public class TaskConverter {
 						authoredOn(authoredOn)
 				.lastModified(lastModified)
 				.executionPeriod(period)
+				.basedOn(planIdentifier)
+				.groupIdentifier(groupIdentifier)
 				.build();
 		return fihrTask;
 	}

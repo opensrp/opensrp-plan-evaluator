@@ -1,12 +1,12 @@
 package org.smartregister.converters;
 
 import com.ibm.fhir.model.resource.Encounter;
-import com.ibm.fhir.model.type.CodeableConcept;
-import com.ibm.fhir.model.type.Identifier;
-import com.ibm.fhir.model.type.Reference;
+import com.ibm.fhir.model.type.*;
 import com.ibm.fhir.model.type.String;
 import org.smartregister.domain.Event;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class EventConverter {
@@ -26,9 +26,14 @@ public class EventConverter {
 		Reference partOf = Reference.builder().id(event.getTeamId()).display(String.builder().value(event.getTeam()).build())
 				.build();
 		Reference serviceProvider = Reference.builder().id(event.getProviderId()).build();
+		Reference baseEntityId = Reference.builder().id(event.getBaseEntityId()).build();
+
 		Encounter encounter = Encounter.builder().identifier().type(eventType).serviceType(entityType).
 				location(location, childLocation).partOf(partOf).
-				serviceProvider(serviceProvider).build();
+				serviceProvider(serviceProvider).
+				subject(baseEntityId).
+				id(event.getFormSubmissionId()).
+				identifier().build();
 		return encounter;
 	}
 }
