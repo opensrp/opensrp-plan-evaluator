@@ -3,58 +3,92 @@
  */
 package org.smartregister.pathevaluator.plan;
 
-import static com.ibm.fhir.model.type.String.of;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import org.junit.BeforeClass;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
+import org.powermock.reflect.Whitebox;
+import org.smartregister.domain.Action;
+import org.smartregister.domain.Jurisdiction;
+import org.smartregister.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition.PlanStatus;
+import org.smartregister.pathevaluator.TestData;
+import org.smartregister.pathevaluator.action.ActionHelper;
+import org.smartregister.pathevaluator.condition.ConditionHelper;
+import org.smartregister.pathevaluator.task.TaskHelper;
 
-import com.ibm.fhir.model.resource.Observation;
 import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.type.CodeableConcept;
-import com.ibm.fhir.model.type.Date;
-import com.ibm.fhir.model.type.HumanName;
-import com.ibm.fhir.model.type.Identifier;
-import com.ibm.fhir.model.type.Reference;
-import com.ibm.fhir.model.type.code.ObservationStatus;
 
 /**
- * @author Samuel Githengi created on 06/10/20
+ * @author Samuel Githengi created on 06/15/20
  */
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class PlanEvaluatorTest {
 	
-	private PlanEvaluator planEvaluator= new PlanEvaluator();
+	private PlanEvaluator planEvaluator;
 	
-	private static Patient patient;
+	@Mock
+	private ActionHelper actionHelper;
 	
-	@BeforeClass
-	public static void startUp() {
-		patient = Patient.builder().id("12345").birthDate(Date.of("1990-12-19"))
-		        .identifier(Identifier.builder().id("1234").value(of("1212313")).build())
-		        .name(HumanName.builder().family(of("John")).given(of("Doe")).build()).build();
-		
-		Reference.Builder builder = Reference.builder();
-		builder.id("12345");
-		builder.reference(of(patient.getId()));
-		Observation observation = Observation.builder()
-		        .code(CodeableConcept.builder().id("123").text(of("12343434343")).build()).subject(builder.build())
-		        .status(ObservationStatus.FINAL).build();
+	@Mock
+	private ConditionHelper conditionHelper;
+	
+	@Mock
+	private TaskHelper taskHelper;
+	
+	@Before
+	public void setUp() {
+		planEvaluator = new PlanEvaluator();
+		Whitebox.setInternalState(planEvaluator, "actionHelper", actionHelper);
+		Whitebox.setInternalState(planEvaluator, "conditionHelper", conditionHelper);
+		Whitebox.setInternalState(planEvaluator, "taskHelper", taskHelper);
 	}
 	
 	@Test
-	public void testWhere() {
-		assertFalse(planEvaluator.evaluateBooleanExpression(patient, "Patient.where(name.given = 'Does').exists()"));
-		assertTrue(planEvaluator.evaluateBooleanExpression(patient, "Patient.where(name.given = 'Doe').exists()"));
-		assertTrue(planEvaluator.evaluateBooleanExpression(patient, "Patient.exists()"));
-		
+	public void testEvaluatePlanForInactivePlan() {
+		PlanDefinition planDefinition = TestData.createPlan();
+		PlanDefinition planDefinition2 = null;
+		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
+		verify(actionHelper, never()).getSubjectResources(any(), any());
 	}
 	
 	@Test
-	public void testExpressions() {
-		assertFalse(planEvaluator.evaluateBooleanExpression(patient, "Patient.name.family = 'Kelvin'"));
-		assertTrue(planEvaluator.evaluateBooleanExpression(patient, "Patient.name.family = 'John'"));
-		assertTrue(planEvaluator.evaluateBooleanExpression(patient, "Patient.birthDate >= @1990-12-19"));
+	public void testEvaluatePlanEvaluatesCondtions() {
+		PlanDefinition planDefinition = TestData.createPlan();
+		planDefinition.setStatus(PlanStatus.ACTIVE);
+		PlanDefinition planDefinition2 = null;
+		List<Patient> patients = Collections.singletonList(TestData.createPatient());
+		Action action = planDefinition.getActions().get(0);
+		Jurisdiction jurisdiction = planDefinition.getJurisdiction().get(0);
+		when(actionHelper.getSubjectResources(action, jurisdiction)).thenAnswer(new Answer<List<Patient>>() {
+			
+			@Override
+			public List<Patient> answer(InvocationOnMock invocation) throws Throwable {
+				return patients;
+			}
+		});
+		when(conditionHelper.evaluateActionConditions(patients.get(0), action)).thenReturn(true);
+		
+		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
+		
+		verify(actionHelper, times(planDefinition.getActions().size() * planDefinition.getJurisdiction().size()))
+		        .getSubjectResources(any(), any());
+		
+		verify(conditionHelper).evaluateActionConditions(patients.get(0), action);
+		
+		verify(taskHelper).generateTask(patients.get(0), action);
 	}
 	
 }

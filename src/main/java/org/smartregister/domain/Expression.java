@@ -13,7 +13,7 @@ import org.smartregister.domain.Action.SubjectConcept;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Builder
+@Builder(toBuilder=true)
 public class Expression {
     private String name;
     private String language;
