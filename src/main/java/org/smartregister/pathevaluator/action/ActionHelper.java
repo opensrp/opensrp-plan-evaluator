@@ -67,7 +67,7 @@ public class ActionHelper {
 	 * @param id the resource id
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends Resource> getConditionSubjectResources(Condition condition, Action action, Resource resource) {
+	public List<? extends Resource> getConditionSubjectResources(Condition condition, Action action, Resource resource,String planIdentifier) {
 		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectConcept());
 		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
 		switch (conditionResourceType) {
@@ -84,7 +84,7 @@ public class ActionHelper {
 				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(resource, actionResourceType);
 			
 			case TASK:
-				return PathEvaluatorLibrary.getInstance().getTaskDao().getTasks(resource, actionResourceType);
+				return PathEvaluatorLibrary.getInstance().getTaskDao().getTasks(resource, actionResourceType,planIdentifier);
 			
 			default:
 				return null;

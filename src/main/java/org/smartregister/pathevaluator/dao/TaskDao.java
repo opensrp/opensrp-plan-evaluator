@@ -22,6 +22,6 @@ public interface TaskDao {
 	 * @param fromResourceType
 	 * @return tasks associated with a resource
 	 */
-	List<Task> getTasks(Resource resource, ResourceType fromResourceType);
+	List<Task> getTasks(Resource resource, ResourceType fromResourceType,String planIdentifier);
 	
 }
