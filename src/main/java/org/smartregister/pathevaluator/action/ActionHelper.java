@@ -43,10 +43,10 @@ public class ActionHelper {
 		ResourceType resourceType = getResourceType(action);
 		switch (resourceType) {
 			case JURISDICTION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getJurisdictions(jurisdiction.getCode());
+				return PathEvaluatorLibrary.getInstance().getLocationProvider().getJurisdictions(jurisdiction.getCode());
 			
 			case LOCATION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getLocations(jurisdiction.getCode());
+				return PathEvaluatorLibrary.getInstance().getLocationProvider().getLocations(jurisdiction.getCode());
 			
 			case FAMILY:
 				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(jurisdiction.getCode());
@@ -72,10 +72,10 @@ public class ActionHelper {
 		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
 		switch (conditionResourceType) {
 			case JURISDICTION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getJurisdictions(resource, actionResourceType);
+				return PathEvaluatorLibrary.getInstance().getLocationProvider().getJurisdictions(resource, actionResourceType);
 			
 			case LOCATION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getLocations(resource, actionResourceType);
+				return PathEvaluatorLibrary.getInstance().getLocationProvider().getLocations(resource, actionResourceType);
 			
 			case FAMILY:
 				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(resource, actionResourceType);
