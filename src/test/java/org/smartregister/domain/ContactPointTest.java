@@ -2,6 +2,8 @@ package org.smartregister.domain;
 
 import static org.junit.Assert.assertEquals;
 
+import com.openpojo.reflection.PojoClass;
+import com.openpojo.reflection.construct.InstanceFactory;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -24,7 +26,7 @@ public class ContactPointTest {
 	@Test
 	public void testConstructor() {
 		final Class<?> clazz = ContactPoint.class;
-		final Object obj1 = FormTest.getInstance(clazz, "type", "use", "number", 0, new DateTime(0l), new DateTime(1l));
+		final Object obj1 = getInstance(clazz, "type", "use", "number", 0, new DateTime(0l), new DateTime(1l));
 		Affirm.affirmNotNull("Should have created an object", obj1);
 		ContactPoint contactPoint = (ContactPoint) obj1;
 		assertEquals("type", contactPoint.getType());
@@ -34,7 +36,12 @@ public class ContactPointTest {
 		assertEquals(new DateTime(0l), contactPoint.getStartDate());
 		assertEquals(new DateTime(1l), contactPoint.getEndDate());
 		
-		final Object obj2 = FormTest.getInstance(clazz, new Object[] {});
+		final Object obj2 = getInstance(clazz, new Object[] {});
 		Affirm.affirmTrue("Should have created a different object", obj1 != obj2);
+	}
+
+	public static Object getInstance(final Class<?> clazz, final Object... parameters) {
+		final PojoClass pojoClass = PojoClassFactory.getPojoClass(clazz);
+		return InstanceFactory.getInstance(pojoClass, parameters);
 	}
 }

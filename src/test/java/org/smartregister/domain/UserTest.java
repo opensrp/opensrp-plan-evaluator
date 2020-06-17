@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.openpojo.reflection.PojoClass;
+import com.openpojo.reflection.construct.InstanceFactory;
 import org.junit.Test;
 
 import com.openpojo.reflection.impl.PojoClassFactory;
@@ -36,10 +38,10 @@ public class UserTest {
 	@Test
 	public void testConstructor() {
 		final Class<?> clazz = User.class;
-		final Object obj1 = FormTest.getInstance(clazz, "entityId", "username", "password", "salt");
+		final Object obj1 = getInstance(clazz, "entityId", "username", "password", "salt");
 		Affirm.affirmNotNull("Should have created an object", obj1);
 		
-		final Object obj2 = FormTest.getInstance(clazz, new Object[] {});
+		final Object obj2 = getInstance(clazz, new Object[] {});
 		Affirm.affirmTrue("Should have created a different object", obj1 != obj2);
 	}
 	
@@ -94,6 +96,11 @@ public class UserTest {
 		user.withPermissions(null);
 		user.addPermission("permission");
 		assertTrue(user.hasPermission("permission"));
+	}
+
+	public static Object getInstance(final Class<?> clazz, final Object... parameters) {
+		final PojoClass pojoClass = PojoClassFactory.getPojoClass(clazz);
+		return InstanceFactory.getInstance(pojoClass, parameters);
 	}
 	
 }
