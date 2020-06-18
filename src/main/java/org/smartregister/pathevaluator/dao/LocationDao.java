@@ -31,11 +31,11 @@ public interface LocationDao {
 	/**
 	 * Gets the jurisdictions associated with a resource
 	 * 
-	 * @param resource a resource
+	 * @param id a resource
 	 * @param fromResourceType 
 	 * @return jurisdictions associated with a resource
 	 */
-	List<Location> getJurisdictionsById(String id);
+	List<Location> getJurisdictionsById( String id);
 	
 	/**
 	 * Gets the structures associated with a resource

@@ -4,7 +4,6 @@
 package org.smartregister.pathevaluator.dao;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.smartregister.pathevaluator.ResourceType;
 
@@ -20,7 +19,11 @@ import lombok.AllArgsConstructor;
  * @author Samuel Githengi created on 06/17/20
  */
 @AllArgsConstructor
-public class LocationProvider {
+public class LocationProvider extends BaseProvider {
+	
+	private static final String RESIDENCE = "residence";
+	
+	private static final String LOCATION_ID = "location_id";
 	
 	private LocationDao locationDao;
 	
@@ -30,13 +33,9 @@ public class LocationProvider {
 				return locationDao.getLocations(resource.getId());
 			case FAMILY:
 			case FAMILY_MEMBER:
-				Patient patient = (Patient) resource;
-				Optional<Identifier> locationIdentifier = patient.getIdentifier().stream()
-				        .filter(identifier -> identifier.getId().equals("residence")).findFirst();
-				if (locationIdentifier.isPresent()) {
-					locationDao.getJurisdictionsById(locationIdentifier.get().getValue().getValue());
-				} else {
-					return null;
+				Identifier residence = getIdentifier((Patient) resource, RESIDENCE);
+				if (residence != null) {
+					return locationDao.getJurisdictionsById(residence.getValue().getValue());
 				}
 			case TASK:
 				Task task = (Task) resource;
@@ -46,7 +45,6 @@ public class LocationProvider {
 				return null;
 		}
 	}
-
 	
 	public List<Location> getJurisdictions(Resource resource, ResourceType fromResourceType) {
 		switch (fromResourceType) {
@@ -54,13 +52,9 @@ public class LocationProvider {
 				return locationDao.getJurisdictionsById(resource.getId());
 			case FAMILY:
 			case FAMILY_MEMBER:
-				Patient patient = (Patient) resource;
-				Optional<Identifier> locationIdentifier = patient.getIdentifier().stream()
-				        .filter(identifier -> identifier.getId().equals("location_id")).findFirst();
-				if (locationIdentifier.isPresent()) {
-					locationDao.getJurisdictionsById(locationIdentifier.get().getValue().getValue());
-				} else {
-					return null;
+				Identifier location = getIdentifier((Patient) resource, LOCATION_ID);
+				if (location != null) {
+					return locationDao.getJurisdictionsById(location.getValue().getValue());
 				}
 			case TASK:
 				Task task = (Task) resource;
@@ -70,21 +64,20 @@ public class LocationProvider {
 				return null;
 		}
 	}
-
 	
 	/**
 	 * @param jurisdiction
 	 * @return
 	 */
-	public List<? extends Resource> getJurisdictions(String jurisdiction) {
+	public List<Location> getJurisdictions(String jurisdiction) {
 		return locationDao.getJurisdictions(jurisdiction);
 	}
-
+	
 	/**
 	 * @param jurisdiction
 	 * @return
 	 */
-	public List<? extends Resource> getLocations(String jurisdiction) {
+	public List<Location> getLocations(String jurisdiction) {
 		return locationDao.getLocations(jurisdiction);
 	}
 	

@@ -115,18 +115,18 @@ public class ActionHelperTest {
 	public void testGetFamilyResources() {
 		subjectConcept.setText(ResourceType.FAMILY.value());
 		List<RelatedPerson> expected = Collections.singletonList(TestData.createFamily());
-		when(clientDao.getFamilies(jurisdiction.getCode())).thenReturn(expected);
+		when(clientDao.findFamilyByJurisdiction(jurisdiction.getCode())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
-		verify(clientDao).getFamilies(jurisdiction.getCode());
+		verify(clientDao).findFamilyByJurisdiction(jurisdiction.getCode());
 	}
 	
 	@Test
 	public void testGetFamilyMemberResources() {
 		subjectConcept.setText(ResourceType.FAMILY_MEMBER.value());
 		List<Patient> expected = Collections.singletonList(TestData.createPatient());
-		when(clientDao.getFamilyMembers(jurisdiction.getCode())).thenReturn(expected);
+		when(clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
-		verify(clientDao).getFamilyMembers(jurisdiction.getCode());
+		verify(clientDao).findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 	}
 	
 	/** Condition resources tests **/

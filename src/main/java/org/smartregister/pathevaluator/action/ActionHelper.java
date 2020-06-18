@@ -49,10 +49,10 @@ public class ActionHelper {
 				return PathEvaluatorLibrary.getInstance().getLocationProvider().getLocations(jurisdiction.getCode());
 			
 			case FAMILY:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(jurisdiction.getCode());
+				return PathEvaluatorLibrary.getInstance().getClientDao().findFamilyByJurisdiction(jurisdiction.getCode());
 			
 			case FAMILY_MEMBER:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(jurisdiction.getCode());
+				return PathEvaluatorLibrary.getInstance().getClientDao().findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 			
 			default:
 				return null;
