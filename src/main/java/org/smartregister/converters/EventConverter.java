@@ -4,7 +4,9 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.type.*;
 import com.ibm.fhir.model.type.String;
 import com.ibm.fhir.model.type.code.QuestionnaireResponseStatus;
+import org.apache.commons.lang3.StringUtils;
 import org.smartregister.domain.Event;
+import org.smartregister.domain.Obs;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -68,9 +70,28 @@ public class EventConverter {
 
 		if (event.getDetails() != null) {
 			for (Map.Entry<java.lang.String, java.lang.String> entry : event.getDetails().entrySet()) {
-				answer = QuestionnaireResponse.Item.Answer.builder()
-						.value(String.builder().value(entry.getValue()).build()).build();
-				item = QuestionnaireResponse.Item.builder().linkId(String.builder().value(entry.getKey()).build())
+				if (StringUtils.trim(entry.getValue()).length() >= 1) {
+					answer = QuestionnaireResponse.Item.Answer.builder()
+							.value(String.builder().value(entry.getValue()).build()).build();
+					item = QuestionnaireResponse.Item.builder().linkId(String.builder().value(entry.getKey()).build())
+							.answer(answer).build();
+					items.add(item);
+				}
+			}
+		}
+		Extension extension;
+		Collection<Extension> extensions = new ArrayList<>();
+		if (event.getObs() != null) {
+			for (Obs obs : event.getObs()) {
+				for (Object obj : obs.getValues()) {
+					if (obj instanceof java.lang.String) {
+						extension = Extension.builder().value(String.builder().value(obj.toString()).build())
+								.url("observation").build();
+						extensions.add(extension);
+					}
+				}
+				answer = QuestionnaireResponse.Item.Answer.builder().extension(extensions).build();
+				item = QuestionnaireResponse.Item.builder().linkId(String.builder().value(obs.getFieldCode()).build())
 						.answer(answer).build();
 				items.add(item);
 			}
