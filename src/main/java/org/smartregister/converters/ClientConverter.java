@@ -40,21 +40,31 @@ public class ClientConverter {
 		Collection<Extension> extensions = new ArrayList<>();
 		Coding coding;
 
-		if(client.getRelationships() != null) {
+		if (client.getRelationships() != null) {
 			for (Map.Entry<java.lang.String, List<java.lang.String>> entry : client.getRelationships().entrySet()) {
 				for (java.lang.String entryValue : entry.getValue()) {
 					extension = Extension.builder().value(String.builder().value(entryValue).build()).build();
 					extensions.add(extension);
 				}
 				coding = Coding.builder().extension(extensions).build();
-				codeableConcept = CodeableConcept.builder().text(String.builder().value(entry.getKey()).build()).coding(coding)
+				codeableConcept = CodeableConcept.builder().text(String.builder().value(entry.getKey()).build())
+						.coding(coding)
 						.build();
 				identifier = Identifier.builder().type(codeableConcept).build();
 				identifierList.add(identifier);
 			}
 		}
 
-		//TODO : attributes
+		if (client.getAttributes() != null) {
+			for (Map.Entry<java.lang.String, java.lang.Object> entry : client.getAttributes().entrySet()) {
+				if (entry.getValue() instanceof java.lang.String) {
+					codeableConcept = CodeableConcept.builder().text(String.builder().value(entry.getValue().toString()).build()).id(entry.getKey())
+							.build();
+					identifier = Identifier.builder().type(codeableConcept).build();
+					identifierList.add(identifier);
+				}
+			}
+		}
 
 		Patient patient = Patient.builder().gender(administrativeGender).
 				name(firstName).deceased(deceasedDateTime).birthDate(birthDate).identifier(identifierList).
