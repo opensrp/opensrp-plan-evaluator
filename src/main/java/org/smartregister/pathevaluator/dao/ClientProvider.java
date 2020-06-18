@@ -22,7 +22,7 @@ import lombok.Getter;
 @Getter
 public class ClientProvider extends BaseProvider {
 	
-	private static final String FAMILY = "family";
+	public static final String FAMILY = "family";
 	
 	private ClientDao clientDao;
 	
@@ -39,7 +39,7 @@ public class ClientProvider extends BaseProvider {
 				}
 			case TASK:
 				Task task = (Task) resource;
-				return clientDao.findClientById(task.getFor().getId());
+				return clientDao.findClientById(task.getFor().getReference().getValue());
 			default:
 				return null;
 		}
@@ -55,7 +55,7 @@ public class ClientProvider extends BaseProvider {
 				return clientDao.findFamilyMemberByRelationship(FAMILY, resource.getId());
 			case TASK:
 				Task task = (Task) resource;
-				return clientDao.findClientById(task.getFor().getId());
+				return clientDao.findClientById(task.getFor().getReference().getValue());
 			default:
 				return null;
 		}
