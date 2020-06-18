@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -33,7 +34,7 @@ import com.ibm.fhir.model.resource.Task;
 /**
  * @author Samuel Githengi created on 06/16/20
  */
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class ConditionHelperTest {
 	
 	private ConditionHelper conditionHelper;
@@ -49,9 +50,11 @@ public class ConditionHelperTest {
 	
 	private Expression expression;
 	
+	private String plan=UUID.randomUUID().toString();
+	
 	@BeforeClass
 	public static void bootstrap() {
-		PathEvaluatorLibrary.init();
+		PathEvaluatorLibrary.init(null,null,null);
 	}
 	
 	@Before
@@ -66,18 +69,18 @@ public class ConditionHelperTest {
 	
 	@Test
 	public void testEvaluateActionWithEmptyConditions() {
-		assertTrue(conditionHelper.evaluateActionConditions(patient, action));
+		assertTrue(conditionHelper.evaluateActionConditions(patient, action,plan));
 	}
 	
 	@Test
 	public void testEvaluateActionConditionWithoutSubject() {
 		action.getConditions().add(condition);
-		assertTrue(conditionHelper.evaluateActionConditions(patient, action));
+		assertTrue(conditionHelper.evaluateActionConditions(patient, action,plan));
 		
 		expression = Expression.builder().expression("Patient.name.given = 'Jil'").build();
 		condition = Condition.builder().kind("applicability").expression(expression).build();
 		action.getConditions().add(condition);
-		assertFalse(conditionHelper.evaluateActionConditions(patient, action));
+		assertFalse(conditionHelper.evaluateActionConditions(patient, action,null));
 	}
 	
 	@Test
@@ -87,15 +90,15 @@ public class ConditionHelperTest {
 		            expression.toBuilder().subjectConcept(new SubjectConcept("Task")).expression("Task.code.text='MDA_Round_1' and Task.businessStatus.text='Completed' ").build())
 		        .build();
 		action.getConditions().add(condition);
-		assertFalse(conditionHelper.evaluateActionConditions(patient, action));
+		assertFalse(conditionHelper.evaluateActionConditions(patient, action,plan));
 		
-		when(actionHelper.getConditionSubjectResources(condition, action, patient)).thenAnswer(new Answer<List<Task>>() {
+		when(actionHelper.getConditionSubjectResources(condition, action, patient,plan)).thenAnswer(new Answer<List<Task>>() {
 			
 			@Override
 			public List<Task> answer(InvocationOnMock invocation) throws Throwable {
 				return Collections.singletonList(TestData.createTask());
 			}
 		});
-		assertTrue(conditionHelper.evaluateActionConditions(patient, action));
+		assertTrue(conditionHelper.evaluateActionConditions(patient, action,plan));
 	}
 }

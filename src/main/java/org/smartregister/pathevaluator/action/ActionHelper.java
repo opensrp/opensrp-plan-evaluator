@@ -10,6 +10,8 @@ import org.smartregister.domain.Condition;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
+import org.smartregister.pathevaluator.dao.ClientDao;
+import org.smartregister.pathevaluator.dao.LocationDao;
 
 import com.ibm.fhir.model.resource.Resource;
 
@@ -41,18 +43,21 @@ public class ActionHelper {
 	 */
 	public List<? extends Resource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
 		ResourceType resourceType = getResourceType(action);
+		LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
+		ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
 		switch (resourceType) {
 			case JURISDICTION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getJurisdictions(jurisdiction.getCode());
+				
+				return locationDao.findJurisdictionsById(jurisdiction.getCode());
 			
 			case LOCATION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getLocations(jurisdiction.getCode());
+				return locationDao.findLocationByJurisdiction(jurisdiction.getCode());
 			
 			case FAMILY:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(jurisdiction.getCode());
+				return clientDao.findFamilyByJurisdiction(jurisdiction.getCode());
 			
 			case FAMILY_MEMBER:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(jurisdiction.getCode());
+				return clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 			
 			default:
 				return null;
@@ -67,24 +72,27 @@ public class ActionHelper {
 	 * @param id the resource id
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends Resource> getConditionSubjectResources(Condition condition, Action action, Resource resource) {
+	public List<? extends Resource> getConditionSubjectResources(Condition condition, Action action, Resource resource,
+	        String planIdentifier) {
 		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectConcept());
 		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
 		switch (conditionResourceType) {
 			case JURISDICTION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getJurisdictions(resource, actionResourceType);
+				return PathEvaluatorLibrary.getInstance().getLocationProvider().getJurisdictions(resource,
+				    actionResourceType);
 			
 			case LOCATION:
-				return PathEvaluatorLibrary.getInstance().getLocationDao().getLocations(resource, actionResourceType);
+				return PathEvaluatorLibrary.getInstance().getLocationProvider().getLocations(resource, actionResourceType);
 			
 			case FAMILY:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilies(resource, actionResourceType);
+				return PathEvaluatorLibrary.getInstance().getClientProvider().getFamilies(resource, actionResourceType);
 			
 			case FAMILY_MEMBER:
-				return PathEvaluatorLibrary.getInstance().getClientDao().getFamilyMembers(resource, actionResourceType);
+				return PathEvaluatorLibrary.getInstance().getClientProvider().getFamilyMembers(resource, actionResourceType);
 			
 			case TASK:
-				return PathEvaluatorLibrary.getInstance().getTaskDao().getTasks(resource, actionResourceType);
+				return PathEvaluatorLibrary.getInstance().getTaskProvider().getTasks(resource, actionResourceType,
+				    planIdentifier);
 			
 			default:
 				return null;

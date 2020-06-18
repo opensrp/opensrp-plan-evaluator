@@ -106,7 +106,7 @@ public class PlanEvaluator {
 			List<? extends Resource> resources = actionHelper.getSubjectResources(action, jurisdiction);
 			
 			for (Resource resource : resources) {
-				if (conditionHelper.evaluateActionConditions(resource, action)) {
+				if (conditionHelper.evaluateActionConditions(resource, action,planDefinition.getIdentifier())) {
 					taskHelper.generateTask(resource, action);
 				}
 			}
