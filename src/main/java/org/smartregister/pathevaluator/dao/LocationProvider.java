@@ -23,9 +23,9 @@ import lombok.Getter;
 @Getter
 public class LocationProvider extends BaseProvider {
 	
-	private static final String RESIDENCE = "residence";
+	public static final String RESIDENCE = "residence";
 	
-	private static final String LOCATION_ID = "location_id";
+	public static final String LOCATION_ID = "location_id";
 	
 	private LocationDao locationDao;
 	
@@ -39,10 +39,10 @@ public class LocationProvider extends BaseProvider {
 				if (residence != null) {
 					return locationDao.findJurisdictionsById(residence.getValue().getValue());
 				}
+				return null;
 			case TASK:
 				Task task = (Task) resource;
-				String locationId = task.getFor().getId();
-				return locationDao.findLocationsById(locationId);
+				return locationDao.findLocationsById(task.getFor().getReference().getValue());
 			default:
 				return null;
 		}
@@ -58,6 +58,7 @@ public class LocationProvider extends BaseProvider {
 				if (location != null) {
 					return locationDao.findJurisdictionsById(location.getValue().getValue());
 				}
+				return null;
 			case TASK:
 				Task task = (Task) resource;
 				String locationId = task.getGroupIdentifier().getValue().getValue();

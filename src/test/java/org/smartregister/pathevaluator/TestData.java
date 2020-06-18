@@ -22,6 +22,7 @@ import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Date;
 import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
+import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.model.type.code.LocationStatus;
 import com.ibm.fhir.model.type.code.TaskIntent;
 import com.ibm.fhir.model.type.code.TaskStatus;
@@ -49,7 +50,9 @@ public class TestData {
 	public static Task createTask() {
 		return Task.builder().id(UUID.randomUUID().toString())
 		        .businessStatus(CodeableConcept.builder().text(of("Completed")).build()).status(TaskStatus.COMPLETED)
-		        .intent(TaskIntent.PLAN).code(CodeableConcept.builder().text(of("MDA_Round_1")).build()).build();
+		        .intent(TaskIntent.PLAN).code(CodeableConcept.builder().text(of("MDA_Round_1")).build())
+		        ._for(Reference.builder().reference(of("1234mlmn-sdsd")).build())
+		        .groupIdentifier(Identifier.builder().value(of("189897")).build()).build();
 	}
 	
 	public static Location createLocation() {

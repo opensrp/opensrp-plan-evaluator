@@ -10,14 +10,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ibm.fhir.model.resource.Observation;
 import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Date;
 import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Reference;
-import com.ibm.fhir.model.type.code.ObservationStatus;
 
 /**
  * @author Samuel Githengi created on 06/10/20
@@ -39,9 +36,6 @@ public class PathEvaluatorLibraryTest {
 		Reference.Builder builder = Reference.builder();
 		builder.id("12345");
 		builder.reference(of(patient.getId()));
-		Observation observation = Observation.builder()
-		        .code(CodeableConcept.builder().id("123").text(of("12343434343")).build()).subject(builder.build())
-		        .status(ObservationStatus.FINAL).build();
 	}
 	
 	@Test
