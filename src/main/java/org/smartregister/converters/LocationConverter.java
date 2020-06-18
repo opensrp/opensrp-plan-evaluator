@@ -1,7 +1,5 @@
 package org.smartregister.converters;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.type.*;
 import com.ibm.fhir.model.type.String;
@@ -48,10 +46,6 @@ public class LocationConverter {
 					.build();
 			identifiers.add(identifier);
 		}
-		//		Identifier identifier1 = Identifier.builder().system(Uri.builder().id("OpenMRS_Id").value(openMrsId).build())
-		//				.build();
-		//		Identifier identifier2 = Identifier.builder().system(Uri.builder().id("externalId").value(externalId).build())
-		//				.build();
 
 		Coding jdnCoding = Coding.builder().code(Code.code("jdn")).build();
 		Coding buCoding = Coding.builder().code(Code.code("bu")).build();

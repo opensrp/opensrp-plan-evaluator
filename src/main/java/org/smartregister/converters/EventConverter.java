@@ -7,6 +7,9 @@ import com.ibm.fhir.model.type.code.QuestionnaireResponseStatus;
 import org.smartregister.domain.Event;
 
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 public class EventConverter {
 
