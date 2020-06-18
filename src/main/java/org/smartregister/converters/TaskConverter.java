@@ -107,7 +107,7 @@ public class TaskConverter {
 				.basedOn(planIdentifier)
 				.groupIdentifier(groupIdentifier)
 				.meta(meta)
-				.intent(TaskIntent.UNKNOWN)  //required property
+				.intent(TaskIntent.PLAN)  //required property
 				.build();
 		return fihrTask;
 	}
