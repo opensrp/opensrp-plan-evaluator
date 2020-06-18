@@ -20,7 +20,7 @@ public class EventConverterTest {
 
 	@Test
 	public void testConvertEventToQuestionnaireResponse() {
-		Event event = new Event(); //TODO : Add identifier
+		Event event ; //TODO : Add identifier
 		event = gson.fromJson(EVENT_JSON, Event.class);
 		event.setChildLocationId("child-location-id");
 		event.setEventType("event-type");
