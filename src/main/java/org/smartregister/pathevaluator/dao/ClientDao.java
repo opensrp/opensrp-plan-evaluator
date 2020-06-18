@@ -12,9 +12,9 @@ import com.ibm.fhir.model.resource.Patient;
  */
 public interface ClientDao {
 	
-	/**
-	 * @param locationId
-	 * @return
+	/** Gets Patient resources using primary key
+	 * @param id the identifier for patient
+	 * @return patient with the id
 	 */
 	List<Patient> findClientById(String id);
 	
@@ -50,11 +50,11 @@ public interface ClientDao {
 	 */
 	List<Patient> findFamilyMemberByResidence(String structureId);
 	
-	/**
-	 * @param family
-	 * @param id
-	 * @return
+	/** Gets the patient using a relationships
+	 * @param relationship the type of relation
+	 * @param id the value of relationship identifier
+	 * @return patients that have relationships
 	 */
-	List<Patient> findFamilyMemberByRelationship(String relationship, String id);
+	List<Patient> findClientByRelationship(String relationship, String id);
 	
 }

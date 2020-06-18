@@ -90,9 +90,9 @@ public class ClientProviderTest {
 	
 	@Test
 	public void testGetFamilyMembersForFamily() {
-		when(clientDao.findFamilyMemberByRelationship(ClientProvider.FAMILY, patient.getId())).thenReturn(expected);
+		when(clientDao.findClientByRelationship(ClientProvider.FAMILY, patient.getId())).thenReturn(expected);
 		assertEquals(expected, clientProvider.getFamilyMembers(patient, ResourceType.FAMILY));
-		verify(clientDao).findFamilyMemberByRelationship(ClientProvider.FAMILY, patient.getId());
+		verify(clientDao).findClientByRelationship(ClientProvider.FAMILY, patient.getId());
 	}
 	
 	@Test

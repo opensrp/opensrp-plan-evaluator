@@ -52,7 +52,7 @@ public class ClientProvider extends BaseProvider {
 			case LOCATION:
 				return clientDao.findFamilyMemberByResidence(resource.getId());
 			case FAMILY:
-				return clientDao.findFamilyMemberByRelationship(FAMILY, resource.getId());
+				return clientDao.findClientByRelationship(FAMILY, resource.getId());
 			case TASK:
 				Task task = (Task) resource;
 				return clientDao.findClientById(task.getFor().getReference().getValue());
