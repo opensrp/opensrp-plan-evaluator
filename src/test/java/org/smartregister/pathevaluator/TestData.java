@@ -17,13 +17,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.RelatedPerson;
 import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Date;
 import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
-import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.model.type.code.LocationStatus;
 import com.ibm.fhir.model.type.code.TaskIntent;
 import com.ibm.fhir.model.type.code.TaskStatus;
@@ -46,13 +44,6 @@ public class TestData {
 		return Patient.builder().id(UUID.randomUUID().toString()).birthDate(Date.of("1990-12-19"))
 		        .identifier(Identifier.builder().id("1234").value(of("1212313")).build())
 		        .name(HumanName.builder().family(of("John")).given(of("Doe")).build()).build();
-	}
-	
-	public static RelatedPerson createFamily() {
-		return RelatedPerson.builder().id(UUID.randomUUID().toString()).birthDate(Date.of("1990-12-19"))
-		        .identifier(Identifier.builder().id("1234").value(of("1212313")).build())
-		        .name(HumanName.builder().family(of("John")).given(of("Doe")).build())
-		        .patient(Reference.builder().reference(of("12345")).build()).build();
 	}
 	
 	public static Task createTask() {

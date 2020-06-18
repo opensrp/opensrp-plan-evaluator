@@ -14,11 +14,13 @@ import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.Identifier;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * @author Samuel Githengi created on 06/17/20
  */
 @AllArgsConstructor
+@Getter
 public class LocationProvider extends BaseProvider {
 	
 	private static final String RESIDENCE = "residence";
@@ -63,22 +65,6 @@ public class LocationProvider extends BaseProvider {
 			default:
 				return null;
 		}
-	}
-	
-	/**
-	 * @param jurisdiction
-	 * @return
-	 */
-	public List<Location> findJurisdictionsById(String jurisdiction) {
-		return locationDao.findJurisdictionsById(jurisdiction);
-	}
-	
-	/**
-	 * @param jurisdiction
-	 * @return
-	 */
-	public List<Location> findLocationByJurisdiction(String jurisdiction) {
-		return locationDao.findLocationByJurisdiction(jurisdiction);
 	}
 	
 }

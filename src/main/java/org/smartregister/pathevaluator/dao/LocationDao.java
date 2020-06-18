@@ -13,14 +13,6 @@ import com.ibm.fhir.model.resource.Location;
 public interface LocationDao {
 	
 	/**
-	 * Gets the locations/structures in a particular jurisdiction
-	 * 
-	 * @param jurisdiction the jurisdiction identifier
-	 * @return the structures in a jurisdiction
-	 */
-	List<Location> findLocationByJurisdiction(String jurisdiction);
-	
-	/**
 	 * Gets the jurisdictions associated with a resource
 	 * 
 	 * @param id a resource
@@ -37,5 +29,13 @@ public interface LocationDao {
 	 * @return structures associated with a resource
 	 */
 	List<Location> findLocationsById(String id);
+	
+	/**
+	 * Gets the locations/structures in a particular jurisdiction
+	 * 
+	 * @param jurisdiction the jurisdiction identifier
+	 * @return the structures in a jurisdiction
+	 */
+	List<Location> findLocationByJurisdiction(String jurisdiction);
 	
 }

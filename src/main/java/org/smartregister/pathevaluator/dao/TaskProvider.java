@@ -11,11 +11,13 @@ import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.model.resource.Task;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * @author Samuel Githengi created on 06/18/20
  */
 @AllArgsConstructor
+@Getter
 public class TaskProvider extends BaseProvider {
 	
 	private TaskDao taskDao;

@@ -13,12 +13,26 @@ import com.ibm.fhir.model.resource.Patient;
 public interface ClientDao {
 	
 	/**
+	 * @param locationId
+	 * @return
+	 */
+	List<Patient> findClientById(String id);
+	
+	/**
 	 * Gets the families in a particular jurisdiction
 	 * 
 	 * @param jurisdiction the jurisdiction identifier
 	 * @return families in a jurisdiction
 	 */
 	List<Patient> findFamilyByJurisdiction(String jurisdiction);
+	
+	/**
+	 * Gets the families that reside in a structure
+	 * 
+	 * @param structureId the structure identifier
+	 * @return families residing in a structure
+	 */
+	List<Patient> findFamilyByResidence(String structureId);
 	
 	/**
 	 * Gets the family members in a particular jurisdiction
@@ -28,19 +42,9 @@ public interface ClientDao {
 	 */
 	List<Patient> findFamilyMemberyByJurisdiction(String jurisdiction);
 	
-	/** Gets the families that reside in a structure
-	 * @param structureId the structure identifier
-	 * @return families residing in a structure
-	 */
-	List<Patient> findFamilyByResidence(String structureId);
-	
 	/**
-	 * @param locationId
-	 * @return
-	 */
-	List<Patient> findClientById(String id);
-	
-	/** Gets the family members that reside in a structure
+	 * Gets the family members that reside in a structure
+	 * 
 	 * @param structureId the structure identifier
 	 * @return family members residing in a structure
 	 */

@@ -13,11 +13,13 @@ import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.Identifier;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * @author Samuel Githengi created on 06/18/20
  */
 @AllArgsConstructor
+@Getter
 public class ClientProvider extends BaseProvider {
 	
 	private static final String FAMILY = "family";
@@ -43,7 +45,6 @@ public class ClientProvider extends BaseProvider {
 		}
 	}
 	
-	
 	public List<Patient> getFamilyMembers(Resource resource, ResourceType fromResourceType) {
 		switch (fromResourceType) {
 			case JURISDICTION:
@@ -51,7 +52,7 @@ public class ClientProvider extends BaseProvider {
 			case LOCATION:
 				return clientDao.findFamilyMemberByResidence(resource.getId());
 			case FAMILY:
-					return clientDao.findFamilyMemberByRelationship(FAMILY,resource.getId());
+				return clientDao.findFamilyMemberByRelationship(FAMILY, resource.getId());
 			case TASK:
 				Task task = (Task) resource;
 				return clientDao.findClientById(task.getFor().getId());
@@ -60,23 +61,4 @@ public class ClientProvider extends BaseProvider {
 		}
 	}
 	
-	/**
-	 * Gets the families in a particular jurisdiction
-	 * 
-	 * @param jurisdiction the jurisdiction identifier
-	 * @return families in a jurisdiction
-	 */
-	public List<Patient> getFamilies(String jurisdiction) {
-		return clientDao.findFamilyByJurisdiction(jurisdiction);
-	}
-	
-	/**
-	 * Gets the family members in a particular jurisdiction
-	 * 
-	 * @param jurisdiction the jurisdiction identifier
-	 * @return family members in a jurisdiction
-	 */
-	List<Patient> getFamilyMembers(String jurisdiction) {
-		return clientDao.findFamilyMemberyByJurisdiction(jurisdiction);
-	}
 }

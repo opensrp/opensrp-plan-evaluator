@@ -25,8 +25,11 @@ import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.TestData;
 import org.smartregister.pathevaluator.dao.ClientDao;
+import org.smartregister.pathevaluator.dao.ClientProvider;
 import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.dao.TaskDao;
+import org.smartregister.pathevaluator.dao.TaskProvider;
 
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
@@ -53,6 +56,15 @@ public class ActionHelperTest {
 	@Mock
 	private TaskDao taskDao;
 	
+	@Mock
+	private LocationProvider locationProvider;
+	
+	@Mock
+	private ClientProvider clientProvider;
+	
+	@Mock
+	private TaskProvider taskProvider;
+	
 	private SubjectConcept subjectConcept;
 	
 	private Jurisdiction jurisdiction;
@@ -63,17 +75,10 @@ public class ActionHelperTest {
 	
 	private Expression expression;
 	
-	@BeforeClass
-	public static void bootstrap() {
-		PathEvaluatorLibrary.init();
-	}
-	
 	@Before
 	public void setUp() {
+		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao);
 		actionHelper = new ActionHelper();
-		PathEvaluatorLibrary.getInstance().setLocationDao(locationDao);
-		PathEvaluatorLibrary.getInstance().setClientDao(clientDao);
-		PathEvaluatorLibrary.getInstance().setTaskDao(taskDao);
 		subjectConcept = new SubjectConcept(ResourceType.JURISDICTION.value());
 		jurisdiction = new Jurisdiction("12123");
 		when(action.getSubjectCodableConcept()).thenReturn(subjectConcept);
