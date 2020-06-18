@@ -9,13 +9,14 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Action.SubjectConcept;
 import org.smartregister.domain.Condition;
@@ -33,7 +34,6 @@ import org.smartregister.pathevaluator.dao.TaskProvider;
 
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.RelatedPerson;
 import com.ibm.fhir.model.resource.Task;
 
 /**
@@ -75,9 +75,18 @@ public class ActionHelperTest {
 	
 	private Expression expression;
 	
+	private String plan = UUID.randomUUID().toString();
+	
 	@Before
 	public void setUp() {
 		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao);
+		PathEvaluatorLibrary instance = PathEvaluatorLibrary.getInstance();
+		Whitebox.setInternalState(instance, "locationProvider", locationProvider);
+		Whitebox.setInternalState(instance, "clientProvider", clientProvider);
+		Whitebox.setInternalState(instance, "taskProvider", taskProvider);
+		when(locationProvider.getLocationDao()).thenReturn(locationDao);
+		when(clientProvider.getClientDao()).thenReturn(clientDao);
+		
 		actionHelper = new ActionHelper();
 		subjectConcept = new SubjectConcept(ResourceType.JURISDICTION.value());
 		jurisdiction = new Jurisdiction("12123");
@@ -119,7 +128,7 @@ public class ActionHelperTest {
 	@Test
 	public void testGetFamilyResources() {
 		subjectConcept.setText(ResourceType.FAMILY.value());
-		List<RelatedPerson> expected = Collections.singletonList(TestData.createFamily());
+		List<Patient> expected = Collections.singletonList(TestData.createPatient());
 		when(clientDao.findFamilyByJurisdiction(jurisdiction.getCode())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
 		verify(clientDao).findFamilyByJurisdiction(jurisdiction.getCode());
@@ -139,45 +148,45 @@ public class ActionHelperTest {
 	@Test
 	public void testGetJurisdictionConditionResources() {
 		List<Location> expected = Collections.singletonList(TestData.createLocation());
-		when(locationDao.getJurisdictions(patient, ResourceType.JURISDICTION)).thenReturn(expected);
-		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient));
-		verify(locationDao).getJurisdictions(patient, ResourceType.JURISDICTION);
+		when(locationProvider.getJurisdictions(patient, ResourceType.JURISDICTION)).thenReturn(expected);
+		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
+		verify(locationProvider).getJurisdictions(patient, ResourceType.JURISDICTION);
 	}
 	
 	@Test
 	public void testGetLocationConditionResources() {
 		subjectConcept.setText(ResourceType.LOCATION.value());
 		List<Location> expected = Collections.singletonList(TestData.createLocation());
-		when(locationDao.getLocations(patient, ResourceType.LOCATION)).thenReturn(expected);
-		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient));
-		verify(locationDao).getLocations(patient, ResourceType.LOCATION);
+		when(locationProvider.getLocations(patient, ResourceType.LOCATION)).thenReturn(expected);
+		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
+		verify(locationProvider).getLocations(patient, ResourceType.LOCATION);
 	}
 	
 	@Test
 	public void testGetFamilyConditionResources() {
 		subjectConcept.setText(ResourceType.FAMILY.value());
-		List<RelatedPerson> expected = Collections.singletonList(TestData.createFamily());
-		when(clientDao.getFamilies(patient, ResourceType.FAMILY)).thenReturn(expected);
-		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient));
-		verify(clientDao).getFamilies(patient, ResourceType.FAMILY);
+		List<Patient> expected = Collections.singletonList(TestData.createPatient());
+		when(clientProvider.getFamilies(patient, ResourceType.FAMILY)).thenReturn(expected);
+		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
+		verify(clientProvider).getFamilies(patient, ResourceType.FAMILY);
 	}
 	
 	@Test
 	public void testGetFamilyMemberConditionResources() {
 		subjectConcept.setText(ResourceType.FAMILY_MEMBER.value());
 		List<Patient> expected = Collections.singletonList(TestData.createPatient());
-		when(clientDao.getFamilyMembers(patient, ResourceType.FAMILY_MEMBER)).thenReturn(expected);
-		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient));
-		verify(clientDao).getFamilyMembers(patient, ResourceType.FAMILY_MEMBER);
+		when(clientProvider.getFamilyMembers(patient, ResourceType.FAMILY_MEMBER)).thenReturn(expected);
+		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
+		verify(clientProvider).getFamilyMembers(patient, ResourceType.FAMILY_MEMBER);
 	}
 	
 	@Test
 	public void testGetTaskConditionResources() {
 		subjectConcept.setText(ResourceType.TASK.value());
 		List<Task> expected = Collections.singletonList(TestData.createTask());
-		when(taskDao.getTasks(patient, ResourceType.TASK)).thenReturn(expected);
-		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient));
-		verify(taskDao).getTasks(patient, ResourceType.TASK);
+		when(taskProvider.getTasks(patient, ResourceType.TASK, plan)).thenReturn(expected);
+		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
+		verify(taskProvider).getTasks(patient, ResourceType.TASK, plan);
 	}
 	
 }
