@@ -2,6 +2,11 @@ package org.smartregister.domain;
 
 import java.util.Set;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * Created by samuelgithengi on 4/29/19.
  */
@@ -137,15 +142,11 @@ public class Action {
         this.definitionUri = definitionUri;
     }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
     public static class SubjectConcept {
         private String text;
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
     }
 }

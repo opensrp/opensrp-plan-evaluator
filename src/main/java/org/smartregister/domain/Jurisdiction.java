@@ -1,19 +1,17 @@
 package org.smartregister.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author Vincent Karuri
  */
+@AllArgsConstructor
+@Getter
+@Setter
 public class Jurisdiction {
 
     private String code;
 
-    public Jurisdiction() {}
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
 }

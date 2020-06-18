@@ -1,27 +1,42 @@
 package org.smartregister.pathevaluator.plan;
 
+
+
+import java.util.Collection;
+import java.util.List;
+
+import org.smartregister.domain.Action;
+import org.smartregister.domain.Jurisdiction;
+import org.smartregister.domain.PlanDefinition;
+import org.smartregister.pathevaluator.TriggerEvent;
+import org.smartregister.pathevaluator.TriggerEventPayload;
+import org.smartregister.pathevaluator.action.ActionHelper;
+import org.smartregister.pathevaluator.condition.ConditionHelper;
+import org.smartregister.pathevaluator.task.TaskHelper;
+import org.smartregister.pathevaluator.utils.PlanHelper;
+
 import com.ibm.fhir.model.resource.Encounter;
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathNode;
 import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
-import org.smartregister.domain.Jurisdiction;
-import org.smartregister.domain.PlanDefinition;
-import org.smartregister.pathevaluator.TriggerEvent;
-import org.smartregister.pathevaluator.TriggerEventPayload;
-import org.smartregister.pathevaluator.utils.PlanHelper;
-
-import java.util.Collection;
-import java.util.List;
-
-/**
- *
- */
 
 /**
  * @author Samuel Githengi created on 06/09/20
  */
 public class PlanEvaluator {
+	
+	private ActionHelper actionHelper;
+	
+	private ConditionHelper conditionHelper;
+	
+	private TaskHelper taskHelper;
+	
+	public PlanEvaluator() {
+		actionHelper = new ActionHelper();
+		conditionHelper = new ConditionHelper(actionHelper);
+		taskHelper = new TaskHelper();
+	}
 
 	private FHIRPathEvaluator fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 
@@ -34,6 +49,7 @@ public class PlanEvaluator {
 		catch (Exception e) {
 			return false;
 		}
+
 
 	}
 
@@ -80,19 +96,22 @@ public class PlanEvaluator {
 	 * @param planDefinition the plan being evaluated
 	 */
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, Jurisdiction jurisdiction) {
-
-		planDefinition.getActions().forEach(action -> {
-			/*
-			if (TriggerHelper.evaluateTrigger(action.getTriggers(), triggerEvent)) {
-				// if the jurisdiction contains a list of  resources generate a list of objects
-				ActionHelper.getSubject(action.getSubjectCodableConcept(), jurisdiction).ifPresent( resources -> resources.forEach(resource -> {
-					if (ConditionHelper.evaluateActionConditions(resource, action.getConditions())) {
-						TaskHelper.generateTask(resource, action);
-					}
-				}));
+		
+		for (Action action : planDefinition.getActions()) {
+			
+			//TODO @Ronald to add this
+			//if (TriggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent)) {
+			
+			//get the subject resources
+			List<? extends Resource> resources = actionHelper.getSubjectResources(action, jurisdiction);
+			
+			for (Resource resource : resources) {
+				if (conditionHelper.evaluateActionConditions(resource, action)) {
+					taskHelper.generateTask(resource, action);
+				}
 			}
-			 */
-		});
+			
+		}
 	}
 
 }

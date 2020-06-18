@@ -12,7 +12,7 @@ import lombok.Builder;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Builder
+@Builder(toBuilder = true)
 public class Condition {
 
     private String kind;
