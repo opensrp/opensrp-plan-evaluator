@@ -6,8 +6,11 @@ package org.smartregister.pathevaluator;
 import java.util.Collection;
 
 import org.smartregister.pathevaluator.dao.ClientDao;
+import org.smartregister.pathevaluator.dao.ClientProvider;
 import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.dao.TaskDao;
+import org.smartregister.pathevaluator.dao.TaskProvider;
 
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
@@ -15,31 +18,32 @@ import com.ibm.fhir.path.FHIRPathNode;
 import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author Samuel Githengi created on 06/15/20
  */
 @Getter
-@Setter
 public class PathEvaluatorLibrary {
 	
 	private static PathEvaluatorLibrary instance;
 	
 	private FHIRPathEvaluator fhirPathEvaluator;
 	
-	private LocationDao locationDao;
+	private LocationProvider locationProvider;
 	
-	private ClientDao clientDao;
+	private ClientProvider clientProvider;
 	
-	private TaskDao taskDao;
+	private TaskProvider taskProvider;
 	
-	private PathEvaluatorLibrary() {
+	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao) {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
+		locationProvider = new LocationProvider(locationDao);
+		clientProvider = new ClientProvider(clientDao);
+		taskProvider = new TaskProvider(taskDao);
 	}
 	
-	public static void init() {
-		instance = new PathEvaluatorLibrary();
+	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao) {
+		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao);
 	}
 	
 	/**

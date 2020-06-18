@@ -32,14 +32,15 @@ public class ConditionHelper {
 	 * 
 	 * @param resource the resource being evaluated against
 	 * @param action the action being evaluated
+	 * @param planIdentifier 
 	 * @return result of condition evaluation
 	 */
-	public boolean evaluateActionConditions(Resource resource, Action action) {
+	public boolean evaluateActionConditions(Resource resource, Action action, String planIdentifier) {
 		boolean isValid = true;
 		for (Condition condition : action.getConditions()) {
 			SubjectConcept concept = condition.getExpression().getSubjectConcept();
 			if (concept != null) {
-				List<? extends Resource> resources = actionHelper.getConditionSubjectResources(condition, action, resource);
+				List<? extends Resource> resources = actionHelper.getConditionSubjectResources(condition, action, resource,planIdentifier);
 				if (resources != null) {
 					isValid = resources.stream().anyMatch(
 					    r -> pathEvaluatorLibrary.evaluateBooleanExpression(r, condition.getExpression().getExpression()));

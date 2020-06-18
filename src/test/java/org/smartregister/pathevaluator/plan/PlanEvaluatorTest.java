@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,7 @@ import com.ibm.fhir.model.resource.Patient;
 /**
  * @author Samuel Githengi created on 06/15/20
  */
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class PlanEvaluatorTest {
 	
 	private PlanEvaluator planEvaluator;
@@ -47,6 +48,8 @@ public class PlanEvaluatorTest {
 	
 	@Mock
 	private TaskHelper taskHelper;
+	
+	private String plan=UUID.randomUUID().toString();
 	
 	@Before
 	public void setUp() {
@@ -67,6 +70,7 @@ public class PlanEvaluatorTest {
 	@Test
 	public void testEvaluatePlanEvaluatesCondtions() {
 		PlanDefinition planDefinition = TestData.createPlan();
+		planDefinition.setIdentifier(plan);
 		planDefinition.setStatus(PlanStatus.ACTIVE);
 		PlanDefinition planDefinition2 = null;
 		List<Patient> patients = Collections.singletonList(TestData.createPatient());
@@ -79,14 +83,14 @@ public class PlanEvaluatorTest {
 				return patients;
 			}
 		});
-		when(conditionHelper.evaluateActionConditions(patients.get(0), action)).thenReturn(true);
+		when(conditionHelper.evaluateActionConditions(patients.get(0), action,plan)).thenReturn(true);
 		
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
 		
 		verify(actionHelper, times(planDefinition.getActions().size() * planDefinition.getJurisdiction().size()))
 		        .getSubjectResources(any(), any());
 		
-		verify(conditionHelper).evaluateActionConditions(patients.get(0), action);
+		verify(conditionHelper).evaluateActionConditions(patients.get(0), action,plan);
 		
 		verify(taskHelper).generateTask(patients.get(0), action);
 	}
