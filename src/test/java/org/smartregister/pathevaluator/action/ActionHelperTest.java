@@ -97,18 +97,18 @@ public class ActionHelperTest {
 	@Test
 	public void testGetJurisdictionResources() {
 		List<Location> expected = Collections.singletonList(TestData.createLocation());
-		when(locationDao.getJurisdictions(jurisdiction.getCode())).thenReturn(expected);
+		when(locationDao.findJurisdictionsById(jurisdiction.getCode())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
-		verify(locationDao).getJurisdictions(jurisdiction.getCode());
+		verify(locationDao).findJurisdictionsById(jurisdiction.getCode());
 	}
 	
 	@Test
 	public void testGetLocationResources() {
 		subjectConcept.setText(ResourceType.LOCATION.value());
 		List<Location> expected = Collections.singletonList(TestData.createLocation());
-		when(locationDao.getLocations(jurisdiction.getCode())).thenReturn(expected);
+		when(locationDao.findLocationByJurisdiction(jurisdiction.getCode())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
-		verify(locationDao).getLocations(jurisdiction.getCode());
+		verify(locationDao).findLocationByJurisdiction(jurisdiction.getCode());
 	}
 	
 	@Test

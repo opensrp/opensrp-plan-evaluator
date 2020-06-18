@@ -18,32 +18,24 @@ public interface LocationDao {
 	 * @param jurisdiction the jurisdiction identifier
 	 * @return the structures in a jurisdiction
 	 */
-	List<Location> getLocations(String jurisdiction);
-	
-	/**
-	 * Gets the child jurisdictions of a jurisdiction
-	 * 
-	 * @param jurisdiction the jurisdiction identifier
-	 * @return the child jurisdictions of a jurisdiction including the jurisdiction
-	 */
-	List<Location> getJurisdictions(String jurisdiction);
+	List<Location> findLocationByJurisdiction(String jurisdiction);
 	
 	/**
 	 * Gets the jurisdictions associated with a resource
 	 * 
 	 * @param id a resource
-	 * @param fromResourceType 
+	 * @param fromResourceType
 	 * @return jurisdictions associated with a resource
 	 */
-	List<Location> getJurisdictionsById( String id);
+	List<Location> findJurisdictionsById(String id);
 	
 	/**
 	 * Gets the structures associated with a resource
 	 * 
 	 * @param resource a resource
-	 * @param fromResourceType 
+	 * @param fromResourceType
 	 * @return structures associated with a resource
 	 */
-	List<Location> getLocationsById(String id);
+	List<Location> findLocationsById(String id);
 	
 }

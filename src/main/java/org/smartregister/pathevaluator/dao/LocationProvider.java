@@ -30,17 +30,17 @@ public class LocationProvider extends BaseProvider {
 	public List<Location> getLocations(Resource resource, ResourceType fromResourceType) {
 		switch (fromResourceType) {
 			case JURISDICTION:
-				return locationDao.getLocations(resource.getId());
+				return locationDao.findLocationByJurisdiction(resource.getId());
 			case FAMILY:
 			case FAMILY_MEMBER:
 				Identifier residence = getIdentifier((Patient) resource, RESIDENCE);
 				if (residence != null) {
-					return locationDao.getJurisdictionsById(residence.getValue().getValue());
+					return locationDao.findJurisdictionsById(residence.getValue().getValue());
 				}
 			case TASK:
 				Task task = (Task) resource;
 				String locationId = task.getFor().getId();
-				return locationDao.getLocationsById(locationId);
+				return locationDao.findLocationsById(locationId);
 			default:
 				return null;
 		}
@@ -49,17 +49,17 @@ public class LocationProvider extends BaseProvider {
 	public List<Location> getJurisdictions(Resource resource, ResourceType fromResourceType) {
 		switch (fromResourceType) {
 			case LOCATION:
-				return locationDao.getJurisdictionsById(resource.getId());
+				return locationDao.findJurisdictionsById(resource.getId());
 			case FAMILY:
 			case FAMILY_MEMBER:
 				Identifier location = getIdentifier((Patient) resource, LOCATION_ID);
 				if (location != null) {
-					return locationDao.getJurisdictionsById(location.getValue().getValue());
+					return locationDao.findJurisdictionsById(location.getValue().getValue());
 				}
 			case TASK:
 				Task task = (Task) resource;
 				String locationId = task.getGroupIdentifier().getValue().getValue();
-				return locationDao.getJurisdictionsById(locationId);
+				return locationDao.findJurisdictionsById(locationId);
 			default:
 				return null;
 		}
@@ -69,16 +69,16 @@ public class LocationProvider extends BaseProvider {
 	 * @param jurisdiction
 	 * @return
 	 */
-	public List<Location> getJurisdictions(String jurisdiction) {
-		return locationDao.getJurisdictions(jurisdiction);
+	public List<Location> findJurisdictionsById(String jurisdiction) {
+		return locationDao.findJurisdictionsById(jurisdiction);
 	}
 	
 	/**
 	 * @param jurisdiction
 	 * @return
 	 */
-	public List<Location> getLocations(String jurisdiction) {
-		return locationDao.getLocations(jurisdiction);
+	public List<Location> findLocationByJurisdiction(String jurisdiction) {
+		return locationDao.findLocationByJurisdiction(jurisdiction);
 	}
 	
 }

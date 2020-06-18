@@ -43,10 +43,10 @@ public class ActionHelper {
 		ResourceType resourceType = getResourceType(action);
 		switch (resourceType) {
 			case JURISDICTION:
-				return PathEvaluatorLibrary.getInstance().getLocationProvider().getJurisdictions(jurisdiction.getCode());
+				return PathEvaluatorLibrary.getInstance().getLocationProvider().findJurisdictionsById(jurisdiction.getCode());
 			
 			case LOCATION:
-				return PathEvaluatorLibrary.getInstance().getLocationProvider().getLocations(jurisdiction.getCode());
+				return PathEvaluatorLibrary.getInstance().getLocationProvider().findLocationByJurisdiction(jurisdiction.getCode());
 			
 			case FAMILY:
 				return PathEvaluatorLibrary.getInstance().getClientDao().findFamilyByJurisdiction(jurisdiction.getCode());

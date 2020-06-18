@@ -5,10 +5,7 @@ package org.smartregister.pathevaluator.dao;
 
 import java.util.List;
 
-import org.smartregister.pathevaluator.ResourceType;
-
 import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.Resource;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -31,27 +28,9 @@ public interface ClientDao {
 	 */
 	List<Patient> findFamilyMemberyByJurisdiction(String jurisdiction);
 	
-	/**
-	 * Gets the families associated with a resource
-	 * 
-	 * @param resource a resource
-	 * @param fromResourceType
-	 * @return families associated with a resource
-	 */
-	List<Patient> getFamilies(Resource resource, ResourceType fromResourceType);
-	
-	/**
-	 * Gets the family members associated with a resource
-	 * 
-	 * @param resource a resource
-	 * @param fromResourceType
-	 * @return family members associated with a resource
-	 */
-	List<Patient> getFamilyMembers(Resource resource, ResourceType fromResourceType);
-	
-	/**
-	 * @param structureId
-	 * @return
+	/** Gets the families that reside in a structure
+	 * @param structureId the structure identifier
+	 * @return families residing in a structure
 	 */
 	List<Patient> findFamilyByResidence(String structureId);
 	
@@ -61,9 +40,9 @@ public interface ClientDao {
 	 */
 	List<Patient> findClientById(String id);
 	
-	/**
-	 * @param id
-	 * @return
+	/** Gets the family members that reside in a structure
+	 * @param structureId the structure identifier
+	 * @return family members residing in a structure
 	 */
 	List<Patient> findFamilyMemberByResidence(String structureId);
 	
