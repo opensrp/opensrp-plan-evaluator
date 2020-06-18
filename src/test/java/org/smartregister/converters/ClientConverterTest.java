@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.smartregister.domain.Client;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ClientConverterTest {
@@ -28,6 +29,11 @@ public class ClientConverterTest {
 				client.setGender("male");
 		Patient patient = ClientConverter.convertClientToPatientResource(client);
 		assertNotNull(patient);
+		assertEquals(patient.getGender().getValueAsEnumConstant().value(),client.getGender());
+		assertEquals(patient.getName().get(0).getFamily().getValue(),client.getLastName());
+		assertEquals(patient.getName().get(0).getText().getValue(),client.fullName());
+		assertEquals(patient.getId(),client.getBaseEntityId());
+		//TODO : Add assertion on remaining properties
 		System.out.println(patient);
 	}
 }

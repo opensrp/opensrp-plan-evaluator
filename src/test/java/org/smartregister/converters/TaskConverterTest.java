@@ -3,10 +3,12 @@ package org.smartregister.converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class TaskConverterTest {
@@ -21,6 +23,8 @@ public class TaskConverterTest {
 		org.smartregister.domain.Task task = gson.fromJson(taskJson, org.smartregister.domain.Task.class);
 	    Task fihrTask = TaskConverter.convertTasktoFihrResource(task);
 	    assertNotNull(fihrTask);
+	    assertEquals(fihrTask.getStatus().getValueAsEnumConstant().value(), StringUtils.toRootLowerCase(task.getStatus().name()));
+		//TODO : Add assertion on remaining properties
 	    System.out.println(fihrTask);
 	}
 

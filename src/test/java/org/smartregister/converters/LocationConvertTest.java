@@ -3,11 +3,13 @@ package org.smartregister.converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Location;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.utils.PropertiesConverter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class LocationConvertTest {
@@ -19,10 +21,12 @@ public class LocationConvertTest {
 
 	@Test
 	public void testConvertToFihrLocation() {
-		PhysicalLocation physicalLocation = new PhysicalLocation();
+		PhysicalLocation physicalLocation ;
 		physicalLocation = gson.fromJson(parentJson, PhysicalLocation.class);
 		Location location = LocationConverter.convertPhysicalLocationToLocationResource(physicalLocation);
 		assertNotNull(location);
+        assertEquals(location.getStatus().getValueAsEnumConstant().value(), StringUtils.toRootLowerCase(physicalLocation.getProperties().getStatus().name()));
+		//TODO : Add assertion on remaining properties
 		System.out.println(location);
 	}
 }

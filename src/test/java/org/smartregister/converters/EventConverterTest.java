@@ -32,6 +32,8 @@ public class EventConverterTest {
 		event.setTeamId("team-id");
 		QuestionnaireResponse questionnaireResponse = EventConverter.convertEventToEncounterResource(event);
 		assertNotNull(questionnaireResponse);
+		assertEquals(questionnaireResponse.getSubject().getReference().getValue(),event.getBaseEntityId());
+		//TODO : Add assertion on remaining properties
 		System.out.println(questionnaireResponse);
 	}
 }
