@@ -12,7 +12,7 @@ import org.joda.time.Days;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
-import org.opensrp.common.AddressField;
+import org.smartregister.common.AddressField;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

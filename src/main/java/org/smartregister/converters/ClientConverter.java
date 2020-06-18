@@ -4,25 +4,61 @@ import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.type.*;
 import com.ibm.fhir.model.type.String;
 import com.ibm.fhir.model.type.code.AdministrativeGender;
+import org.joda.time.format.ISODateTimeFormat;
 import org.smartregister.domain.Client;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class ClientConverter {
 
 	public static Patient convertClientToPatientResource(Client client) {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-		java.lang.String strDate = dateFormat.format(client.getBirthdate());
+		java.lang.String strDate = ISODateTimeFormat.date().print(client.getBirthdate());
 		Date birthDate = Date.builder().value(strDate).build();
 		AdministrativeGender administrativeGender = AdministrativeGender.of(client.getGender());
-		HumanName firstName = HumanName.builder().given(String.builder().value(client.getFirstName()).build()).build();
-		HumanName middleName = HumanName.builder().given(String.builder().value(client.getMiddleName()).build()).build();
-		HumanName lastName = HumanName.builder().family(String.builder().value(client.getLastName()).build()).build();
-		HumanName fullName = HumanName.builder().given(String.builder().value(client.fullName()).build()).build();
+		HumanName firstName = HumanName.builder().given(String.builder().value(client.getFirstName()).build(),
+				String.builder().value(client.getMiddleName()).build()).
+				family(String.builder().value(client.getLastName()).build()).
+				text(String.builder().value(client.fullName()).build()).build();
+		java.lang.String deceasedDate = ISODateTimeFormat.dateTime().print(client.getDeathdate());
+		DateTime deceasedDateTime = DateTime.builder().value(deceasedDate).build();
 
-		Patient patient = Patient.builder().name(fullName).birthDate(birthDate).gender(administrativeGender).
-				name(firstName, middleName, lastName, fullName).build();
+		Identifier identifier;
+		Collection<Identifier> identifierList = new ArrayList<>();
+		for (Map.Entry<java.lang.String, java.lang.String> entry : client.getIdentifiers().entrySet()) {
+			identifier = Identifier.builder()
+					.system(Uri.builder().value(entry.getKey()).build())
+					.value(String.builder().value(entry.getValue()).build())
+					.build();
+			identifierList.add(identifier);
+		}
+
+		CodeableConcept codeableConcept;
+		Extension extension;
+		Collection<Extension> extensions = new ArrayList<>();
+		Coding coding;
+
+		if(client.getRelationships() != null) {
+			for (Map.Entry<java.lang.String, List<java.lang.String>> entry : client.getRelationships().entrySet()) {
+				for (java.lang.String entryValue : entry.getValue()) {
+					extension = Extension.builder().value(String.builder().value(entryValue).build()).build();
+					extensions.add(extension);
+				}
+				coding = Coding.builder().extension(extensions).build();
+				codeableConcept = CodeableConcept.builder().text(String.builder().value(entry.getKey()).build()).coding(coding)
+						.build();
+				identifier = Identifier.builder().type(codeableConcept).build();
+				identifierList.add(identifier);
+			}
+		}
+
+		//TODO : attributes
+
+		Patient patient = Patient.builder().gender(administrativeGender).
+				name(firstName).deceased(deceasedDateTime).birthDate(birthDate).identifier(identifierList).
+				id(client.getBaseEntityId()).build();
 		return patient;
 	}
 }
