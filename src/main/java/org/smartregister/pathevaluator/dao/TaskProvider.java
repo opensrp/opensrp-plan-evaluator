@@ -5,8 +5,6 @@ package org.smartregister.pathevaluator.dao;
 
 import java.util.List;
 
-import org.smartregister.pathevaluator.ResourceType;
-
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.model.resource.Task;
 
@@ -22,7 +20,14 @@ public class TaskProvider extends BaseProvider {
 	
 	private TaskDao taskDao;
 	
-	public List<Task> getTasks(Resource resource, ResourceType fromResourceType, String planIdentifier) {
+	/**
+	 * gets the task associated with a resource in a plan
+	 * 
+	 * @param id the if of the resource
+	 * @param planIdentifier the identifier of the plan
+	 * @return the tasks for a resource in a plan
+	 */
+	public List<Task> getTasks(Resource resource, String planIdentifier) {
 		
 		return taskDao.findTasksForEntity(resource.getId(), planIdentifier);
 		

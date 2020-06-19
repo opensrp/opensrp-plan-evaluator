@@ -106,12 +106,10 @@ public class ActionHelper {
 				return PathEvaluatorLibrary.getInstance().getClientProvider().getFamilyMembers(resource, actionResourceType);
 			
 			case TASK:
-				return PathEvaluatorLibrary.getInstance().getTaskProvider().getTasks(resource, actionResourceType,
-				    planIdentifier);
-				
+				return PathEvaluatorLibrary.getInstance().getTaskProvider().getTasks(resource, planIdentifier);
+			
 			case QUESTIONAIRRE_RESPONSE:
-				return PathEvaluatorLibrary.getInstance().getEventProvider().getEvents(resource, actionResourceType,
-				    planIdentifier);
+				return PathEvaluatorLibrary.getInstance().getEventProvider().getEvents(resource, planIdentifier);
 			
 			default:
 				return null;
