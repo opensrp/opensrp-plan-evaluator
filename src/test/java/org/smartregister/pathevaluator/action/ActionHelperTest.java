@@ -93,9 +93,9 @@ public class ActionHelperTest {
 		Whitebox.setInternalState(instance, "locationProvider", locationProvider);
 		Whitebox.setInternalState(instance, "clientProvider", clientProvider);
 		Whitebox.setInternalState(instance, "taskProvider", taskProvider);
+		Whitebox.setInternalState(instance, "eventProvider", eventProvider);
 		when(locationProvider.getLocationDao()).thenReturn(locationDao);
 		when(clientProvider.getClientDao()).thenReturn(clientDao);
-		when(eventProvider.getEventDao()).thenReturn(eventDao);
 		
 		actionHelper = new ActionHelper();
 		subjectConcept = new SubjectConcept(ResourceType.JURISDICTION.value());
