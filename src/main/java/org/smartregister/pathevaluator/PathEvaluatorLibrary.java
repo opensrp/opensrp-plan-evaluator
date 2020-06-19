@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.ClientProvider;
+import org.smartregister.pathevaluator.dao.EventProvider;
 import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.dao.TaskDao;
@@ -34,6 +35,8 @@ public class PathEvaluatorLibrary {
 	private ClientProvider clientProvider;
 	
 	private TaskProvider taskProvider;
+	
+	private EventProvider eventProvider;
 	
 	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao) {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();

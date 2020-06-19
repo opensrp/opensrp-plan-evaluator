@@ -43,6 +43,8 @@ public class TriggerHelper {
 	        QuestionnaireResponse questionnaireResponse) {
 		if (triggers == null)
 			return false;
+		QuestionnaireResponse questionnaireWithEntityIdId = questionnaireResponse.toBuilder()
+		        .id(questionnaireResponse.getIdentifier().getValue().getValue()).build();
 		boolean valid = false;
 		for (Trigger trigger : triggers) {
 			if (PLAN_ACTIVATION.equals(triggerEvent) || PLAN_JURISDICTION_CHANGE.equals(triggerEvent)) {
@@ -53,7 +55,7 @@ public class TriggerHelper {
 					    trigger.getExpression().getExpression());
 				} else {
 					valid = actionHelper
-					        .getConditionSubjectResources(questionnaireResponse, planIdentifier,
+					        .getConditionSubjectResources(questionnaireWithEntityIdId, planIdentifier,
 					            ResourceType.from(trigger.getExpression().getSubjectConcept().getText()),
 					            ResourceType.QUESTIONAIRRE_RESPONSE)
 					        .stream().anyMatch(resource -> pathEvaluatorLibrary.evaluateBooleanExpression(resource,

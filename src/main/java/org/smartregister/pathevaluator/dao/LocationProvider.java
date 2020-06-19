@@ -43,6 +43,8 @@ public class LocationProvider extends BaseProvider {
 			case TASK:
 				Task task = (Task) resource;
 				return locationDao.findLocationsById(task.getFor().getReference().getValue());
+			case LOCATION:
+				return locationDao.findLocationsById(resource.getId());
 			default:
 				return null;
 		}
@@ -51,6 +53,7 @@ public class LocationProvider extends BaseProvider {
 	public List<Location> getJurisdictions(Resource resource, ResourceType fromResourceType) {
 		switch (fromResourceType) {
 			case LOCATION:
+			case JURISDICTION:
 				return locationDao.findJurisdictionsById(resource.getId());
 			case FAMILY:
 			case FAMILY_MEMBER:
