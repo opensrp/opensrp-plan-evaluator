@@ -1,18 +1,26 @@
 package org.smartregister.converters;
 
-import com.ibm.fhir.model.resource.Task;
-import com.ibm.fhir.model.type.*;
-import com.ibm.fhir.model.type.String;
-import com.ibm.fhir.model.type.code.TaskIntent;
-import com.ibm.fhir.model.type.code.TaskPriority;
-import com.ibm.fhir.model.type.code.TaskStatus;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
+import com.ibm.fhir.model.resource.Task;
+import com.ibm.fhir.model.type.Annotation;
+import com.ibm.fhir.model.type.CodeableConcept;
+import com.ibm.fhir.model.type.DateTime;
+import com.ibm.fhir.model.type.Element;
+import com.ibm.fhir.model.type.Id;
+import com.ibm.fhir.model.type.Identifier;
+import com.ibm.fhir.model.type.Markdown;
+import com.ibm.fhir.model.type.Meta;
+import com.ibm.fhir.model.type.Period;
+import com.ibm.fhir.model.type.Reference;
+import com.ibm.fhir.model.type.String;
+import com.ibm.fhir.model.type.Uri;
+import com.ibm.fhir.model.type.code.TaskIntent;
+import com.ibm.fhir.model.type.code.TaskStatus;
 
 public class TaskConverter {
 
@@ -91,17 +99,17 @@ public class TaskConverter {
 		Meta meta = Meta.builder().versionId(versionId).build();
 
 		Task fihrTask = Task.builder().identifier(identifier).status(taskStatus)
-				.businessStatus(businessStatus).
-						location(referenceLocation).
-						focus(focus).
-						_for(forEntity).
-						description(description).
-						code(code).
-						note(annotationList).
-						requester(reuqestor).
-						owner(owner).
-						statusReason(reasonReference).
-						authoredOn(authoredOn)
+				.businessStatus(businessStatus)
+				.location(referenceLocation)
+				.focus(focus)
+				._for(forEntity)
+				.description(description)
+				.code(code)
+				.note(annotationList)
+				.requester(reuqestor)
+				.owner(owner)
+				.statusReason(reasonReference)
+				.authoredOn(authoredOn)
 				.lastModified(lastModified)
 				.executionPeriod(period)
 				.basedOn(planIdentifier)

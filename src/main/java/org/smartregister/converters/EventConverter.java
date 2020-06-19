@@ -8,10 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class EventConverter {

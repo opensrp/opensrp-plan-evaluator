@@ -55,14 +55,11 @@ public class LocationConverter {
 				CodeableConcept.builder().coding(buCoding).build();
 
 		LocationMode mode = LocationMode.builder().id("mode").value("instance").build();
-		Location.Builder builder;
+		Location.Builder builder = Location.builder().status(locationStatus).partOf(partOf).name(name)
+				.identifier(identifiers).meta(meta).mode(mode).physicalType(physicalType);;
 		if (name_en != null) {
-			builder = Location.builder().status(locationStatus).partOf(partOf).name(name)
-					.identifier(identifiers).alias(name_en).meta(meta).mode(mode).physicalType(physicalType);
-		} else {
-			builder = Location.builder().status(locationStatus).partOf(partOf).name(name)
-					.identifier(identifiers).meta(meta).mode(mode).physicalType(physicalType);
-		}
+			builder = builder.alias(name_en);
+		} 
 
 		return builder.build();
 	}
