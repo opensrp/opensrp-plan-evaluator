@@ -6,7 +6,7 @@ package org.smartregister.pathevaluator.utils;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.PlanDefinition.PlanStatus;
-import org.smartregister.pathevaluator.TriggerEvent;
+import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.TriggerEventPayload;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class PlanHelper {
 			PlanDefinition existingPlanDefinition) {
 		if (existingPlanDefinition == null && planDefinition.getStatus().equals(PlanStatus.ACTIVE)) {
 
-			return new TriggerEventPayload(TriggerEvent.PLAN_ACTIVATION, planDefinition.getJurisdiction());
+			return new TriggerEventPayload(TriggerType.PLAN_ACTIVATION, planDefinition.getJurisdiction());
 
 		} else if (existingPlanDefinition != null && planDefinition.getStatus().equals(PlanStatus.ACTIVE)) {
 
@@ -44,7 +44,7 @@ public class PlanHelper {
 					.filter(j -> !existingJurisdictions.contains(j.getCode()))
 					.collect(Collectors.toList());
 
-			return new TriggerEventPayload(TriggerEvent.PLAN_JURISDICTION_CHANGE, modifiedJurisdictions);
+			return new TriggerEventPayload(TriggerType.PLAN_JURISDICTION_MODIFICATION, modifiedJurisdictions);
 		}
 		return null;
 	}

@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 public class TriggerEventPayload {
 
-	private TriggerEvent triggerEvent;
+	private TriggerType triggerEvent;
 
 	private List<Jurisdiction> jurisdictions;
 }
