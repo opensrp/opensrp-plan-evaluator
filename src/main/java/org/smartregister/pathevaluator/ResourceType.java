@@ -14,7 +14,8 @@ public enum ResourceType {
 	LOCATION("Location"),
 	FAMILY("Family"),
 	FAMILY_MEMBER("Family_Member"),
-	TASK("Task");
+	TASK("Task"),
+	QUESTIONAIRRE_RESPONSE("Questionnaire_Response");
 	
 	private String value;
 	
