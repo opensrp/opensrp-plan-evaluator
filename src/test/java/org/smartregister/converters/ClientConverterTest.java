@@ -36,7 +36,7 @@ public class ClientConverterTest {
 		int identifiersSize = client.getRelationships().entrySet().size() + client.getAttributes().entrySet().size() + client.getIdentifiers().entrySet().size();
 		assertEquals(patient.getIdentifier().size(),identifiersSize);
 		assertEquals(patient.getBirthDate().getValue().toString(),client.getBirthdate().toString("YYYY-MM-DD"));
-		assertEquals(patient.getDeceased().as(com.ibm.fhir.model.type.DateTime.class).getValue().toString(),client.getDeathdate().toString("yyyy-MM-dd'T'HH:mmZZ"));
+		assertEquals(patient.getDeceased().as(com.ibm.fhir.model.type.DateTime.class).getValue().toString(),client.getDeathdate().toString("yyyy-MM-dd'T'HH:mm'Z'"));
 		//TODO : Individual assertions on relationships, attributes and identifiers
 		System.out.println(patient);
 	}

@@ -38,13 +38,13 @@ public class TaskConverterTest {
 		assertEquals(fihrTask.getRequester().getReference().getValue(), task.getRequester());
 		assertEquals(fihrTask.getOwner().getReference().getValue(), task.getOwner());
 		assertEquals(fihrTask.getStatusReason().getText().getValue(), task.getReasonReference());
-		assertEquals(fihrTask.getAuthoredOn().getValue().toString(), task.getAuthoredOn().toString("yyyy-MM-dd'T'HH:mmZZ"));
+		assertEquals(fihrTask.getAuthoredOn().getValue().toString(), task.getAuthoredOn().toString("yyyy-MM-dd'T'HH:mm'Z'"));
 		assertEquals(fihrTask.getLastModified().getValue().toString(),
-				task.getLastModified().toString("yyyy-MM-dd'T'HH:mmZZ"));
+				task.getLastModified().toString("yyyy-MM-dd'T'HH:mm'Z'"));
 		assertEquals(fihrTask.getExecutionPeriod().getStart().getValue().toString(),
-				task.getExecutionStartDate().toString("yyyy-MM-dd'T'HH:mmZZ"));
+				task.getExecutionStartDate().toString("yyyy-MM-dd'T'HH:mm'Z'"));
 		assertEquals(fihrTask.getExecutionPeriod().getEnd().getValue().toString(),
-				task.getExecutionEndDate().toString("yyyy-MM-dd'T'HH:mmZZ"));
+				task.getExecutionEndDate().toString("yyyy-MM-dd'T'HH:mm'Z'"));
 		assertEquals(fihrTask.getBasedOn().get(0).getReference().getValue(), task.getPlanIdentifier());
 		assertEquals(fihrTask.getMeta().getVersionId().getValue(), String.valueOf(task.getServerVersion()));
 		assertEquals(fihrTask.getIntent().getValueAsEnumConstant().value(), "plan");
