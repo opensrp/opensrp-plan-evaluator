@@ -3,6 +3,9 @@ package org.smartregister.converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+
+import java.lang.String;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.smartregister.domain.Event;
@@ -20,7 +23,7 @@ public class EventConverterTest {
 
 	@Test
 	public void testConvertEventToQuestionnaireResponse() {
-		Event event ; //TODO : Add identifier
+		Event event;
 		event = gson.fromJson(EVENT_JSON, Event.class);
 		event.setChildLocationId("child-location-id");
 		event.setEventType("event-type");
@@ -32,8 +35,27 @@ public class EventConverterTest {
 		event.setTeamId("team-id");
 		QuestionnaireResponse questionnaireResponse = EventConverter.convertEventToEncounterResource(event);
 		assertNotNull(questionnaireResponse);
-		assertEquals(questionnaireResponse.getSubject().getReference().getValue(),event.getBaseEntityId());
-		//TODO : Add assertion on remaining properties
+		assertEquals(questionnaireResponse.getSubject().getReference().getValue(), event.getBaseEntityId());
+		assertEquals(questionnaireResponse.getStatus().getValueAsEnumConstant().value(), "completed");
+		assertEquals(questionnaireResponse.getAuthor().getReference().getValue(), event.getProviderId());
+		assertEquals(questionnaireResponse.getMeta().getVersionId().getValue(), String.valueOf(event.getServerVersion()));
+		assertEquals(questionnaireResponse.getItem().get(0).getLinkId().getValue(), "locationId");
+		assertEquals(
+				questionnaireResponse.getItem().get(0).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
+						.getValue(), event.getLocationId());
+		assertEquals(questionnaireResponse.getItem().get(1).getLinkId().getValue(), "childLocationId");
+		assertEquals(
+				questionnaireResponse.getItem().get(1).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
+						.getValue(), event.getChildLocationId());
+		assertEquals(questionnaireResponse.getItem().get(2).getLinkId().getValue(), "teamId");
+		assertEquals(
+				questionnaireResponse.getItem().get(2).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
+						.getValue(), event.getTeamId());
+		assertEquals(questionnaireResponse.getItem().get(3).getLinkId().getValue(), "team");
+		assertEquals(
+				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
+						.getValue(), event.getTeam());
+		//TODO : Do we need to test individual obs, details and identifier fields?
 		System.out.println(questionnaireResponse);
 	}
 }

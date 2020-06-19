@@ -21,12 +21,21 @@ public class LocationConvertTest {
 
 	@Test
 	public void testConvertToFihrLocation() {
-		PhysicalLocation physicalLocation ;
+		PhysicalLocation physicalLocation;
 		physicalLocation = gson.fromJson(parentJson, PhysicalLocation.class);
 		Location location = LocationConverter.convertPhysicalLocationToLocationResource(physicalLocation);
 		assertNotNull(location);
-        assertEquals(location.getStatus().getValueAsEnumConstant().value(), StringUtils.toRootLowerCase(physicalLocation.getProperties().getStatus().name()));
-		//TODO : Add assertion on remaining properties
+		assertEquals(location.getStatus().getValueAsEnumConstant().value(),
+				StringUtils.toRootLowerCase(physicalLocation.getProperties().getStatus().name()));
+		assertEquals(location.getPartOf().getReference().getValue(), physicalLocation.getProperties().getParentId());
+		assertEquals(location.getName().getValue(), physicalLocation.getProperties().getName());
+		assertEquals(location.getMeta().getVersionId().getValue(),
+				String.valueOf(physicalLocation.getProperties().getVersion()));
+		Long locationServerVersion = location.getMeta().getLastUpdated().getValue().toInstant().toEpochMilli();
+		assertEquals(locationServerVersion, physicalLocation.getServerVersion());
+		assertEquals(location.getMode().getValue(), "instance");
+		assertEquals(location.getPhysicalType().getCoding().get(0).getCode().getValue(), "bu");
+		assertEquals(location.getIdentifier().size(), physicalLocation.getProperties().getCustomProperties().size());
 		System.out.println(location);
 	}
 }
