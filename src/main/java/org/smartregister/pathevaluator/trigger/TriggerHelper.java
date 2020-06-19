@@ -3,16 +3,15 @@
  */
 package org.smartregister.pathevaluator.trigger;
 
-import static org.smartregister.pathevaluator.TriggerEvent.EVENT_SUBMISSION;
-import static org.smartregister.pathevaluator.TriggerEvent.PLAN_ACTIVATION;
-import static org.smartregister.pathevaluator.TriggerEvent.PLAN_JURISDICTION_CHANGE;
+import static org.smartregister.pathevaluator.TriggerType.PLAN_ACTIVATION;
+import static org.smartregister.pathevaluator.TriggerType.PLAN_JURISDICTION_MODIFICATION;
 
 import java.util.Set;
 
 import org.smartregister.domain.Trigger;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
-import org.smartregister.pathevaluator.TriggerEvent;
+import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
@@ -39,17 +38,20 @@ public class TriggerHelper {
 	 * @param quest
 	 * @return true if trigger conditions are met
 	 */
-	public boolean evaluateTrigger(Set<Trigger> triggers, TriggerEvent triggerEvent, String planIdentifier,
+	public boolean evaluateTrigger(Set<Trigger> triggers, TriggerType triggerEvent, String planIdentifier,
 	        QuestionnaireResponse questionnaireResponse) {
 		if (triggers == null)
 			return false;
-		QuestionnaireResponse questionnaireWithEntityIdId = questionnaireResponse.toBuilder()
-		        .id(questionnaireResponse.getIdentifier().getValue().getValue()).build();
+		QuestionnaireResponse questionnaireWithEntityIdId = null;
+		if (questionnaireResponse != null) {
+			questionnaireWithEntityIdId = questionnaireResponse.toBuilder()
+			        .id(questionnaireResponse.getSubject().getReference().getValue()).build();
+		}
 		boolean valid = false;
 		for (Trigger trigger : triggers) {
-			if (PLAN_ACTIVATION.equals(triggerEvent) || PLAN_JURISDICTION_CHANGE.equals(triggerEvent)) {
-				return false;
-			} else if (EVENT_SUBMISSION.equals(triggerEvent) && trigger.getExpression() != null) {
+			if (PLAN_ACTIVATION.equals(triggerEvent) || PLAN_JURISDICTION_MODIFICATION.equals(triggerEvent)) {
+				return true;
+			} else if (trigger.getExpression() != null) {
 				if (trigger.getExpression().getSubjectConcept() == null) {
 					valid = pathEvaluatorLibrary.evaluateBooleanExpression(questionnaireResponse,
 					    trigger.getExpression().getExpression());
@@ -58,8 +60,7 @@ public class TriggerHelper {
 					        .getConditionSubjectResources(questionnaireWithEntityIdId, planIdentifier,
 					            ResourceType.from(trigger.getExpression().getSubjectConcept().getText()),
 					            ResourceType.QUESTIONAIRRE_RESPONSE)
-					        .stream()
-					        .anyMatch(resource -> pathEvaluatorLibrary.evaluateBooleanExpression(resource,
+					        .stream().anyMatch(resource -> pathEvaluatorLibrary.evaluateBooleanExpression(resource,
 					            trigger.getExpression().getExpression()));
 				}
 				if (valid) {

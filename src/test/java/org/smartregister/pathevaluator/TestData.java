@@ -18,6 +18,8 @@ import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.model.resource.QuestionnaireResponse.*;
+import com.ibm.fhir.model.resource.QuestionnaireResponse.Item.Answer;
 import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Date;
@@ -62,6 +64,12 @@ public class TestData {
 	}
 	
 	public static QuestionnaireResponse createResponse() {
-		return QuestionnaireResponse.builder().status(QuestionnaireResponseStatus.COMPLETED).build();
+		Item structureType = Item.builder().linkId(of("structureType"))
+		        .answer(Answer.builder().value(of("Residential Structure")).build()).build();
+		Item businessStatus = Item.builder().linkId(of("business_status"))
+		        .answer(Answer.builder().value(of("Not Visited")).build()).build();
+		return QuestionnaireResponse.builder().status(QuestionnaireResponseStatus.COMPLETED)
+		        .subject(Reference.builder().reference(of("098787kml-jsks09")).build()).item(structureType, businessStatus)
+		        .build();
 	}
 }

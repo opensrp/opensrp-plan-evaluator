@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
-import org.smartregister.pathevaluator.TriggerEvent;
+import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.TriggerEventPayload;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
@@ -61,8 +61,8 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
 		TriggerEventPayload triggerEvent = PlanHelper.evaluatePlanModification(planDefinition, existingPlanDefinition);
-		if (triggerEvent != null && (triggerEvent.getTriggerEvent().equals(TriggerEvent.PLAN_ACTIVATION)
-		        || triggerEvent.getTriggerEvent().equals(TriggerEvent.PLAN_JURISDICTION_CHANGE))) {
+		if (triggerEvent != null && (triggerEvent.getTriggerEvent().equals(TriggerType.PLAN_ACTIVATION)
+		        || triggerEvent.getTriggerEvent().equals(TriggerType.PLAN_JURISDICTION_MODIFICATION))) {
 			evaluatePlan(planDefinition, triggerEvent.getTriggerEvent(), triggerEvent.getJurisdictions());
 		}
 		
@@ -84,7 +84,7 @@ public class PlanEvaluator {
 	 * @param triggerEvent
 	 * @param jurisdictions
 	 */
-	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, List<Jurisdiction> jurisdictions) {
+	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, List<Jurisdiction> jurisdictions) {
 		jurisdictions.forEach(jurisdiction -> evaluatePlan(planDefinition, triggerEvent, jurisdiction, null));
 	}
 	
@@ -94,7 +94,7 @@ public class PlanEvaluator {
 	 * @param planDefinition the plan being evaluated
 	 * @param questionnaireResponse {@link QuestionnaireResponse} just submitted
 	 */
-	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, Jurisdiction jurisdiction,
+	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
 		
 		planDefinition.getActions().forEach(action -> {
