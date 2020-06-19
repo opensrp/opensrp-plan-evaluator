@@ -85,7 +85,8 @@ public class PlanEvaluator {
 	 * @param jurisdictions
 	 */
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, List<Jurisdiction> jurisdictions) {
-		jurisdictions.forEach(jurisdiction -> evaluatePlan(planDefinition, triggerEvent, jurisdiction, null));
+		jurisdictions.parallelStream()
+		        .forEach(jurisdiction -> evaluatePlan(planDefinition, triggerEvent, jurisdiction, null));
 	}
 	
 	/**
