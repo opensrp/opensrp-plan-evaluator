@@ -47,7 +47,7 @@ public class EventConverter {
 		Reference providerId = Reference.builder().id("providerId")
 				.reference(String.builder().value(event.getProviderId()).build()).build();
 		Reference baseEntityId = Reference.builder().id("baseEntityId")
-				.reference(String.builder().value(event.getBaseEntityId()).build()).build();
+				.reference(String.builder().value(event.getBaseEntityId()).build()).build();;
 
 		java.lang.String version = java.lang.String.valueOf(event.getServerVersion());
 		Id versionId = Id.builder().value(version).build();
@@ -97,13 +97,15 @@ public class EventConverter {
 
 		//TODO : Add mapping for entityType
 
-		QuestionnaireResponse questionnaireResponse = QuestionnaireResponse.builder().
-				status(QuestionnaireResponseStatus.COMPLETED).questionnaire(eventType)
-				.item(items).
-						author(providerId).
-						subject(baseEntityId).
-						meta(meta).
-						build();
+		QuestionnaireResponse questionnaireResponse = QuestionnaireResponse.builder()
+				.id(event.getFormSubmissionId())
+				.status(QuestionnaireResponseStatus.COMPLETED)
+				.questionnaire(eventType)
+				.item(items)
+				.author(providerId)
+				.subject(baseEntityId)
+				.meta(meta)
+				.build();
 		return questionnaireResponse;
 	}
 }

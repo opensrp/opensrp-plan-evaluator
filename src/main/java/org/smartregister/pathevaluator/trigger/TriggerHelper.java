@@ -58,7 +58,8 @@ public class TriggerHelper {
 					        .getConditionSubjectResources(questionnaireWithEntityIdId, planIdentifier,
 					            ResourceType.from(trigger.getExpression().getSubjectConcept().getText()),
 					            ResourceType.QUESTIONAIRRE_RESPONSE)
-					        .stream().anyMatch(resource -> pathEvaluatorLibrary.evaluateBooleanExpression(resource,
+					        .stream()
+					        .anyMatch(resource -> pathEvaluatorLibrary.evaluateBooleanExpression(resource,
 					            trigger.getExpression().getExpression()));
 				}
 				if (valid) {
