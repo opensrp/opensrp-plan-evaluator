@@ -92,7 +92,7 @@ public class PlanEvaluatorTest {
 		
 		verify(conditionHelper).evaluateActionConditions(patients.get(0), action,plan);
 		
-		verify(taskHelper).generateTask(patients.get(0), action);
+		verify(taskHelper).generateTask(patients.get(0), action, "", "");
 	}
 	
 }

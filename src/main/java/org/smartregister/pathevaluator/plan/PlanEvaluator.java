@@ -107,7 +107,7 @@ public class PlanEvaluator {
 			
 			for (Resource resource : resources) {
 				if (conditionHelper.evaluateActionConditions(resource, action,planDefinition.getIdentifier())) {
-					taskHelper.generateTask(resource, action);
+					taskHelper.generateTask(resource, action,"","");
 				}
 			}
 			

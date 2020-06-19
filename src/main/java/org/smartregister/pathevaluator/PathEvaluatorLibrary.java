@@ -34,16 +34,19 @@ public class PathEvaluatorLibrary {
 	private ClientProvider clientProvider;
 	
 	private TaskProvider taskProvider;
+
+	private String userName;
 	
-	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao) {
+	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, String userName) {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 		locationProvider = new LocationProvider(locationDao);
 		clientProvider = new ClientProvider(clientDao);
 		taskProvider = new TaskProvider(taskDao);
+		this.userName = userName;
 	}
 	
-	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao) {
-		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao);
+	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, String userName) {
+		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, userName);
 	}
 	
 	/**

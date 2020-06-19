@@ -79,7 +79,7 @@ public class ActionHelperTest {
 	
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao);
+		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao,"testUser");
 		PathEvaluatorLibrary instance = PathEvaluatorLibrary.getInstance();
 		Whitebox.setInternalState(instance, "locationProvider", locationProvider);
 		Whitebox.setInternalState(instance, "clientProvider", clientProvider);
