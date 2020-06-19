@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 
 import java.lang.String;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -57,7 +58,10 @@ public class EventConverterTest {
 		assertEquals(
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue(), event.getTeam());
-		//TODO : Do we need to test individual obs, details and identifier fields?
+		int itemsSize = 0;
+		itemsSize = 4 + event.getIdentifiers().size() + event.getObs().size() + sizeOfDetailsWithNonEmptyValues(
+				event.getDetails());
+		assertEquals(questionnaireResponse.getItem().size(), itemsSize);
 		System.out.println(questionnaireResponse);
 	}
 
@@ -96,6 +100,27 @@ public class EventConverterTest {
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue(), event.getTeam());
 		//TODO : Do we need to test individual obs, details and identifier fields?
+		for (QuestionnaireResponse.Item item : questionnaireResponse.getItem()) {
+			if (item.getLinkId().equals("totPopulation")) {
+				assertEquals(item.getAnswer().size(), 1);
+				assertEquals(item.getAnswer().get(0).getValue(), 2);
+			}
+			if (item.getLinkId().equals("existingLLINs")) {
+				assertEquals(item.getAnswer().size(), 2);  //Test for multiple values
+				assertEquals(item.getAnswer().get(0).getValue(), 0);
+				assertEquals(item.getAnswer().get(1).getValue(), 1);
+			}
+		}
 		System.out.println(questionnaireResponse);
+	}
+
+	private int sizeOfDetailsWithNonEmptyValues(Map<String, String> details) {
+		int size = 0;
+		for (Map.Entry<String, String> entry : details.entrySet()) {
+			if (entry.getValue().length() >= 1) {
+				size++;
+			}
+		}
+		return size;
 	}
 }

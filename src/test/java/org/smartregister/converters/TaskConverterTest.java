@@ -35,6 +35,9 @@ public class TaskConverterTest {
 		assertEquals(fihrTask.getDescription().getValue(), task.getDescription());
 		assertEquals(fihrTask.getCode().getText().getValue(), task.getCode());
 		assertEquals(fihrTask.getNote().size(), task.getNotes().size());
+		assertEquals(fihrTask.getNote().get(0).getAuthor().as(com.ibm.fhir.model.type.String.class).getValue(),task.getNotes().get(0).getAuthorString());
+		assertEquals(fihrTask.getNote().get(0).getText().getValue(),task.getNotes().get(0).getText());
+		assertEquals(fihrTask.getNote().get(0).getTime().getValue().toString(),task.getNotes().get(0).getTime().toString("yyyy-MM-dd'T'HH:mm'Z'"));
 		assertEquals(fihrTask.getRequester().getReference().getValue(), task.getRequester());
 		assertEquals(fihrTask.getOwner().getReference().getValue(), task.getOwner());
 		assertEquals(fihrTask.getStatusReason().getText().getValue(), task.getReasonReference());

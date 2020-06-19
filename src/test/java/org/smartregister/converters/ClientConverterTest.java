@@ -3,6 +3,7 @@ package org.smartregister.converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.type.Identifier;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.smartregister.domain.Client;
@@ -21,23 +22,43 @@ public class ClientConverterTest {
 	@Test
 	public void testConvertToPatientResource() {
 		Client client = gson.fromJson(CLIENT_JSON, Client.class);
-				client.setBirthdate(new DateTime(0l));
-				client.setDeathdate(new DateTime(0l));
-				client.setFirstName("John");
-				client.setMiddleName("Lewis");
-				client.setLastName("Johny");
-				client.setGender("male");
+		client.setBirthdate(new DateTime(0l));
+		client.setDeathdate(new DateTime(0l));
+		client.setFirstName("John");
+		client.setMiddleName("Lewis");
+		client.setLastName("Johny");
+		client.setGender("male");
 		Patient patient = ClientConverter.convertClientToPatientResource(client);
 		assertNotNull(patient);
-		assertEquals(patient.getGender().getValueAsEnumConstant().value(),client.getGender());
-		assertEquals(patient.getName().get(0).getFamily().getValue(),client.getLastName());
-		assertEquals(patient.getName().get(0).getText().getValue(),client.fullName());
-		assertEquals(patient.getId(),client.getBaseEntityId());
-		int identifiersSize = client.getRelationships().entrySet().size() + client.getAttributes().entrySet().size() + client.getIdentifiers().entrySet().size();
-		assertEquals(patient.getIdentifier().size(),identifiersSize);
-		assertEquals(patient.getBirthDate().getValue().toString(),client.getBirthdate().toString("YYYY-MM-DD"));
-		assertEquals(patient.getDeceased().as(com.ibm.fhir.model.type.DateTime.class).getValue().toString(),client.getDeathdate().toString("yyyy-MM-dd'T'HH:mm'Z'"));
-		//TODO : Individual assertions on relationships, attributes and identifiers
+		assertEquals(patient.getGender().getValueAsEnumConstant().value(), client.getGender());
+		assertEquals(patient.getName().get(0).getFamily().getValue(), client.getLastName());
+		assertEquals(patient.getName().get(0).getText().getValue(), client.fullName());
+		assertEquals(patient.getId(), client.getBaseEntityId());
+		int identifiersSize = client.getRelationships().entrySet().size() + client.getAttributes().entrySet().size() + client
+				.getIdentifiers().entrySet().size();
+		assertEquals(patient.getIdentifier().size(), identifiersSize);
+		assertEquals(patient.getBirthDate().getValue().toString(), client.getBirthdate().toString("YYYY-MM-DD"));
+		assertEquals(patient.getDeceased().as(com.ibm.fhir.model.type.DateTime.class).getValue().toString(),
+				client.getDeathdate().toString("yyyy-MM-dd'T'HH:mm'Z'"));
+		for (Identifier identifier : patient.getIdentifier()) {
+			if (identifier.getSystem() != null && identifier.getSystem().getValue()
+					.equals("opensrp_id")) { //Tested propery of identifiers
+				assertEquals(identifier.getValue().getValue(), "20366639");
+			}
+			if (identifier.getExtension() != null && identifier.getType() != null && identifier.getType().getCoding().get(0)
+					.getCode().getValue().equals("relationships")) {
+				assertEquals(identifier.getType().getText().getValue(), "family");
+				assertEquals(identifier.getType().getCoding().get(0).getExtension().size(), 1);
+				assertEquals(identifier.getType().getCoding().get(0).getExtension().get(0),
+						"e6d3ea63-1309-4302-bd93-a6d0571cc645");
+			}
+			if (identifier.getType() != null && identifier.getType().getCoding().get(0)
+					.getCode().getValue().equals("attribute")) {
+				assertEquals(identifier.getId(), "residence");
+				assertEquals(identifier.getValue().getValue(), "40930448-ea84-4ba7-8780-2a98dd8e902e");
+			}
+		}
+
 		System.out.println(patient);
 	}
 }
