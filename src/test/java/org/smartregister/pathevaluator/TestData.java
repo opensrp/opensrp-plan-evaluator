@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Date;
@@ -24,6 +25,7 @@ import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.model.type.code.LocationStatus;
+import com.ibm.fhir.model.type.code.QuestionnaireResponseStatus;
 import com.ibm.fhir.model.type.code.TaskIntent;
 import com.ibm.fhir.model.type.code.TaskStatus;
 
@@ -57,5 +59,9 @@ public class TestData {
 	
 	public static Location createLocation() {
 		return Location.builder().id(UUID.randomUUID().toString()).name(of("Nairobi")).status(LocationStatus.ACTIVE).build();
+	}
+	
+	public static QuestionnaireResponse createResponse() {
+		return QuestionnaireResponse.builder().status(QuestionnaireResponseStatus.COMPLETED).build();
 	}
 }

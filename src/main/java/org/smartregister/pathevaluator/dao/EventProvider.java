@@ -9,11 +9,13 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * @author Samuel Githengi created on 06/19/20
  */
 @AllArgsConstructor
+@Getter
 public class EventProvider {
 	
 	private EventDao eventDao;

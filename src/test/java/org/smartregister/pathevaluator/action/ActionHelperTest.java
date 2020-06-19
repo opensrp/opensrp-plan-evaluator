@@ -27,6 +27,8 @@ import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.TestData;
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.ClientProvider;
+import org.smartregister.pathevaluator.dao.EventDao;
+import org.smartregister.pathevaluator.dao.EventProvider;
 import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.dao.TaskDao;
@@ -34,6 +36,7 @@ import org.smartregister.pathevaluator.dao.TaskProvider;
 
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Task;
 
 /**
@@ -57,6 +60,9 @@ public class ActionHelperTest {
 	private TaskDao taskDao;
 	
 	@Mock
+	private EventDao eventDao;
+	
+	@Mock
 	private LocationProvider locationProvider;
 	
 	@Mock
@@ -64,6 +70,9 @@ public class ActionHelperTest {
 	
 	@Mock
 	private TaskProvider taskProvider;
+	
+	@Mock
+	private EventProvider eventProvider;
 	
 	private SubjectConcept subjectConcept;
 	
@@ -79,13 +88,14 @@ public class ActionHelperTest {
 	
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao);
+		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao);
 		PathEvaluatorLibrary instance = PathEvaluatorLibrary.getInstance();
 		Whitebox.setInternalState(instance, "locationProvider", locationProvider);
 		Whitebox.setInternalState(instance, "clientProvider", clientProvider);
 		Whitebox.setInternalState(instance, "taskProvider", taskProvider);
 		when(locationProvider.getLocationDao()).thenReturn(locationDao);
 		when(clientProvider.getClientDao()).thenReturn(clientDao);
+		when(eventProvider.getEventDao()).thenReturn(eventDao);
 		
 		actionHelper = new ActionHelper();
 		subjectConcept = new SubjectConcept(ResourceType.JURISDICTION.value());
@@ -184,9 +194,18 @@ public class ActionHelperTest {
 	public void testGetTaskConditionResources() {
 		subjectConcept.setText(ResourceType.TASK.value());
 		List<Task> expected = Collections.singletonList(TestData.createTask());
-		when(taskProvider.getTasks(patient, ResourceType.TASK, plan)).thenReturn(expected);
+		when(taskProvider.getTasks(patient, plan)).thenReturn(expected);
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
-		verify(taskProvider).getTasks(patient, ResourceType.TASK, plan);
+		verify(taskProvider).getTasks(patient, plan);
+	}
+	
+	@Test
+	public void testGetQuestionnaireConditionResources() {
+		subjectConcept.setText(ResourceType.QUESTIONAIRRE_RESPONSE.value());
+		List<QuestionnaireResponse> expected = Collections.singletonList(TestData.createResponse());
+		when(eventProvider.getEvents(patient, plan)).thenReturn(expected);
+		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
+		verify(eventProvider).getEvents(patient, plan);
 	}
 	
 }

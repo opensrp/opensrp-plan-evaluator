@@ -19,31 +19,31 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.smartregister.pathevaluator.TestData;
 
 import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.Task;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 
 /**
- * @author Samuel Githengi created on 06/18/20
+ * @author Samuel Githengi created on 06/19/20
  */
 @RunWith(MockitoJUnitRunner.class)
-public class TaskProviderTest {
+public class EventProviderTest {
+	
+	private EventProvider eventProvider;
 	
 	@Mock
-	private TaskDao taskDao;
-	
-	private TaskProvider taskProvider;
+	private EventDao eventDao;
 	
 	@Before
 	public void setUp() {
-		taskProvider = new TaskProvider(taskDao);
+		eventProvider = new EventProvider(eventDao);
 	}
 	
 	@Test
-	public void testGetTasks() {
+	public void testGetEvents() {
 		Patient patient = TestData.createPatient();
-		List<Task> expected = Collections.singletonList(TestData.createTask());
+		List<QuestionnaireResponse> expected = Collections.singletonList(TestData.createResponse());
 		String planIdentifier = UUID.randomUUID().toString();
-		when(taskDao.findTasksForEntity(patient.getId(), planIdentifier)).thenReturn(expected);
-		assertEquals(expected, taskProvider.getTasks(patient, planIdentifier));
-		verify(taskDao).findTasksForEntity(patient.getId(), planIdentifier);
+		when(eventDao.findEventsByEntityIdAndPlan(patient.getId(), planIdentifier)).thenReturn(expected);
+		assertEquals(expected, eventProvider.getEvents(patient, planIdentifier));
+		verify(eventDao).findEventsByEntityIdAndPlan(patient.getId(), planIdentifier);
 	}
 }
