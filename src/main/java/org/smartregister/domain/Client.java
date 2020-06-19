@@ -11,7 +11,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
-import org.opensrp.common.Gender;
+import org.smartregister.common.Gender;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

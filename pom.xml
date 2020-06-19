@@ -6,7 +6,7 @@
 
 	<artifactId>opensrp-plan-evaluator</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.6-SNAPSHOT</version>
 	<name>OpenSRP  Plan Evaluator</name>
 	<description>OpenSRP  Plan Evaluator Library</description>
 	<url>https://github.com/OpenSRP/opensrp-plan-evaluator</url>
@@ -20,7 +20,6 @@
 
 		<jacoco.maven.plugin.version>0.8.5</jacoco.maven.plugin.version>
 		<coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
-		<opensrp.common.version>2.0.2-SNAPSHOT</opensrp.common.version>
 		<powermock.version>2.0.5</powermock.version>
 	</properties>
 
@@ -85,11 +84,6 @@
 	</repositories>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.smartregister</groupId>
-			<artifactId>opensrp-server-common</artifactId>
-			<version>${opensrp.common.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>com.ibm.fhir</groupId>
 			<artifactId>fhir-path</artifactId>
