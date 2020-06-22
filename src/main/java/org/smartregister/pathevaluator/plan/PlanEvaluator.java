@@ -1,21 +1,19 @@
 package org.smartregister.pathevaluator.plan;
 
-
-
 import java.util.Collection;
 import java.util.List;
 
-import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
-import org.smartregister.pathevaluator.TriggerEvent;
+import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.TriggerEventPayload;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
 import org.smartregister.pathevaluator.task.TaskHelper;
+import org.smartregister.pathevaluator.trigger.TriggerHelper;
 import org.smartregister.pathevaluator.utils.PlanHelper;
 
-import com.ibm.fhir.model.resource.Encounter;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathNode;
@@ -32,10 +30,13 @@ public class PlanEvaluator {
 	
 	private TaskHelper taskHelper;
 	
+	private TriggerHelper triggerHelper;
+
 	public PlanEvaluator() {
 		actionHelper = new ActionHelper();
 		conditionHelper = new ConditionHelper(actionHelper);
 		taskHelper = new TaskHelper();
+		triggerHelper = new TriggerHelper(actionHelper);
 	}
 
 	private FHIRPathEvaluator fhirPathEvaluator = FHIRPathEvaluator.evaluator();
@@ -50,7 +51,6 @@ public class PlanEvaluator {
 			return false;
 		}
 
-
 	}
 
 	/**
@@ -61,10 +61,8 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
 		TriggerEventPayload triggerEvent = PlanHelper.evaluatePlanModification(planDefinition, existingPlanDefinition);
-		if (triggerEvent != null  && (
-				triggerEvent.getTriggerEvent().equals(TriggerEvent.PLAN_ACTIVATION) ||
-				triggerEvent.getTriggerEvent().equals(TriggerEvent.PLAN_JURISDICTION_CHANGE))
-		) {
+		if (triggerEvent != null && (triggerEvent.getTriggerEvent().equals(TriggerType.PLAN_ACTIVATION)
+		        || triggerEvent.getTriggerEvent().equals(TriggerType.PLAN_JURISDICTION_MODIFICATION))) {
 			evaluatePlan(planDefinition, triggerEvent.getTriggerEvent(), triggerEvent.getJurisdictions());
 		}
 
@@ -74,44 +72,42 @@ public class PlanEvaluator {
 	 * Evaluates a plan if an encounter is submitted
 	 *
 	 * @param planDefinition the plan being evaluated
-	 * @param encounter the encounter that has just been submitted
+	 * @param questionnaireResponse the questionnaireResponse that has just been submitted
 	 */
-	public void evaluatePlan(PlanDefinition planDefinition, Encounter encounter) {
-	}
-
-	/**
-	 *  Evaluates a plan for task generation
-	 *
-	 * @param planDefinition the plan being evaluated
-	 * @param triggerEvent
-	 * @param jurisdictions
-	 */
-	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, List<Jurisdiction> jurisdictions) {
-		jurisdictions.forEach(jurisdiction-> evaluatePlan(planDefinition, triggerEvent, jurisdiction));
+	public void evaluatePlan(PlanDefinition planDefinition, QuestionnaireResponse questionnaireResponse) {
 	}
 
 	/**
 	 * Evaluates a plan for task generation
 	 *
 	 * @param planDefinition the plan being evaluated
+	 * @param triggerEvent
+	 * @param jurisdictions
 	 */
-	private void evaluatePlan(PlanDefinition planDefinition, TriggerEvent triggerEvent, Jurisdiction jurisdiction) {
+	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, List<Jurisdiction> jurisdictions) {
+		jurisdictions.parallelStream()
+		        .forEach(jurisdiction -> evaluatePlan(planDefinition, triggerEvent, jurisdiction, null));
+	}
+
+	/**
+	 * Evaluates a plan for task generation
+	 *
+	 * @param planDefinition the plan being evaluated
+	 * @param questionnaireResponse {@link QuestionnaireResponse} just submitted
+	 */
+	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
+	        QuestionnaireResponse questionnaireResponse) {
 		
-		for (Action action : planDefinition.getActions()) {
-			
-			//TODO @Ronald to add this
-			//if (TriggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent)) {
-			
-			//get the subject resources
-			List<? extends Resource> resources = actionHelper.getSubjectResources(action, jurisdiction);
-			
-			for (Resource resource : resources) {
-				if (conditionHelper.evaluateActionConditions(resource, action,planDefinition.getIdentifier())) {
-					taskHelper.generateTask(resource, action,"","");
-				}
+		planDefinition.getActions().forEach(action -> {
+			if (triggerHelper.evaluateTrigger(action.getTriggers(), triggerEvent, planDefinition.getIdentifier(),
+			    questionnaireResponse)) {
+				actionHelper.getSubjectResources(action, jurisdiction).forEach(resource -> {
+					if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier())) {
+						taskHelper.generateTask(resource, action,"","");
+					}
+				});
 			}
-			
-		}
+		});
 	}
 
 }

@@ -34,7 +34,7 @@ public class TaskHelper {
 		task.setStatus(Task.TaskStatus.READY);
 		task.setPriority(3);
 		task.setCode(action.getCode());
-		task.setDescription(action.getDescription());
+		task.setDescription(ction.getDescription());
 		task.setFocus(action.getIdentifier());
 		task.setForEntity(resource.getId());
 		task.setExecutionStartDate(new DateTime(action.getTimingPeriod().getStart()));
