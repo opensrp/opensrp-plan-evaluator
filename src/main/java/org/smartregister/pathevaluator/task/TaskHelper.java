@@ -37,10 +37,10 @@ public class TaskHelper {
 		task.setDescription(action.getDescription());
 		task.setFocus(action.getIdentifier());
 		task.setForEntity(resource.getId());
-		task.setExecutionStartDate(new DateTime(action.getTimingPeriod().getStart()));
-		task.setExecutionEndDate(new DateTime(action.getTimingPeriod().getEnd()));
-		task.setAuthoredOn(new DateTime());
-		task.setLastModified(new DateTime());
+		task.setExecutionStartDate(new DateTime(action.getTimingPeriod() != null ? action.getTimingPeriod().getStart() : null));
+		task.setExecutionEndDate(new DateTime(action.getTimingPeriod() != null ? action.getTimingPeriod().getEnd() : null));
+		task.setAuthoredOn(DateTime.now());
+		task.setLastModified(DateTime.now());
 		task.setBusinessStatus("Not Visited");
 		task.setRequester(instance.getUserName());
 		task.setOwner(instance.getUserName());
