@@ -106,19 +106,19 @@ public class EventConverterTest {
 		assertEquals(event.getTeam(),
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue());
-		
-		PathEvaluatorLibrary.init(null, null, null);
+
+		PathEvaluatorLibrary.init(null, null, null, null);
 		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='totPopulation')");
 		QuestionnaireResponse.Item totPopulation = node.element().as(QuestionnaireResponse.Item.class);
 		assertEquals(1,totPopulation.getAnswer().size());
 		assertEquals(com.ibm.fhir.model.type.String.of("2"),totPopulation.getAnswer().get(0).getValue());
 		node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='existingLLINs')");
-		
+
 		QuestionnaireResponse.Item existingLLINs = node.element().as(QuestionnaireResponse.Item.class);
 		assertEquals(2, existingLLINs.getAnswer().size());  //Test for multiple values
 		assertEquals(0,existingLLINs.getAnswer().get(0).getValue());
 		assertEquals(1,existingLLINs.getAnswer().get(1).getValue());
-	
+
 		System.out.println(questionnaireResponse);
 	}
 
