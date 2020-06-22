@@ -12,12 +12,14 @@ import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * @author Samuel Githengi created on 06/15/20
  */
 public class TaskHelper {
 
+	private static Logger logger= Logger.getLogger(TaskHelper.class.getSimpleName());
 	/** Generates task for an action and target resource
 	 * @param resource entity task is being generated for 
 	 * @param action  entity used to create the task
@@ -44,9 +46,8 @@ public class TaskHelper {
 		task.setOwner(instance.getUserName());
         TaskDao taskDao = instance.getTaskProvider().getTaskDao();
 		taskDao.saveTask(task);
+		logger.info("Created task "+task.toString());
 
-		// TODO Auto-generated method stub
-		
 	}
 
 }

@@ -1,10 +1,14 @@
 package org.smartregister.domain;
 
 import com.google.gson.annotations.SerializedName;
+
+import lombok.ToString;
+
 import org.joda.time.DateTime;
 
 import java.util.List;
 
+@ToString
 public class Task {
 
 	public enum TaskStatus {

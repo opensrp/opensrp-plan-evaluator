@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.smartregister.pathevaluator.utils;
+package org.smartregister.pathevaluator.plan;
 
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
