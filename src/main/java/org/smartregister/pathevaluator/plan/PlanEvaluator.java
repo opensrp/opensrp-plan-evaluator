@@ -103,7 +103,7 @@ public class PlanEvaluator {
 			    questionnaireResponse)) {
 				actionHelper.getSubjectResources(action, jurisdiction).forEach(resource -> {
 					if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier())) {
-						taskHelper.generateTask(resource, action,"","");
+						taskHelper.generateTask(resource, action,planDefinition.getIdentifier(),jurisdiction.getCode());
 					}
 				});
 			}
