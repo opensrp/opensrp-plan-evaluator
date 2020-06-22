@@ -26,7 +26,7 @@ import com.ibm.fhir.model.type.code.LocationStatus;
 public class LocationConverter {
 
 	public static Location convertPhysicalLocationToLocationResource(PhysicalLocation physicalLocation) {
-		Location.Builder builder = Location.builder();
+		Location.Builder builder = Location.builder().id(physicalLocation.getId());
 		if(physicalLocation.getProperties().getStatus().equals(PropertyStatus.PENDING_REVIEW)) {
 			physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
 		}
