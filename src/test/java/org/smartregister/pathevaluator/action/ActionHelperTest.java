@@ -61,7 +61,7 @@ public class ActionHelperTest {
 	
 	@Mock
 	private EventDao eventDao;
-	
+
 	@Mock
 	private LocationProvider locationProvider;
 	
@@ -73,7 +73,7 @@ public class ActionHelperTest {
 	
 	@Mock
 	private EventProvider eventProvider;
-	
+
 	private SubjectConcept subjectConcept;
 	
 	private Jurisdiction jurisdiction;
@@ -88,7 +88,7 @@ public class ActionHelperTest {
 	
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao);
+		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao,"testUser");
 		PathEvaluatorLibrary instance = PathEvaluatorLibrary.getInstance();
 		Whitebox.setInternalState(instance, "locationProvider", locationProvider);
 		Whitebox.setInternalState(instance, "clientProvider", clientProvider);
@@ -198,7 +198,7 @@ public class ActionHelperTest {
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
 		verify(taskProvider).getTasks(patient, plan);
 	}
-	
+
 	@Test
 	public void testGetQuestionnaireConditionResources() {
 		subjectConcept.setText(ResourceType.QUESTIONAIRRE_RESPONSE.value());

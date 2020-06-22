@@ -43,7 +43,7 @@ public class ClientConverterTest {
 		assertEquals(client.getBirthdate().toString("YYYY-MM-DD"), patient.getBirthDate().getValue().toString());
 		assertEquals(client.getDeathdate().toString("yyyy-MM-dd'T'HH:mm'Z'"),
 				patient.getDeceased().as(com.ibm.fhir.model.type.DateTime.class).getValue().toString());
-		PathEvaluatorLibrary.init(null, null, null,null);
+		PathEvaluatorLibrary.init(null, null, null,null,"testUser");
 		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(patient, "Patient.identifier.where(system='opensrp_id')");
 		Identifier identifierNode = node.element().as(Identifier.class);
 		assertEquals("20366639", identifierNode.getValue().getValue());

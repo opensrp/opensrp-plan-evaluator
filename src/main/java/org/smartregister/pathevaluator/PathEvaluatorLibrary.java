@@ -38,19 +38,22 @@ public class PathEvaluatorLibrary {
 	private ClientProvider clientProvider;
 	
 	private TaskProvider taskProvider;
-	
+
+	private String userName;
+
 	private EventProvider eventProvider;
-	
-	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
+
+	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, String userName) {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 		locationProvider = new LocationProvider(locationDao);
 		clientProvider = new ClientProvider(clientDao);
 		taskProvider = new TaskProvider(taskDao);
 		eventProvider = new EventProvider(eventDao);
+		this.userName = userName;
 	}
 	
-	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
-		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao);
+	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, String userName) {
+		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao,userName);
 	}
 	
 	/**
@@ -95,5 +98,5 @@ public class PathEvaluatorLibrary {
 				return null;
 			}
 	}
-	
+
 }

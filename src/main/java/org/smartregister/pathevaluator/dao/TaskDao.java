@@ -20,5 +20,7 @@ public interface TaskDao {
 	 * @return the tasks for a resource in a plan
 	 */
 	List<Task> findTasksForEntity(String id, String planIdentifier);
+
+	void saveTask(org.smartregister.domain.Task task);
 	
 }

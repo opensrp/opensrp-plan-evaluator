@@ -60,7 +60,7 @@ public class TriggerHelperTest {
 	
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(null, null, null, null);
+		PathEvaluatorLibrary.init(null, null, null, null,null);
 		triggerHelper = new TriggerHelper(actionHelper);
 		trigger = Trigger.builder().name(TriggerType.PLAN_ACTIVATION.value()).build();
 	}
