@@ -48,6 +48,9 @@ public class PlanDefinition {
 	@JsonProperty
 	@SerializedName("action")
 	private List<Action> actions;
+
+	@JsonProperty
+	private Boolean isTemplate;
 	
 	public String getIdentifier() {
 		return identifier;
@@ -144,7 +147,15 @@ public class PlanDefinition {
 	public void setServerVersion(Long serverVersion) {
 		this.serverVersion = serverVersion;
 	}
-	
+
+	public Boolean getTemplate() {
+		return isTemplate;
+	}
+
+	public void setTemplate(Boolean template) {
+		isTemplate = template;
+	}
+
 	static class UseContext {
 		
 		private String code;
