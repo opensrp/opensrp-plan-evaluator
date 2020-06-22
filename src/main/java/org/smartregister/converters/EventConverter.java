@@ -53,7 +53,7 @@ public class EventConverter {
 		Id versionId = Id.builder().value(version).build();
 		Meta meta = Meta.builder().versionId(versionId).build();
 
-		QuestionnaireResponse.Item.Answer answer;
+		QuestionnaireResponse.Item.Answer answer = null;
 		QuestionnaireResponse.Item item;
 
 		if (event.getIdentifiers() != null) {
@@ -81,14 +81,21 @@ public class EventConverter {
 		Collection<Extension> extensions = new ArrayList<>();
 		if (event.getObs() != null) {
 			for (Obs obs : event.getObs()) {
+				extensions = new ArrayList<>();
 				for (Object obj : obs.getValues()) {
-					if (obj instanceof java.lang.String) {
-						extension = Extension.builder().value(String.builder().value(obj.toString()).build())
-								.url("observation").build();
-						extensions.add(extension);
+					if (obs.getValues().size() == 1 && obj instanceof java.lang.String) {
+						answer = QuestionnaireResponse.Item.Answer.builder()
+								.value(String.builder().value(obj.toString()).build()).build();
+					} else {
+						if (obj instanceof java.lang.String) {
+							extension = Extension.builder().value(String.builder().value(obj.toString()).build())
+									.url("observation").build();
+							extensions.add(extension);
+						}
+						answer = QuestionnaireResponse.Item.Answer.builder().extension(extensions).build();
 					}
 				}
-				answer = QuestionnaireResponse.Item.Answer.builder().extension(extensions).build();
+
 				item = QuestionnaireResponse.Item.builder().linkId(String.builder().value(obs.getFieldCode()).build())
 						.answer(answer).build();
 				items.add(item);
