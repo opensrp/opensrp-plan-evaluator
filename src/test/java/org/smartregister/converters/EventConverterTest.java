@@ -3,13 +3,20 @@ package org.smartregister.converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.model.type.Integer;
+import com.ibm.fhir.path.FHIRPathElementNode;
+import com.ibm.fhir.path.FHIRPathNode;
+import com.ibm.fhir.path.FHIRPathResourceNode;
 
 import java.lang.String;
+import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.smartregister.domain.Event;
+import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import static org.junit.Assert.assertEquals;
@@ -99,18 +106,20 @@ public class EventConverterTest {
 		assertEquals(
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue(), event.getTeam());
+		
+		PathEvaluatorLibrary.init(null, null, null);
 		//TODO : Do we need to test individual obs, details and identifier fields?
-		for (QuestionnaireResponse.Item item : questionnaireResponse.getItem()) {
-			if (item.getLinkId().equals("totPopulation")) {
-				assertEquals(item.getAnswer().size(), 1);
-				assertEquals(item.getAnswer().get(0).getValue(), 2);
-			}
-			if (item.getLinkId().equals("existingLLINs")) {
-				assertEquals(item.getAnswer().size(), 2);  //Test for multiple values
-				assertEquals(item.getAnswer().get(0).getValue(), 0);
-				assertEquals(item.getAnswer().get(1).getValue(), 1);
-			}
-		}
+		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='totPopulation')");
+		QuestionnaireResponse.Item totPopulation = node.element().as(QuestionnaireResponse.Item.class);
+		assertEquals(1,totPopulation.getAnswer().size());
+		assertEquals(com.ibm.fhir.model.type.String.of("2"),totPopulation.getAnswer().get(0).getValue());
+		node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='existingLLINs')");
+		
+		QuestionnaireResponse.Item existingLLINs = node.element().as(QuestionnaireResponse.Item.class);
+		assertEquals(2, existingLLINs.getAnswer().size());  //Test for multiple values
+		assertEquals(0,existingLLINs.getAnswer().get(0).getValue());
+		assertEquals(1,existingLLINs.getAnswer().get(1).getValue());
+	
 		System.out.println(questionnaireResponse);
 	}
 
