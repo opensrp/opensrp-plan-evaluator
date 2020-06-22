@@ -73,8 +73,4 @@ public class PathEvaluatorLibrary {
 			return false;
 		}
 	}
-
-	public String getUserName() {
-		return userName;
-	}
 }

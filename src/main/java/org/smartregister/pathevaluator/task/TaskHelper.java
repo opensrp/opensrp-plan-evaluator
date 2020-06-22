@@ -18,8 +18,6 @@ import java.util.UUID;
  */
 public class TaskHelper {
 
-	private TaskDao taskDao;
-
 	/** Generates task for an action and target resource
 	 * @param resource entity task is being generated for 
 	 * @param action  entity used to create the task
@@ -44,11 +42,11 @@ public class TaskHelper {
 		task.setBusinessStatus("Not Visited");
 		task.setRequester(instance.getUserName());
 		task.setOwner(instance.getUserName());
-
+        TaskDao taskDao = instance.getTaskProvider().getTaskDao();
 		taskDao.saveTask(task);
 
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 }
