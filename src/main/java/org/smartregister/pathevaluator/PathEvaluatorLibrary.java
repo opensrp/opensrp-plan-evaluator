@@ -4,7 +4,10 @@
 package org.smartregister.pathevaluator;
 
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.ClientProvider;
 import org.smartregister.pathevaluator.dao.EventDao;
@@ -29,6 +32,8 @@ import lombok.Getter;
 @Getter
 public class PathEvaluatorLibrary {
 	
+	private static Logger logger = Logger.getLogger(PathEvaluatorLibrary.class.getSimpleName());
+	
 	private static PathEvaluatorLibrary instance;
 	
 	private FHIRPathEvaluator fhirPathEvaluator;
@@ -38,12 +43,13 @@ public class PathEvaluatorLibrary {
 	private ClientProvider clientProvider;
 	
 	private TaskProvider taskProvider;
-
+	
 	private String userName;
-
+	
 	private EventProvider eventProvider;
-
-	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, String userName) {
+	
+	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao,
+	    String userName) {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 		locationProvider = new LocationProvider(locationDao);
 		clientProvider = new ClientProvider(clientDao);
@@ -52,8 +58,9 @@ public class PathEvaluatorLibrary {
 		this.userName = userName;
 	}
 	
-	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, String userName) {
-		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao,userName);
+	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao,
+	        String userName) {
+		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao, userName);
 	}
 	
 	/**
@@ -67,6 +74,7 @@ public class PathEvaluatorLibrary {
 	
 	/**
 	 * Evaluates a boolean FHIR Path expression on a resource
+	 * 
 	 * @param resource the resource expression is being evaluated on
 	 * @param expression the expression to evaluate
 	 * @return results of expression or false if the expression is not valid
@@ -75,28 +83,33 @@ public class PathEvaluatorLibrary {
 		
 		try {
 			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, expression);
-			return nodes != null ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean() : false;
+			return nodes != null && nodes.iterator().hasNext()
+			        ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean()
+			        : false;
 		}
 		catch (FHIRPathException e) {
+			logger.log(Level.SEVERE,
+			    "Error execuring expression " + expression + "resource " + ReflectionToStringBuilder.toString(resource), e);
 			return false;
 		}
 	}
 	
 	/**
 	 * Evaluates a FHIR Path expression on a resource
+	 * 
 	 * @param resource the resource expression is being evaluated on
 	 * @param expression the expression to evaluate
-	 * @return results of expression 
+	 * @return results of expression
 	 */
-	public FHIRPathElementNode evaluateElementExpression(Resource resource, String expression)  {
+	public FHIRPathElementNode evaluateElementExpression(Resource resource, String expression) {
 		
-			try {
-				return fhirPathEvaluator.evaluate(resource, expression).iterator().next().asElementNode();
-			}
-			catch (FHIRPathException e) {
-				e.printStackTrace();
-				return null;
-			}
+		try {
+			return fhirPathEvaluator.evaluate(resource, expression).iterator().next().asElementNode();
+		}
+		catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error execuring expression "+expression, e);
+			return null;
+		}
 	}
-
+	
 }
