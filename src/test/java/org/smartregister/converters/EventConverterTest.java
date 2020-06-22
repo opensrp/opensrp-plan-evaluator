@@ -115,9 +115,9 @@ public class EventConverterTest {
 		node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='existingLLINs')");
 
 		QuestionnaireResponse.Item existingLLINs = node.element().as(QuestionnaireResponse.Item.class);
-		assertEquals(2, existingLLINs.getAnswer().size());  //Test for multiple values
-		assertEquals(0,existingLLINs.getAnswer().get(0).getValue());
-		assertEquals(1,existingLLINs.getAnswer().get(1).getValue());
+		assertEquals(2, existingLLINs.getAnswer().get(0).getExtension().size());  //Test for multiple values
+		assertEquals(String.valueOf(0),existingLLINs.getAnswer().get(0).getExtension().get(0).getValue().as(com.ibm.fhir.model.type.String.class).getValue());
+		assertEquals(String.valueOf(1),existingLLINs.getAnswer().get(0).getExtension().get(1).getValue().as(com.ibm.fhir.model.type.String.class).getValue());
 
 		System.out.println(questionnaireResponse);
 	}
