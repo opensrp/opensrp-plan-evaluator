@@ -107,7 +107,7 @@ public class EventConverterTest {
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue());
 
-		PathEvaluatorLibrary.init(null, null, null, null);
+		PathEvaluatorLibrary.init(null, null, null, null, "testUser");
 		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='totPopulation')");
 		QuestionnaireResponse.Item totPopulation = node.element().as(QuestionnaireResponse.Item.class);
 		assertEquals(1,totPopulation.getAnswer().size());
