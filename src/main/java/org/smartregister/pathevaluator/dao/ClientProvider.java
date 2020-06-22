@@ -40,6 +40,8 @@ public class ClientProvider extends BaseProvider {
 			case TASK:
 				Task task = (Task) resource;
 				return clientDao.findClientById(task.getFor().getReference().getValue());
+			case QUESTIONAIRRE_RESPONSE:
+				return clientDao.findClientById(resource.getId());
 			default:
 				return null;
 		}
@@ -56,6 +58,8 @@ public class ClientProvider extends BaseProvider {
 			case TASK:
 				Task task = (Task) resource;
 				return clientDao.findClientById(task.getFor().getReference().getValue());
+			case QUESTIONAIRRE_RESPONSE:
+				return clientDao.findClientById(resource.getId());
 			default:
 				return null;
 		}

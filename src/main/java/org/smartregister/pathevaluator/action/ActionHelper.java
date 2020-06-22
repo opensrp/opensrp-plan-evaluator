@@ -76,6 +76,21 @@ public class ActionHelper {
 	        String planIdentifier) {
 		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectConcept());
 		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
+		return getConditionSubjectResources(resource, planIdentifier, conditionResourceType, actionResourceType);
+	}
+	
+	/**
+	 * Gets the subject resources for the resource
+	 * 
+	 * @param resource the resource id
+	 * @param planIdentifier the plan Identifier
+	 * @param conditionResourceType the condition/expression subject concept
+	 * @param actionResourceType the action subject concept
+	 * @return resources that tasks should be generated against
+	 */
+	public List<? extends Resource> getConditionSubjectResources(Resource resource, String planIdentifier,
+	        ResourceType conditionResourceType, ResourceType actionResourceType) {
+		
 		switch (conditionResourceType) {
 			case JURISDICTION:
 				return PathEvaluatorLibrary.getInstance().getLocationProvider().getJurisdictions(resource,
@@ -91,8 +106,10 @@ public class ActionHelper {
 				return PathEvaluatorLibrary.getInstance().getClientProvider().getFamilyMembers(resource, actionResourceType);
 			
 			case TASK:
-				return PathEvaluatorLibrary.getInstance().getTaskProvider().getTasks(resource, actionResourceType,
-				    planIdentifier);
+				return PathEvaluatorLibrary.getInstance().getTaskProvider().getTasks(resource, planIdentifier);
+			
+			case QUESTIONAIRRE_RESPONSE:
+				return PathEvaluatorLibrary.getInstance().getEventProvider().getEvents(resource, planIdentifier);
 			
 			default:
 				return null;
