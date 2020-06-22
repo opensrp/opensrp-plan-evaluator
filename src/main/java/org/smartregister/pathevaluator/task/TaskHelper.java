@@ -37,8 +37,8 @@ public class TaskHelper {
 		task.setDescription(action.getDescription());
 		task.setFocus(action.getIdentifier());
 		task.setForEntity(resource.getId());
-		task.setExecutionStartDate(new DateTime(action.getTimingPeriod() != null ? action.getTimingPeriod().getStart() : null));
-		task.setExecutionEndDate(new DateTime(action.getTimingPeriod() != null ? action.getTimingPeriod().getEnd() : null));
+		task.setExecutionStartDate(action.getTimingPeriod() != null ? action.getTimingPeriod().getStart().toDateTimeAtStartOfDay() : null);
+		task.setExecutionEndDate(action.getTimingPeriod() != null ? action.getTimingPeriod().getEnd().toDateTimeAtStartOfDay() : null);
 		task.setAuthoredOn(DateTime.now());
 		task.setLastModified(DateTime.now());
 		task.setBusinessStatus("Not Visited");
