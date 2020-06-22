@@ -16,8 +16,10 @@ import org.smartregister.pathevaluator.dao.TaskProvider;
 
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
+import com.ibm.fhir.path.FHIRPathElementNode;
 import com.ibm.fhir.path.FHIRPathNode;
 import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
+import com.ibm.fhir.path.exception.FHIRPathException;
 
 import lombok.Getter;
 
@@ -60,15 +62,38 @@ public class PathEvaluatorLibrary {
 		return instance;
 	}
 	
+	/**
+	 * Evaluates a boolean FHIR Path expression on a resource
+	 * @param resource the resource expression is being evaluated on
+	 * @param expression the expression to evaluate
+	 * @return results of expression or false if the expression is not valid
+	 */
 	public boolean evaluateBooleanExpression(Resource resource, String expression) {
 		
 		try {
 			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, expression);
 			return nodes != null ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean() : false;
 		}
-		catch (Exception e) {
+		catch (FHIRPathException e) {
 			return false;
 		}
+	}
+	
+	/**
+	 * Evaluates a FHIR Path expression on a resource
+	 * @param resource the resource expression is being evaluated on
+	 * @param expression the expression to evaluate
+	 * @return results of expression 
+	 */
+	public FHIRPathElementNode evaluateElementExpression(Resource resource, String expression)  {
+		
+			try {
+				return fhirPathEvaluator.evaluate(resource, expression).iterator().next().asElementNode();
+			}
+			catch (FHIRPathException e) {
+				e.printStackTrace();
+				return null;
+			}
 	}
 	
 }
