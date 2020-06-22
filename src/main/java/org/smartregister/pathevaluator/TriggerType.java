@@ -8,9 +8,9 @@ package org.smartregister.pathevaluator;
  */
 public enum TriggerType {
 	
-	PLAN_ACTIVATION("plan_activation"),
-	PLAN_JURISDICTION_MODIFICATION("plan_jurisdiction_modification"),
-	EVENT_SUBMISSION("event_submission");
+	PLAN_ACTIVATION("PlanActivation"),
+	PLAN_JURISDICTION_MODIFICATION("PlanJurisdictionModification"),
+	EVENT_SUBMISSION("EventSubmission");
 	
 	private String value;
 	

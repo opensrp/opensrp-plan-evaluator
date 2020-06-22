@@ -98,7 +98,7 @@ public class PlanEvaluator {
 	        QuestionnaireResponse questionnaireResponse) {
 		
 		planDefinition.getActions().forEach(action -> {
-			if (triggerHelper.evaluateTrigger(action.getTriggers(), triggerEvent, planDefinition.getIdentifier(),
+			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
 			    questionnaireResponse)) {
 				actionHelper.getSubjectResources(action, jurisdiction).forEach(resource -> {
 					if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier())) {

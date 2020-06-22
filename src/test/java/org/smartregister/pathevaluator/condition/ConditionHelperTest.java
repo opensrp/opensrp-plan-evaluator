@@ -62,7 +62,7 @@ public class ConditionHelperTest {
 		conditionHelper = new ConditionHelper(actionHelper);
 		patient = TestData.createPatient();
 		action = new Action();
-		action.setConditions(new HashSet<>());
+		action.setCondition(new HashSet<>());
 		expression = Expression.builder().expression("Patient.name.family = 'John'").build();
 		condition = Condition.builder().kind("applicability").expression(expression).build();
 	}
@@ -74,12 +74,12 @@ public class ConditionHelperTest {
 	
 	@Test
 	public void testEvaluateActionConditionWithoutSubject() {
-		action.getConditions().add(condition);
+		action.getCondition().add(condition);
 		assertTrue(conditionHelper.evaluateActionConditions(patient, action,plan));
 		
 		expression = Expression.builder().expression("Patient.name.given = 'Jil'").build();
 		condition = Condition.builder().kind("applicability").expression(expression).build();
-		action.getConditions().add(condition);
+		action.getCondition().add(condition);
 		assertFalse(conditionHelper.evaluateActionConditions(patient, action,null));
 	}
 	
@@ -89,7 +89,7 @@ public class ConditionHelperTest {
 		        .expression(
 		            expression.toBuilder().subjectConcept(new SubjectConcept("Task")).expression("Task.code.text='MDA_Round_1' and Task.businessStatus.text='Completed' ").build())
 		        .build();
-		action.getConditions().add(condition);
+		action.getCondition().add(condition);
 		assertFalse(conditionHelper.evaluateActionConditions(patient, action,plan));
 		
 		when(actionHelper.getConditionSubjectResources(condition, action, patient,plan)).thenAnswer(new Answer<List<Task>>() {

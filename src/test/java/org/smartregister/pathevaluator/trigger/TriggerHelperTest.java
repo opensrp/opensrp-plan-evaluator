@@ -104,7 +104,7 @@ public class TriggerHelperTest {
 	
 	@Test
 	public void testEvaluateTriggerWithDependentResources() {
-		SubjectConcept subjectConcept = new SubjectConcept("task");
+		SubjectConcept subjectConcept = new SubjectConcept("Task");
 		Expression expression = Expression.builder()
 		        .expression("Task.code.text='MDA_Round_1' and Task.businessStatus.text='Completed'")
 		        .subjectConcept(subjectConcept).build();
