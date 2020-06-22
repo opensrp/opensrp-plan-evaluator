@@ -86,29 +86,28 @@ public class EventConverterTest {
 		event.setTeamId("team-id");
 		QuestionnaireResponse questionnaireResponse = EventConverter.convertEventToEncounterResource(event);
 		assertNotNull(questionnaireResponse);
-		assertEquals(questionnaireResponse.getSubject().getReference().getValue(), event.getBaseEntityId());
-		assertEquals(questionnaireResponse.getStatus().getValueAsEnumConstant().value(), "completed");
-		assertEquals(questionnaireResponse.getAuthor().getReference().getValue(), event.getProviderId());
-		assertEquals(questionnaireResponse.getMeta().getVersionId().getValue(), String.valueOf(event.getServerVersion()));
-		assertEquals(questionnaireResponse.getItem().get(0).getLinkId().getValue(), "locationId");
-		assertEquals(
+		assertEquals(event.getBaseEntityId(),questionnaireResponse.getSubject().getReference().getValue());
+		assertEquals("completed",questionnaireResponse.getStatus().getValueAsEnumConstant().value());
+		assertEquals(event.getProviderId(),questionnaireResponse.getAuthor().getReference().getValue());
+		assertEquals(String.valueOf(event.getServerVersion()),questionnaireResponse.getMeta().getVersionId().getValue());
+		assertEquals("locationId",questionnaireResponse.getItem().get(0).getLinkId().getValue());
+		assertEquals(event.getLocationId(),
 				questionnaireResponse.getItem().get(0).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
-						.getValue(), event.getLocationId());
-		assertEquals(questionnaireResponse.getItem().get(1).getLinkId().getValue(), "childLocationId");
-		assertEquals(
+						.getValue());
+		assertEquals("childLocationId", questionnaireResponse.getItem().get(1).getLinkId().getValue());
+		assertEquals(event.getChildLocationId(),
 				questionnaireResponse.getItem().get(1).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
-						.getValue(), event.getChildLocationId());
-		assertEquals(questionnaireResponse.getItem().get(2).getLinkId().getValue(), "teamId");
-		assertEquals(
+						.getValue());
+		assertEquals("teamId",questionnaireResponse.getItem().get(2).getLinkId().getValue());
+		assertEquals(event.getTeamId(),
 				questionnaireResponse.getItem().get(2).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
-						.getValue(), event.getTeamId());
-		assertEquals(questionnaireResponse.getItem().get(3).getLinkId().getValue(), "team");
-		assertEquals(
+						.getValue());
+		assertEquals("team",questionnaireResponse.getItem().get(3).getLinkId().getValue());
+		assertEquals(event.getTeam(),
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
-						.getValue(), event.getTeam());
+						.getValue());
 		
 		PathEvaluatorLibrary.init(null, null, null);
-		//TODO : Do we need to test individual obs, details and identifier fields?
 		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='totPopulation')");
 		QuestionnaireResponse.Item totPopulation = node.element().as(QuestionnaireResponse.Item.class);
 		assertEquals(1,totPopulation.getAnswer().size());

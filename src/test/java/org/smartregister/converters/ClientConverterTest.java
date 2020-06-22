@@ -3,10 +3,13 @@ package org.smartregister.converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Identifier;
+import com.ibm.fhir.path.FHIRPathElementNode;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.smartregister.domain.Client;
+import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import static org.junit.Assert.assertEquals;
@@ -30,34 +33,31 @@ public class ClientConverterTest {
 		client.setGender("male");
 		Patient patient = ClientConverter.convertClientToPatientResource(client);
 		assertNotNull(patient);
-		assertEquals(patient.getGender().getValueAsEnumConstant().value(), client.getGender());
-		assertEquals(patient.getName().get(0).getFamily().getValue(), client.getLastName());
-		assertEquals(patient.getName().get(0).getText().getValue(), client.fullName());
-		assertEquals(patient.getId(), client.getBaseEntityId());
+		assertEquals(client.getGender(), patient.getGender().getValueAsEnumConstant().value());
+		assertEquals(client.getLastName(), patient.getName().get(0).getFamily().getValue());
+		assertEquals(client.fullName(), patient.getName().get(0).getText().getValue());
+		assertEquals(client.getBaseEntityId(), patient.getId());
 		int identifiersSize = client.getRelationships().entrySet().size() + client.getAttributes().entrySet().size() + client
 				.getIdentifiers().entrySet().size();
-		assertEquals(patient.getIdentifier().size(), identifiersSize);
-		assertEquals(patient.getBirthDate().getValue().toString(), client.getBirthdate().toString("YYYY-MM-DD"));
-		assertEquals(patient.getDeceased().as(com.ibm.fhir.model.type.DateTime.class).getValue().toString(),
-				client.getDeathdate().toString("yyyy-MM-dd'T'HH:mm'Z'"));
-		for (Identifier identifier : patient.getIdentifier()) {
-			if (identifier.getSystem() != null && identifier.getSystem().getValue()
-					.equals("opensrp_id")) { //Tested propery of identifiers
-				assertEquals(identifier.getValue().getValue(), "20366639");
-			}
-			if (identifier.getExtension() != null && identifier.getType() != null && identifier.getType().getCoding().get(0)
-					.getCode().getValue().equals("relationships")) {
-				assertEquals(identifier.getType().getText().getValue(), "family");
-				assertEquals(identifier.getType().getCoding().get(0).getExtension().size(), 1);
-				assertEquals(identifier.getType().getCoding().get(0).getExtension().get(0),
-						"e6d3ea63-1309-4302-bd93-a6d0571cc645");
-			}
-			if (identifier.getType() != null && identifier.getType().getCoding().get(0)
-					.getCode().getValue().equals("attribute")) {
-				assertEquals(identifier.getId(), "residence");
-				assertEquals(identifier.getValue().getValue(), "40930448-ea84-4ba7-8780-2a98dd8e902e");
-			}
-		}
+		assertEquals(identifiersSize, patient.getIdentifier().size());
+		assertEquals(client.getBirthdate().toString("YYYY-MM-DD"), patient.getBirthDate().getValue().toString());
+		assertEquals(client.getDeathdate().toString("yyyy-MM-dd'T'HH:mm'Z'"),
+				patient.getDeceased().as(com.ibm.fhir.model.type.DateTime.class).getValue().toString());
+		PathEvaluatorLibrary.init(null, null, null);
+		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(patient, "Patient.identifier.where(system='opensrp_id')");
+		Identifier identifierNode = node.element().as(Identifier.class);
+		assertEquals("20366639", identifierNode.getValue().getValue());
+
+		node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(patient, "Patient.identifier.type.where(text='family')");
+		CodeableConcept familyNode = node.element().as(CodeableConcept.class);
+		assertEquals(1, familyNode.getCoding().get(0).getExtension().size());
+		assertEquals("e6d3ea63-1309-4302-bd93-a6d0571cc645", familyNode.getCoding().get(0).getExtension().get(0).getValue().as(com.ibm.fhir.model.type.String.class).getValue());
+
+		node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(patient, "Patient.identifier.where(id='residence')");
+		Identifier residenceIdentifier = node.element().as(Identifier.class);
+		assertEquals("residence", residenceIdentifier.getId());
+		assertEquals("40930448-ea84-4ba7-8780-2a98dd8e902e", residenceIdentifier.getValue().getValue());
+		assertEquals("attribute", residenceIdentifier.getType().getCoding().get(0).getCode().getValue());
 
 		System.out.println(patient);
 	}

@@ -25,32 +25,34 @@ public class TaskConverterTest {
 		assertNotNull(fihrTask);
 		assertEquals(fihrTask.getStatus().getValueAsEnumConstant().value(),
 				StringUtils.toRootLowerCase(task.getStatus().name()));
-		assertEquals(fihrTask.getIdentifier().get(0).getSystem().getValue(), "identifier");
-		assertEquals(fihrTask.getIdentifier().get(0).getValue().getValue(), task.getIdentifier());
-		assertEquals(fihrTask.getGroupIdentifier().getValue().getValue(), task.getGroupIdentifier());
-		assertEquals(fihrTask.getBusinessStatus().getText().getValue(), task.getBusinessStatus());
-		assertEquals(fihrTask.getLocation().getReference().getValue(), task.getLocation());
-		assertEquals(fihrTask.getFor().getReference().getValue(), task.getForEntity());
-		assertEquals(fihrTask.getFocus().getReference().getValue(), task.getFocus());
-		assertEquals(fihrTask.getDescription().getValue(), task.getDescription());
-		assertEquals(fihrTask.getCode().getText().getValue(), task.getCode());
-		assertEquals(fihrTask.getNote().size(), task.getNotes().size());
-		assertEquals(fihrTask.getNote().get(0).getAuthor().as(com.ibm.fhir.model.type.String.class).getValue(),task.getNotes().get(0).getAuthorString());
-		assertEquals(fihrTask.getNote().get(0).getText().getValue(),task.getNotes().get(0).getText());
-		assertEquals(fihrTask.getNote().get(0).getTime().getValue().toString(),task.getNotes().get(0).getTime().toString("yyyy-MM-dd'T'HH:mm'Z'"));
-		assertEquals(fihrTask.getRequester().getReference().getValue(), task.getRequester());
-		assertEquals(fihrTask.getOwner().getReference().getValue(), task.getOwner());
-		assertEquals(fihrTask.getStatusReason().getText().getValue(), task.getReasonReference());
-		assertEquals(fihrTask.getAuthoredOn().getValue().toString(), task.getAuthoredOn().toString("yyyy-MM-dd'T'HH:mm'Z'"));
-		assertEquals(fihrTask.getLastModified().getValue().toString(),
-				task.getLastModified().toString("yyyy-MM-dd'T'HH:mm'Z'"));
-		assertEquals(fihrTask.getExecutionPeriod().getStart().getValue().toString(),
-				task.getExecutionStartDate().toString("yyyy-MM-dd'T'HH:mm'Z'"));
-		assertEquals(fihrTask.getExecutionPeriod().getEnd().getValue().toString(),
-				task.getExecutionEndDate().toString("yyyy-MM-dd'T'HH:mm'Z'"));
-		assertEquals(fihrTask.getBasedOn().get(0).getReference().getValue(), task.getPlanIdentifier());
-		assertEquals(fihrTask.getMeta().getVersionId().getValue(), String.valueOf(task.getServerVersion()));
-		assertEquals(fihrTask.getIntent().getValueAsEnumConstant().value(), "plan");
+		assertEquals("identifier", fihrTask.getIdentifier().get(0).getSystem().getValue());
+		assertEquals(task.getIdentifier(), fihrTask.getIdentifier().get(0).getValue().getValue());
+		assertEquals(task.getGroupIdentifier(), fihrTask.getGroupIdentifier().getValue().getValue());
+		assertEquals(task.getBusinessStatus(), fihrTask.getBusinessStatus().getText().getValue());
+		assertEquals(task.getLocation(), fihrTask.getLocation().getReference().getValue());
+		assertEquals(task.getForEntity(), fihrTask.getFor().getReference().getValue());
+		assertEquals(task.getFocus(), fihrTask.getFocus().getReference().getValue());
+		assertEquals(task.getDescription(), fihrTask.getDescription().getValue());
+		assertEquals(task.getCode(), fihrTask.getCode().getText().getValue());
+		assertEquals(task.getNotes().size(), fihrTask.getNote().size());
+		assertEquals(task.getNotes().get(0).getAuthorString(),
+				fihrTask.getNote().get(0).getAuthor().as(com.ibm.fhir.model.type.String.class).getValue());
+		assertEquals(task.getNotes().get(0).getText(), fihrTask.getNote().get(0).getText().getValue());
+		assertEquals(task.getNotes().get(0).getTime().toString("yyyy-MM-dd'T'HH:mm'Z'"),
+				fihrTask.getNote().get(0).getTime().getValue().toString());
+		assertEquals(task.getRequester(), fihrTask.getRequester().getReference().getValue());
+		assertEquals(task.getOwner(), fihrTask.getOwner().getReference().getValue());
+		assertEquals(task.getReasonReference(), fihrTask.getStatusReason().getText().getValue());
+		assertEquals(task.getAuthoredOn().toString("yyyy-MM-dd'T'HH:mm'Z'"), fihrTask.getAuthoredOn().getValue().toString());
+		assertEquals(task.getLastModified().toString("yyyy-MM-dd'T'HH:mm'Z'"),
+				fihrTask.getLastModified().getValue().toString());
+		assertEquals(task.getExecutionStartDate().toString("yyyy-MM-dd'T'HH:mm'Z'"),
+				fihrTask.getExecutionPeriod().getStart().getValue().toString());
+		assertEquals(task.getExecutionEndDate().toString("yyyy-MM-dd'T'HH:mm'Z'"),
+				fihrTask.getExecutionPeriod().getEnd().getValue().toString());
+		assertEquals(task.getPlanIdentifier(), fihrTask.getBasedOn().get(0).getReference().getValue());
+		assertEquals(String.valueOf(task.getServerVersion()), fihrTask.getMeta().getVersionId().getValue());
+		assertEquals("plan", fihrTask.getIntent().getValueAsEnumConstant().value());
 		//TODO: Do we need to add assertions for Notes individually?
 		System.out.println(fihrTask);
 	}
