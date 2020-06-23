@@ -50,7 +50,7 @@ public class PlanDefinition {
 	private List<Action> actions;
 
 	@JsonProperty
-	private Boolean experimental;
+	private boolean experimental;
 	
 	public String getIdentifier() {
 		return identifier;
@@ -148,11 +148,11 @@ public class PlanDefinition {
 		this.serverVersion = serverVersion;
 	}
 
-	public Boolean getExperimental() {
+	public boolean isExperimental() {
 		return experimental;
 	}
 
-	public void setExperimental(Boolean experimental) {
+	public void setExperimental(boolean experimental) {
 		this.experimental = experimental;
 	}
 
