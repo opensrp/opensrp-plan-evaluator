@@ -50,7 +50,7 @@ public class PlanDefinition {
 	private List<Action> actions;
 
 	@JsonProperty
-	private Boolean isTemplate;
+	private Boolean experimental;
 	
 	public String getIdentifier() {
 		return identifier;
@@ -148,12 +148,12 @@ public class PlanDefinition {
 		this.serverVersion = serverVersion;
 	}
 
-	public Boolean getTemplate() {
-		return isTemplate;
+	public Boolean getExperimental() {
+		return experimental;
 	}
 
-	public void setTemplate(Boolean template) {
-		isTemplate = template;
+	public void setExperimental(Boolean experimental) {
+		this.experimental = experimental;
 	}
 
 	static class UseContext {
