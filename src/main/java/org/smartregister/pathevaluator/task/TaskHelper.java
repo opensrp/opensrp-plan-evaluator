@@ -45,10 +45,11 @@ public class TaskHelper {
 		task.setExecutionEndDate(getDateTime(action.getTimingPeriod(), false));
 		task.setAuthoredOn(DateTime.now());
 		task.setLastModified(DateTime.now());
-		if(action.getDynamicValue().getExpression().getName().equals("defaultBusinessStatus")) {
-//			task.setBusinessStatus();
-			//TODO : Populate business status from expression
-		}
+        //TODO : Generate task according to defaultBusinessStatus
+//		if(action.getDynamicValue().getExpression().getName().equals("defaultBusinessStatus")) {
+//		task.setBusinessStatus();
+//
+//		}
 		task.setBusinessStatus("Not Visited");
 		task.setRequester(username);
 		task.setOwner(username);
