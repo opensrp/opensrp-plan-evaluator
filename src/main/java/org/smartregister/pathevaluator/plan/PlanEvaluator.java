@@ -30,12 +30,15 @@ public class PlanEvaluator {
 	private TaskHelper taskHelper;
 	
 	private TriggerHelper triggerHelper;
+	
+	private String username;
 
-	public PlanEvaluator() {
+	public PlanEvaluator(String username) {
 		actionHelper = new ActionHelper();
 		conditionHelper = new ConditionHelper(actionHelper);
 		taskHelper = new TaskHelper();
 		triggerHelper = new TriggerHelper(actionHelper);
+		this.username=username;
 	}
 
 	private FHIRPathEvaluator fhirPathEvaluator = FHIRPathEvaluator.evaluator();
@@ -102,7 +105,7 @@ public class PlanEvaluator {
 			    questionnaireResponse)) {
 				actionHelper.getSubjectResources(action, jurisdiction).forEach(resource -> {
 					if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier())) {
-						taskHelper.generateTask(resource, action,planDefinition.getIdentifier(),jurisdiction.getCode());
+						taskHelper.generateTask(resource, action,planDefinition.getIdentifier(),jurisdiction.getCode(),username);
 					}
 				});
 			}

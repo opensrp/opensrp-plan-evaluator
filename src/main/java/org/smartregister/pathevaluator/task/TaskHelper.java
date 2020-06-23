@@ -28,11 +28,10 @@ public class TaskHelper {
 	 * 
 	 * @param resource entity task is being generated for
 	 * @param action entity used to create the task
+	 * @param username 
 	 */
-	public void generateTask(Resource resource, Action action, String planIdentifier, String jurisdiction) {
+	public void generateTask(Resource resource, Action action, String planIdentifier, String jurisdiction, String username) {
 		Task task = new Task();
-		PathEvaluatorLibrary instance = PathEvaluatorLibrary.getInstance();
-		
 		task.setIdentifier(UUID.randomUUID().toString());
 		task.setPlanIdentifier(planIdentifier);
 		task.setGroupIdentifier(jurisdiction);
@@ -47,9 +46,9 @@ public class TaskHelper {
 		task.setAuthoredOn(DateTime.now());
 		task.setLastModified(DateTime.now());
 		task.setBusinessStatus("Not Visited");
-		task.setRequester(instance.getUserName());
-		task.setOwner(instance.getUserName());
-		TaskDao taskDao = instance.getTaskProvider().getTaskDao();
+		task.setRequester(username);
+		task.setOwner(username);
+		TaskDao taskDao =  PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 		taskDao.saveTask(task);
 		logger.info("Created task " + task.toString());
 		
