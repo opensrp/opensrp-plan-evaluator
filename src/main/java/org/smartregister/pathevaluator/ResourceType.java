@@ -10,12 +10,12 @@ import org.smartregister.domain.Action.SubjectConcept;
  */
 public enum ResourceType {
 	
-	JURISDICTION("jurisdiction"),
-	LOCATION("location"),
-	FAMILY("family"),
-	FAMILY_MEMBER("family_ember"),
-	TASK("task"),
-	QUESTIONAIRRE_RESPONSE("questionnaire_response");
+	JURISDICTION("Jurisdiction"),
+	LOCATION("Location"),
+	FAMILY("Family"),
+	FAMILY_MEMBER("FamilyMmber"),
+	TASK("Task"),
+	QUESTIONAIRRE_RESPONSE("QuestionnaireResponse");
 	
 	private String value;
 	

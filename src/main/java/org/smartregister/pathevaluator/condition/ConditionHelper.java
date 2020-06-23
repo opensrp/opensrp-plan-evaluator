@@ -37,7 +37,7 @@ public class ConditionHelper {
 	 */
 	public boolean evaluateActionConditions(Resource resource, Action action, String planIdentifier) {
 		boolean isValid = true;
-		for (Condition condition : action.getConditions()) {
+		for (Condition condition : action.getCondition()) {
 			SubjectConcept concept = condition.getExpression().getSubjectConcept();
 			if (concept != null) {
 				List<? extends Resource> resources = actionHelper.getConditionSubjectResources(condition, action, resource,planIdentifier);

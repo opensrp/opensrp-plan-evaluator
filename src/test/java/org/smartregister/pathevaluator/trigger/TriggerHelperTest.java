@@ -60,7 +60,7 @@ public class TriggerHelperTest {
 	
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(null, null, null, null,null);
+		PathEvaluatorLibrary.init(null, null, null, null);
 		triggerHelper = new TriggerHelper(actionHelper);
 		trigger = Trigger.builder().name(TriggerType.PLAN_ACTIVATION.value()).build();
 	}
@@ -104,7 +104,7 @@ public class TriggerHelperTest {
 	
 	@Test
 	public void testEvaluateTriggerWithDependentResources() {
-		SubjectConcept subjectConcept = new SubjectConcept("task");
+		SubjectConcept subjectConcept = new SubjectConcept("Task");
 		Expression expression = Expression.builder()
 		        .expression("Task.code.text='MDA_Round_1' and Task.businessStatus.text='Completed'")
 		        .subjectConcept(subjectConcept).build();
