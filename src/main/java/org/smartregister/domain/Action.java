@@ -2,7 +2,6 @@ package org.smartregister.domain;
 
 import java.util.Set;
 
-import com.ibm.fhir.model.resource.PlanDefinition;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,7 +38,7 @@ public class Action {
 
     private String definitionUri;
 
-    private PlanDefinition.Action.DynamicValue dynamicValue;
+    private DynamicValue dynamicValue;
 
     public String getIdentifier() {
         return identifier;
@@ -145,11 +144,11 @@ public class Action {
         this.definitionUri = definitionUri;
     }
 
-    public PlanDefinition.Action.DynamicValue getDynamicValue() {
+    public DynamicValue getDynamicValue() {
         return dynamicValue;
     }
 
-    public void setDynamicValue(PlanDefinition.Action.DynamicValue dynamicValue) {
+    public void setDynamicValue(DynamicValue dynamicValue) {
         this.dynamicValue = dynamicValue;
     }
 

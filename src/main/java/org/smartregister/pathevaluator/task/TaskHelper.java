@@ -41,7 +41,7 @@ public class TaskHelper {
 		task.setExecutionEndDate(new DateTime(action.getTimingPeriod() != null ? action.getTimingPeriod().getEnd() : null));
 		task.setAuthoredOn(DateTime.now());
 		task.setLastModified(DateTime.now());
-		if(action.getDynamicValue().getExpression().getName().as(com.ibm.fhir.model.type.String.class).getValue().equals("defaultBusinessStatus")) {
+		if(action.getDynamicValue().getExpression().getName().equals("defaultBusinessStatus")) {
 //			task.setBusinessStatus();
 			//TODO : Populate business status from expression
 		}
