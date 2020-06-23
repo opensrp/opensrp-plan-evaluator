@@ -48,6 +48,9 @@ public class PlanDefinition {
 	@JsonProperty
 	@SerializedName("action")
 	private List<Action> actions;
+
+	@JsonProperty
+	private boolean experimental;
 	
 	public String getIdentifier() {
 		return identifier;
@@ -144,7 +147,15 @@ public class PlanDefinition {
 	public void setServerVersion(Long serverVersion) {
 		this.serverVersion = serverVersion;
 	}
-	
+
+	public boolean isExperimental() {
+		return experimental;
+	}
+
+	public void setExperimental(boolean experimental) {
+		this.experimental = experimental;
+	}
+
 	static class UseContext {
 		
 		private String code;
