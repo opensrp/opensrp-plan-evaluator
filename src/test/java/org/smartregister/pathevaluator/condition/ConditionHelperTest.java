@@ -54,7 +54,7 @@ public class ConditionHelperTest {
 	
 	@BeforeClass
 	public static void bootstrap() {
-		PathEvaluatorLibrary.init(null,null,null, null,null);
+		PathEvaluatorLibrary.init(null,null,null, null);
 	}
 	
 	@Before

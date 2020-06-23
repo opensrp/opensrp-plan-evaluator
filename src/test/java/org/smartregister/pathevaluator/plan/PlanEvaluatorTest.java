@@ -56,9 +56,11 @@ public class PlanEvaluatorTest {
 	
 	private String plan = UUID.randomUUID().toString();
 	
+	private String username = UUID.randomUUID().toString();
+	
 	@Before
 	public void setUp() {
-		planEvaluator = new PlanEvaluator();
+		planEvaluator = new PlanEvaluator(username);
 		Whitebox.setInternalState(planEvaluator, "actionHelper", actionHelper);
 		Whitebox.setInternalState(planEvaluator, "conditionHelper", conditionHelper);
 		Whitebox.setInternalState(planEvaluator, "taskHelper", taskHelper);
@@ -100,7 +102,7 @@ public class PlanEvaluatorTest {
 		
 		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan);
 		
-		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), jurisdiction.getCode());
+		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), jurisdiction.getCode(),username);
 	}
 	
 }

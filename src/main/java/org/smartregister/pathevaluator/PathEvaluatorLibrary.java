@@ -54,8 +54,7 @@ public class PathEvaluatorLibrary {
 		eventProvider = new EventProvider(eventDao);
 	}
 	
-	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao,
-	        String userName) {
+	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
 		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao);
 	}
 	
