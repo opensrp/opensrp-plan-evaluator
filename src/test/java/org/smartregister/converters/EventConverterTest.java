@@ -1,26 +1,20 @@
 package org.smartregister.converters;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.ibm.fhir.model.resource.QuestionnaireResponse;
-import com.ibm.fhir.model.type.Integer;
-import com.ibm.fhir.path.FHIRPathElementNode;
-import com.ibm.fhir.path.FHIRPathNode;
-import com.ibm.fhir.path.FHIRPathResourceNode;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.lang.String;
-import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.smartregister.domain.Event;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.path.FHIRPathElementNode;
 
 public class EventConverterTest {
 
@@ -107,7 +101,7 @@ public class EventConverterTest {
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue());
 
-		PathEvaluatorLibrary.init(null, null, null, null, "testUser");
+		PathEvaluatorLibrary.init(null, null, null, null);
 		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='totPopulation')");
 		QuestionnaireResponse.Item totPopulation = node.element().as(QuestionnaireResponse.Item.class);
 		assertEquals(1,totPopulation.getAnswer().size());
