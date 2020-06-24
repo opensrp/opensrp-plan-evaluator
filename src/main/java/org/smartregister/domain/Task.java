@@ -22,6 +22,8 @@ public class Task {
         ARCHIVED
 	}
 
+	public static final String[] INACTIVE_TASK_STATUS = new String[]{TaskStatus.CANCELLED.name(), TaskStatus.ARCHIVED.name()};
+
 	private String identifier;
 
 	private String planIdentifier;
@@ -63,6 +65,12 @@ public class Task {
 	private String location;
 
 	private String requester;
+
+	private String syncStatus;
+
+	private String structureId;
+
+	private Long rowid;
 
 	public String getIdentifier() {
 		return identifier;
@@ -224,4 +232,27 @@ public class Task {
 		this.requester = requester;
 	}
 
+	public String getSyncStatus() {
+		return syncStatus;
+	}
+
+	public void setSyncStatus(String syncStatus) {
+		this.syncStatus = syncStatus;
+	}
+
+	public String getStructureId() {
+		return structureId;
+	}
+
+	public void setStructureId(String structureId) {
+		this.structureId = structureId;
+	}
+
+	public Long getRowid() {
+		return rowid;
+	}
+
+	public void setRowid(Long rowid) {
+		this.rowid = rowid;
+	}
 }
