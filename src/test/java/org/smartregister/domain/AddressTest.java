@@ -19,6 +19,9 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.smartregister.domain.Address;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 public class AddressTest {
 	
 	@Test
@@ -103,33 +106,41 @@ public class AddressTest {
 	public void testIsActive() {
 		Address address = new Address();
 		assertTrue(address.isActive());
-		
-		address.withEndDate(new DateTime().plusDays(5));
+		Date date = new Date();
+		date.setTime(date.getTime() + TimeUnit.DAYS.toMillis(5));
+		address.withEndDate(date);
 		assertTrue(address.isActive());
-		
-		address.withEndDate(new DateTime().minusDays(5));
+		date.setTime(date.getTime() - TimeUnit.DAYS.toMillis(5));
+		address.withEndDate(date);
 		assertFalse(address.isActive());
 	}
-	
+
 	@Test
 	public void testDurationCalculation() {
 		Address address = new Address();
 		assertEquals(-1, address.durationInDays());
-		
-		address.withStartDate(new DateTime().minusDays(5));
+		Date date = new Date();
+		date.setTime(date.getTime() - TimeUnit.DAYS.toMillis(5));
+		address.withStartDate(date);
 		assertEquals(5, address.durationInDays());
-		
-		address.withStartDate(new DateTime());
-		address.withEndDate(new DateTime().plusMonths(2));
+
+		address.withStartDate(new Date());
+		date = new Date();
+		date.setTime(date.getTime() + TimeUnit.DAYS.toMillis(62));
+		address.withEndDate(date);
 		assertEquals(2, address.durationInMonths());
-		
-		address.withEndDate(new DateTime().plusWeeks(2));
+
+		date = new Date();
+		date.setTime(date.getTime() + TimeUnit.DAYS.toMillis(14));
+		address.withEndDate(date);
 		assertEquals(2, address.durationInWeeks());
-		
-		address.withEndDate(new DateTime().plusYears(2));
+
+		date = new Date();
+		date.setTime(date.getTime() + TimeUnit.DAYS.toMillis(730));
+		address.withEndDate(date);
 		assertEquals(2, address.durationInYears());
 	}
-	
+
 	@Test
 	public void testCreatingObject() {
 		Address address = new Address();
@@ -146,7 +157,7 @@ public class AddressTest {
 		address.withLatitude(latitude).withLongitude(longitude).withGeopoint(geopoint).withPostalCode(postalCode)
 		        .withTown(town).withSubDistrict(subDistrict).withCountyDistrict(countyDistrict).withCityVillage(cityVillage)
 		        .withStateProvince(stateProvince).withCountry(country);
-		
+
 		assertEquals(latitude, address.getLatitude());
 		assertEquals(longitude, address.getLongitude());
 		assertEquals(geopoint, address.getGeopoint());

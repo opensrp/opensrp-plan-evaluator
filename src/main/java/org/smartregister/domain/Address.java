@@ -1,5 +1,6 @@
 package org.smartregister.domain;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,10 +26,10 @@ public class Address {
 	@JsonProperty private String addressType;
 	
 	@JsonProperty
-	private DateTime startDate;
+	private Date startDate;
 	
 	@JsonProperty
-	private DateTime endDate;
+	private Date endDate;
 	
 	@JsonProperty
 	private Map<String, String> addressFields;
@@ -69,7 +70,7 @@ public class Address {
 	public Address() {
 	}
 	
-	public Address(String addressType, DateTime startDate, DateTime endDate, Map<String, String> addressFields,
+	public Address(String addressType, Date startDate, Date endDate, Map<String, String> addressFields,
 	    String latitude, String longitude, String postalCode, String stateProvince, String country) {
 		this.addressType = addressType;
 		this.startDate = startDate;
@@ -90,19 +91,19 @@ public class Address {
 		this.addressType = addressType;
 	}
 	
-	public DateTime getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
 	
-	public void setStartDate(DateTime startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 	
-	public DateTime getEndDate() {
+	public Date getEndDate() {
 		return endDate;
 	}
 	
-	public void setEndDate(DateTime endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 	
@@ -268,7 +269,7 @@ public class Address {
 	 */
 	@JsonIgnore
 	public boolean isActive() {
-		return endDate == null || endDate.isAfter(DateTime.now());
+		return endDate == null || new DateTime(endDate).isAfter(DateTime.now());
 	}
 	
 	/**
@@ -282,7 +283,7 @@ public class Address {
 			return -1;
 		}
 		
-		return getCurrentEndDate().getMillis() - startDate.getMillis();
+		return getCurrentEndDate().getTime() - startDate.getTime();
 	}
 	
 	/**
@@ -293,7 +294,7 @@ public class Address {
 	 */
 	public int durationInDays() {
 		return (int) (durationInMillis() == -1 ? durationInMillis()
-		        : Days.daysBetween(startDate.withTimeAtStartOfDay(), getCurrentEndDate().withTimeAtStartOfDay()).getDays());
+		        : Days.daysBetween(new DateTime(startDate).withTimeAtStartOfDay(), new DateTime(getCurrentEndDate()).withTimeAtStartOfDay()).getDays());
 	}
 	
 	/**
@@ -304,7 +305,7 @@ public class Address {
 	 */
 	public int durationInWeeks() {
 		return durationInDays() == -1 ? durationInDays()
-		        : Weeks.weeksBetween(startDate.withTimeAtStartOfDay(), getCurrentEndDate().withTimeAtStartOfDay())
+		        : Weeks.weeksBetween(new DateTime(startDate).withTimeAtStartOfDay(), new DateTime(getCurrentEndDate()).withTimeAtStartOfDay())
 		                .getWeeks();
 	}
 	
@@ -316,7 +317,7 @@ public class Address {
 	 */
 	public int durationInMonths() {
 		return durationInDays() == -1 ? durationInDays()
-		        : Months.monthsBetween(startDate.withTimeAtStartOfDay(), getCurrentEndDate().withTimeAtStartOfDay())
+		        : Months.monthsBetween(new DateTime(startDate).withTimeAtStartOfDay(), new DateTime(getCurrentEndDate()).withTimeAtStartOfDay())
 		                .getMonths();
 	}
 	
@@ -328,13 +329,13 @@ public class Address {
 	 */
 	public int durationInYears() {
 		return durationInDays() == -1 ? durationInDays()
-		        : Years.yearsBetween(startDate.withTimeAtStartOfDay(), getCurrentEndDate().withTimeAtStartOfDay())
+		        : Years.yearsBetween(new DateTime(startDate).withTimeAtStartOfDay(), new DateTime(getCurrentEndDate()).withTimeAtStartOfDay())
 		                .getYears();
 	}
 	
-	private DateTime getCurrentEndDate() {
+	private Date getCurrentEndDate() {
 		if (endDate == null) {
-			return DateTime.now();
+			return new Date();
 		}
 		return endDate;
 	}
@@ -356,7 +357,7 @@ public class Address {
 	 * @param endDate
 	 * @return
 	 */
-	public Address withStartDate(DateTime startDate) {
+	public Address withStartDate(Date startDate) {
 		this.startDate = startDate;
 		return this;
 	}
@@ -367,7 +368,7 @@ public class Address {
 	 * @param endDate
 	 * @return
 	 */
-	public Address withEndDate(DateTime endDate) {
+	public Address withEndDate(Date endDate) {
 		this.endDate = endDate;
 		return this;
 	}
