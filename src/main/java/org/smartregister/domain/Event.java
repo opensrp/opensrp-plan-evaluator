@@ -1,9 +1,6 @@
 package org.smartregister.domain;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +14,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Event extends BaseDataObject {
+
+	@JsonProperty
+	private String eventId;
 	
 	@JsonProperty
 	private Map<String, String> identifiers;
@@ -28,7 +28,7 @@ public class Event extends BaseDataObject {
 	private String locationId;
 	
 	@JsonProperty
-	private DateTime eventDate;
+	private Date eventDate;
 	
 	@JsonProperty
 	private String eventType;
@@ -43,7 +43,7 @@ public class Event extends BaseDataObject {
 	private String status;
 	
 	@JsonProperty
-	private Map<String, DateTime> statusHistory;
+	private Map<String, Date> statusHistory;
 	
 	@JsonProperty
 	private String priority;
@@ -86,12 +86,15 @@ public class Event extends BaseDataObject {
 
 	@JsonProperty
 	private String childLocationId;
+
+	@JsonProperty
+	private String syncStatus;
 	
 	public Event() {
 		this.version = System.currentTimeMillis();
 	}
 	
-	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
+	public Event(String baseEntityId, String eventType, Date eventDate, String entityType, String providerId,
 	    String locationId, String formSubmissionId) {
 		this.baseEntityId = baseEntityId;
 		this.eventType = eventType;
@@ -102,15 +105,29 @@ public class Event extends BaseDataObject {
 		this.formSubmissionId = formSubmissionId;
 		this.version = System.currentTimeMillis();
 	}
+
+	public Event(String baseEntityId, String eventId, String eventType, Date eventDate, String
+			entityType, String providerId, String locationId, String formSubmissionId) {
+		this.baseEntityId = baseEntityId;
+		this.identifiers = new HashMap<>();
+		this.eventId = eventId;
+		this.eventType = eventType;
+		this.eventDate = eventDate;
+		this.entityType = entityType;
+		this.providerId = providerId;
+		this.locationId = locationId;
+		this.formSubmissionId = formSubmissionId;
+		this.version = System.currentTimeMillis();
+	}
 	
-	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
+	public Event(String baseEntityId, String eventType, Date eventDate, String entityType, String providerId,
 	    String locationId, String formSubmissionId, String teamId, String team) {
 		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId);
 		setTeamId(teamId);
 		setTeam(team);
 	}
 
-	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
+	public Event(String baseEntityId, String eventType, Date eventDate, String entityType, String providerId,
 				 String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion,
 				 Integer clientDatabaseVersion) {
 		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team);
@@ -118,7 +135,7 @@ public class Event extends BaseDataObject {
 		setClientDatabaseVersion(clientDatabaseVersion);
 	}
 
-    public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
+    public Event(String baseEntityId, String eventType, Date eventDate, String entityType, String providerId,
                  String locationId, String formSubmissionId, String teamId, String team, String childLocationId,
 				 Integer clientApplicationVersion, Integer clientDatabaseVersion) {
 
@@ -241,11 +258,11 @@ public class Event extends BaseDataObject {
 		this.locationId = locationId;
 	}
 	
-	public DateTime getEventDate() {
+	public Date getEventDate() {
 		return eventDate;
 	}
 	
-	public void setEventDate(DateTime eventDate) {
+	public void setEventDate(Date eventDate) {
 		this.eventDate = eventDate;
 	}
 	
@@ -349,7 +366,7 @@ public class Event extends BaseDataObject {
 		return this;
 	}
 	
-	public Event withEventDate(DateTime eventDate) {
+	public Event withEventDate(Date eventDate) {
 		this.eventDate = eventDate;
 		return this;
 	}
@@ -378,6 +395,18 @@ public class Event extends BaseDataObject {
 		setChildLocationId(childLocationId);
 		return this;
 	}
+
+	public String getSyncStatus() {
+		return syncStatus;
+	}
+	public void setSyncStatus(String syncStatus) {
+		this.syncStatus = syncStatus;
+	}
+	public Event withSyncStatus(String syncStatus) {
+		setSyncStatus(syncStatus);
+		return this;
+	}
+
 
 	/**
 	 * WARNING: Overrides all existing obs

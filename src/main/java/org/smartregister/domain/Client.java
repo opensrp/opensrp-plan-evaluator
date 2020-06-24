@@ -1,9 +1,6 @@
 package org.smartregister.domain;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,10 +24,10 @@ public class Client extends BaseEntity {
 	private String lastName;
 	
 	@JsonProperty
-	private DateTime birthdate;
+	private Date birthdate;
 	
 	@JsonProperty
-	private DateTime deathdate;
+	private Date deathdate;
 	
 	@JsonProperty
 	private Boolean birthdateApprox;
@@ -46,6 +43,13 @@ public class Client extends BaseEntity {
 	
 	@JsonProperty
 	private Map<String, List<String>> relationships;
+
+	//This is an id field used to link a client to other clients or parent
+	@JsonProperty
+	private String relationalBaseEntityId;
+
+	@JsonProperty
+	private String syncStatus;
 	
 	protected Client() {
 		
@@ -55,8 +59,8 @@ public class Client extends BaseEntity {
 		super(baseEntityId);
 	}
 	
-	public Client(String baseEntityId, String firstName, String middleName, String lastName, DateTime birthdate,
-	    DateTime deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender) {
+	public Client(String baseEntityId, String firstName, String middleName, String lastName, Date birthdate,
+			Date deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender) {
 		super(baseEntityId);
 		setFirstName(firstName);
 		setMiddleName(middleName);
@@ -68,8 +72,8 @@ public class Client extends BaseEntity {
 		setGender(gender);
 	}
 	
-	public Client(String baseEntityId, String firstName, String middleName, String lastName, DateTime birthdate,
-	    DateTime deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, String identifierType,
+	public Client(String baseEntityId, String firstName, String middleName, String lastName, Date birthdate,
+			Date deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, String identifierType,
 	    String identifier) {
 		super(baseEntityId);
 		setFirstName(firstName);
@@ -83,8 +87,8 @@ public class Client extends BaseEntity {
 		addIdentifier(identifierType, identifier);
 	}
 	
-	public Client(String baseEntityId, String firstName, String middleName, String lastName, DateTime birthdate,
-	    DateTime deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, List<Address> addresses,
+	public Client(String baseEntityId, String firstName, String middleName, String lastName, Date birthdate,
+			Date deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, List<Address> addresses,
 	    Map<String, String> identifiers, Map<String, Object> attributes) {
 		super(baseEntityId);
 		this.firstName = firstName;
@@ -100,28 +104,36 @@ public class Client extends BaseEntity {
 		setAttributes(attributes);
 	}
 	
-	public Client(String baseEntityId, String firstName, String middleName, String lastName, DateTime birthdate,
-	    DateTime deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, String clientType) {
+	public Client(String baseEntityId, String firstName, String middleName, String lastName, Date birthdate,
+			Date deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, String clientType) {
 		this(baseEntityId, firstName, middleName, lastName, birthdate, deathdate, birthdateApprox, deathdateApprox, gender);
 		setClientType(clientType);
 	}
 	
-	public Client(String baseEntityId, String firstName, String middleName, String lastName, DateTime birthdate,
-	    DateTime deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, String identifierType,
+	public Client(String baseEntityId, String firstName, String middleName, String lastName, Date birthdate,
+			Date deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, String identifierType,
 	    String identifier, String clientType) {
 		this(baseEntityId, firstName, middleName, lastName, birthdate, deathdate, birthdateApprox, deathdateApprox, gender,
 		        identifierType, identifier);
 		setClientType(clientType);
 	}
 	
-	public Client(String baseEntityId, String firstName, String middleName, String lastName, DateTime birthdate,
-	    DateTime deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, List<Address> addresses,
+	public Client(String baseEntityId, String firstName, String middleName, String lastName, Date birthdate,
+			Date deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, List<Address> addresses,
 	    Map<String, String> identifiers, Map<String, Object> attributes, String clientType) {
 		this(baseEntityId, firstName, middleName, lastName, birthdate, deathdate, birthdateApprox, deathdateApprox, gender,
 		        addresses, identifiers, attributes);
 		setClientType(clientType);
 	}
-	
+
+	public String getRelationalBaseEntityId() {
+		return relationalBaseEntityId;
+	}
+
+	public void setRelationalBaseEntityId(String relationalBaseEntityId) {
+		this.relationalBaseEntityId = relationalBaseEntityId;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -160,19 +172,19 @@ public class Client extends BaseEntity {
 		return n.trim();
 	}
 	
-	public DateTime getBirthdate() {
+	public Date getBirthdate() {
 		return birthdate;
 	}
 	
-	public void setBirthdate(DateTime birthdate) {
+	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
 	}
 	
-	public DateTime getDeathdate() {
+	public Date getDeathdate() {
 		return deathdate;
 	}
 	
-	public void setDeathdate(DateTime deathdate) {
+	public void setDeathdate(Date deathdate) {
 		this.deathdate = deathdate;
 	}
 	
@@ -238,13 +250,13 @@ public class Client extends BaseEntity {
 		return this;
 	}
 	
-	public Client withBirthdate(DateTime birthdate, Boolean isApproximate) {
+	public Client withBirthdate(Date birthdate, Boolean isApproximate) {
 		this.birthdate = birthdate;
 		this.birthdateApprox = isApproximate;
 		return this;
 	}
 	
-	public Client withDeathdate(DateTime deathdate, Boolean isApproximate) {
+	public Client withDeathdate(Date deathdate, Boolean isApproximate) {
 		this.deathdate = deathdate;
 		this.deathdateApprox = isApproximate;
 		return this;
@@ -302,7 +314,20 @@ public class Client extends BaseEntity {
 		}
 		return relations;
 	}
-	
+
+	public String getSyncStatus() {
+		return syncStatus;
+	}
+
+	public void setSyncStatus(String syncStatus) {
+		this.syncStatus = syncStatus;
+	}
+
+	public Client withSyncStatus(String syncStatus) {
+		setSyncStatus(syncStatus);
+		return this;
+	}
+
 	@Override
 	public final boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o, "id", "revision");
