@@ -6,6 +6,7 @@ package org.smartregister.pathevaluator.task;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import com.ibm.fhir.path.FHIRPathElementNode;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
@@ -45,12 +46,14 @@ public class TaskHelper {
 		task.setExecutionEndDate(getDateTime(action.getTimingPeriod(), false));
 		task.setAuthoredOn(DateTime.now());
 		task.setLastModified(DateTime.now());
-        //TODO : Generate task according to defaultBusinessStatus
-//		if(action.getDynamicValue().getExpression().getName().equals("defaultBusinessStatus")) {
-//		task.setBusinessStatus();
-//
-//		}
-		task.setBusinessStatus("Not Visited");
+		if (action.getDynamicValue().getExpression().getName().equals("defaultBusinessStatus")) {
+			FHIRPathElementNode node = PathEvaluatorLibrary.getInstance()
+					.evaluateElementExpression(resource, action.getDynamicValue().getExpression().getExpression());
+			com.ibm.fhir.model.type.String businessStatus = node.element().as(com.ibm.fhir.model.type.String.class);
+			task.setBusinessStatus(businessStatus.getValue());
+		} else {
+			task.setBusinessStatus("Not Visited");
+		}
 		task.setRequester(username);
 		task.setOwner(username);
 		TaskDao taskDao =  PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
