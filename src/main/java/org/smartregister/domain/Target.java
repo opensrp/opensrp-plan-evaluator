@@ -2,6 +2,8 @@ package org.smartregister.domain;
 
 import org.joda.time.LocalDate;
 
+import java.util.AbstractMap;
+
 /**
  * Created by samuelgithengi on 4/29/19.
  */
@@ -42,7 +44,7 @@ public class Target {
 
         private MeasureRange detailRange;
 
-        private DetailCodableConcept detailCodableConcept;
+        private AbstractMap.SimpleEntry<String, String> detailCodableConcept;
 
         public Measure getDetailQuantity() {
             return detailQuantity;
@@ -60,11 +62,11 @@ public class Target {
             this.detailRange = detailRange;
         }
 
-        public DetailCodableConcept getDetailCodableConcept() {
+        public AbstractMap.SimpleEntry<String, String> getDetailCodableConcept() {
             return detailCodableConcept;
         }
 
-        public void setDetailCodableConcept(DetailCodableConcept detailCodableConcept) {
+        public void setDetailCodableConcept(AbstractMap.SimpleEntry<String, String> detailCodableConcept) {
             this.detailCodableConcept = detailCodableConcept;
         }
     }

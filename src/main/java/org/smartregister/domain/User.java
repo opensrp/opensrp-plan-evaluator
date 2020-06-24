@@ -242,12 +242,12 @@ public class User extends BaseEntity {
 	
 	@Override
 	public final boolean equals(Object o) {
-		return EqualsBuilder.reflectionEquals(this, o, "id", "revision");
+		return EqualsBuilder.reflectionEquals(this, o, "id", "rev");
 	}
 	
 	@Override
 	public final int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this, "id", "revision");
+		return HashCodeBuilder.reflectionHashCode(this, "id", "rev");
 	}
 	
 	@Override
