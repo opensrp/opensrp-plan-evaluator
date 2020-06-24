@@ -12,6 +12,10 @@ import org.smartregister.domain.Client;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -22,11 +26,14 @@ public class ClientConverterTest {
 	private static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 			.serializeNulls().create();
 
+	java.lang.String pattern = "yyyy-MM-dd";
+	DateFormat df = new SimpleDateFormat(pattern);
+
 	@Test
 	public void testConvertToPatientResource() {
 		Client client = gson.fromJson(CLIENT_JSON, Client.class);
-		client.setBirthdate(new DateTime(0l));
-		client.setDeathdate(new DateTime(0l));
+		client.setBirthdate(new Date(0l));
+		client.setDeathdate(new Date(0l));
 		client.setFirstName("John");
 		client.setMiddleName("Lewis");
 		client.setLastName("Johny");
@@ -40,8 +47,8 @@ public class ClientConverterTest {
 		int identifiersSize = client.getRelationships().entrySet().size() + client.getAttributes().entrySet().size() + client
 				.getIdentifiers().entrySet().size();
 		assertEquals(identifiersSize, patient.getIdentifier().size());
-		assertEquals(client.getBirthdate().toString("YYYY-MM-DD"), patient.getBirthDate().getValue().toString());
-		assertEquals(client.getDeathdate().toString("yyyy-MM-dd'T'HH:mm'Z'"),
+		assertEquals(df.format(client.getBirthdate()), patient.getBirthDate().getValue().toString());
+		assertEquals(df.format(client.getDeathdate()),
 				patient.getDeceased().as(com.ibm.fhir.model.type.DateTime.class).getValue().toString());
 		PathEvaluatorLibrary.init(null, null, null,null);
 		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(patient, "Patient.identifier.where(system='opensrp_id')");
