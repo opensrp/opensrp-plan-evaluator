@@ -50,9 +50,10 @@ public class TaskHelper {
 			if (dynamicValue != null && dynamicValue.getExpression() != null &&
 					dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
 				task.setBusinessStatus(dynamicValue.getExpression().getExpression());
-			} else {
-				task.setBusinessStatus("Not Visited");
 			}
+		}
+		if (task.getBusinessStatus() == null) {
+			task.setBusinessStatus("Not Visited");
 		}
 		task.setRequester(username);
 		task.setOwner(username);
