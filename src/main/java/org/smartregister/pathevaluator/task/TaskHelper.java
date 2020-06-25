@@ -48,10 +48,7 @@ public class TaskHelper {
 		task.setLastModified(DateTime.now());
 		if (action.getDynamicValue() != null && action.getDynamicValue().getExpression() != null &&
 				action.getDynamicValue().getExpression().getName().equals("defaultBusinessStatus")) {
-			FHIRPathElementNode node = PathEvaluatorLibrary.getInstance()
-					.evaluateElementExpression(resource, action.getDynamicValue().getExpression().getExpression());
-			com.ibm.fhir.model.type.String businessStatus = node.element().as(com.ibm.fhir.model.type.String.class);
-			task.setBusinessStatus(businessStatus.getValue());
+			task.setBusinessStatus(action.getDynamicValue().getExpression().getExpression());
 		} else {
 			task.setBusinessStatus("Not Visited");
 		}

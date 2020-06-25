@@ -93,7 +93,7 @@ public class TestData {
 			+ "\"dynamicValue\": {\n"
 			+ "\"expression\": {\n"
 			+ "\"name\": \"defaultBusinessStatus\",\n"
-			+ "\"expression\": \"\"\n"
+			+ "\"expression\": \"expression\"\n"
 			+ "}\n"
 			+ "}\n"
 			+ "}]\n"
