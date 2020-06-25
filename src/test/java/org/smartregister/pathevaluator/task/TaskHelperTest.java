@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.smartregister.domain.Action;
+import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Task;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TestData;
@@ -16,6 +17,7 @@ import org.smartregister.pathevaluator.dao.*;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.smartregister.pathevaluator.TestData.createPlanV1;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskHelperTest {
@@ -53,5 +55,14 @@ public class TaskHelperTest {
 		String jurisdiction = "12123";
 		Mockito.doNothing().when(taskDao).saveTask(any(Task.class));
 		taskHelper.generateTask(patient, action, planIdentifier, jurisdiction, "testUser");
+	}
+
+	@Test
+	public void testGenerateTaskWithDefaultBusinessStatus() {
+		String planIdentifier = UUID.randomUUID().toString();
+		String jurisdiction = "12123";
+		PlanDefinition planDefinition = createPlanV1();
+		Mockito.doNothing().when(taskDao).saveTask(any(Task.class));
+		taskHelper.generateTask(patient, planDefinition.getActions().get(0), planIdentifier, jurisdiction, "testUser");
 	}
 }

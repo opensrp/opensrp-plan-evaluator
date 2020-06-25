@@ -41,6 +41,8 @@ public class Action {
 
     private String definitionUri;
 
+    private Set<DynamicValue> dynamicValue;
+
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
