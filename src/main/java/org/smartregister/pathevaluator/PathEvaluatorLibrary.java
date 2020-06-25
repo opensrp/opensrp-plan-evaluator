@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.text.StringEscapeUtils;
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.ClientProvider;
 import org.smartregister.pathevaluator.dao.EventDao;
@@ -79,7 +80,8 @@ public class PathEvaluatorLibrary {
 			return false;
 		}
 		try {
-			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, expression);
+			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource,
+			    StringEscapeUtils.unescapeHtml4(expression));
 			return nodes != null && nodes.iterator().hasNext()
 			        ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean()
 			        : false;

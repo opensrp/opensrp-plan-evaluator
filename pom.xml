@@ -97,6 +97,12 @@
 			<scope>provided</scope>
 		</dependency>
 
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-text</artifactId>
+		<version>1.8</version>
+	</dependency>
+
 		<!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
 		<dependency>
 			<groupId>joda-time</groupId>
