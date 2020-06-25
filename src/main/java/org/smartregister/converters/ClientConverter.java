@@ -8,8 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.ISODateTimeFormat;
 import org.smartregister.domain.Client;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,16 +16,14 @@ import java.util.Map;
 public class ClientConverter {
 
 	public static Patient convertClientToPatientResource(Client client) {
-		java.lang.String pattern = "yyyy-MM-dd";
-		DateFormat df = new SimpleDateFormat(pattern);
-		java.lang.String strDate = df.format(client.getBirthdate());
+		java.lang.String strDate = ISODateTimeFormat.date().print(client.getBirthdate());
 		Date birthDate = Date.builder().value(strDate).build();
 		AdministrativeGender administrativeGender = AdministrativeGender.of(StringUtils.toRootLowerCase(client.getGender()));
 		HumanName firstName = HumanName.builder().given(String.builder().value(client.getFirstName()).build(),
 				String.builder().value(client.getMiddleName()).build()).
 				family(String.builder().value(client.getLastName()).build()).
 				text(String.builder().value(client.fullName()).build()).build();
-		java.lang.String deceasedDate = df.format(client.getDeathdate());
+		java.lang.String deceasedDate = ISODateTimeFormat.dateTime().print(client.getDeathdate());
 		DateTime deceasedDateTime = DateTime.builder().value(deceasedDate).build();
 
 		Identifier identifier;
