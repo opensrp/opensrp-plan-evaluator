@@ -6,7 +6,6 @@ package org.smartregister.pathevaluator.task;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import com.ibm.fhir.path.FHIRPathElementNode;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
