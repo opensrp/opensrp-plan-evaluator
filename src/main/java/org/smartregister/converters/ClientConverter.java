@@ -16,18 +16,23 @@ import java.util.Map;
 public class ClientConverter {
 	
 	public static Patient convertClientToPatientResource(Client client) {
+		
+		Patient.Builder builder = Patient.builder();
 		java.lang.String strDate = ISODateTimeFormat.date().print(client.getBirthdate());
 		Date birthDate = Date.builder().value(strDate).build();
 		AdministrativeGender administrativeGender = AdministrativeGender.of(StringUtils.toRootLowerCase(client.getGender()));
 		
-		HumanName.Builder builder = HumanName.builder().given(String.of(client.getFirstName()))
+		HumanName.Builder nameBuilder = HumanName.builder().given(String.of(client.getFirstName()))
 		        .family(String.of(client.getLastName())).text(String.of(client.fullName()));
 		if (StringUtils.isBlank(client.getMiddleName())) {
-			builder.given(String.of(client.getMiddleName()));
+			nameBuilder.given(String.of(client.getMiddleName()));
 		}
-		HumanName firstName = builder.build();
-		java.lang.String deceasedDate = ISODateTimeFormat.dateTime().print(client.getDeathdate());
-		DateTime deceasedDateTime = DateTime.builder().value(deceasedDate).build();
+		builder.name(nameBuilder.build());
+		if (client.getDeathdate() != null) {
+			java.lang.String deceasedDate = ISODateTimeFormat.dateTime().print(client.getDeathdate());
+			DateTime deceasedDateTime = DateTime.builder().value(deceasedDate).build();
+			builder.deceased(deceasedDateTime);
+		}
 		
 		Identifier identifier;
 		Collection<Identifier> identifierList = new ArrayList<>();
@@ -69,7 +74,7 @@ public class ClientConverter {
 			}
 		}
 		
-		Patient patient = Patient.builder().gender(administrativeGender).name(firstName).deceased(deceasedDateTime)
+		Patient patient = builder.gender(administrativeGender)
 		        .birthDate(birthDate).identifier(identifierList).id(client.getBaseEntityId()).build();
 		return patient;
 	}
