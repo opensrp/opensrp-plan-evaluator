@@ -19,9 +19,6 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.smartregister.domain.Address;
 
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 public class AddressTest {
 	
 	@Test
@@ -106,12 +103,11 @@ public class AddressTest {
 	public void testIsActive() {
 		Address address = new Address();
 		assertTrue(address.isActive());
-		Date date = new Date();
-		date.setTime(date.getTime() + TimeUnit.DAYS.toMillis(5));
-		address.withEndDate(date);
+
+		address.withEndDate(new DateTime().plusDays(5));
 		assertTrue(address.isActive());
-		date.setTime(date.getTime() - TimeUnit.DAYS.toMillis(5));
-		address.withEndDate(date);
+
+		address.withEndDate(new DateTime().minusDays(5));
 		assertFalse(address.isActive());
 	}
 
@@ -119,25 +115,18 @@ public class AddressTest {
 	public void testDurationCalculation() {
 		Address address = new Address();
 		assertEquals(-1, address.durationInDays());
-		Date date = new Date();
-		date.setTime(date.getTime() - TimeUnit.DAYS.toMillis(5));
-		address.withStartDate(date);
+
+		address.withStartDate(new DateTime().minusDays(5));
 		assertEquals(5, address.durationInDays());
 
-		address.withStartDate(new Date());
-		date = new Date();
-		date.setTime(date.getTime() + TimeUnit.DAYS.toMillis(62));
-		address.withEndDate(date);
+		address.withStartDate(new DateTime());
+		address.withEndDate(new DateTime().plusMonths(2));
 		assertEquals(2, address.durationInMonths());
 
-		date = new Date();
-		date.setTime(date.getTime() + TimeUnit.DAYS.toMillis(14));
-		address.withEndDate(date);
+		address.withEndDate(new DateTime().plusWeeks(2));
 		assertEquals(2, address.durationInWeeks());
 
-		date = new Date();
-		date.setTime(date.getTime() + TimeUnit.DAYS.toMillis(730));
-		address.withEndDate(date);
+		address.withEndDate(new DateTime().plusYears(2));
 		assertEquals(2, address.durationInYears());
 	}
 

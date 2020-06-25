@@ -2,8 +2,7 @@ package org.smartregister.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import java.util.Date;
+import org.joda.time.DateTime;
 
 public abstract class BaseDataObject extends BaseDataEntity {
 
@@ -13,19 +12,19 @@ public abstract class BaseDataObject extends BaseDataEntity {
 	private User creator;
 	
 	@JsonProperty
-	private Date dateCreated;
+	private DateTime dateCreated;
 	
 	@JsonProperty
 	private User editor;
 	
 	@JsonProperty
-	private Date dateEdited;
+	private DateTime dateEdited;
 	
 	@JsonProperty
 	private Boolean voided;
 	
 	@JsonProperty
-	private Date dateVoided;
+	private DateTime dateVoided;
 	
 	@JsonProperty
 	private User voider;
@@ -42,12 +41,6 @@ public abstract class BaseDataObject extends BaseDataEntity {
 	@JsonProperty
 	private Integer clientDatabaseVersion;
 
-	@JsonProperty
-	private String clientApplicationVersionName;
-
-	public BaseDataObject() {
-	}
-
 	public User getCreator() {
 		return creator;
 	}
@@ -56,11 +49,11 @@ public abstract class BaseDataObject extends BaseDataEntity {
 		this.creator = creator;
 	}
 	
-	public Date getDateCreated() {
+	public DateTime getDateCreated() {
 		return dateCreated;
 	}
 	
-	public void setDateCreated(Date dateCreated) {
+	public void setDateCreated(DateTime dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 	
@@ -72,11 +65,11 @@ public abstract class BaseDataObject extends BaseDataEntity {
 		this.editor = editor;
 	}
 	
-	public Date getDateEdited() {
+	public DateTime getDateEdited() {
 		return dateEdited;
 	}
 	
-	public void setDateEdited(Date dateEdited) {
+	public void setDateEdited(DateTime dateEdited) {
 		this.dateEdited = dateEdited;
 	}
 	
@@ -88,11 +81,11 @@ public abstract class BaseDataObject extends BaseDataEntity {
 		this.voided = voided;
 	}
 	
-	public Date getDateVoided() {
+	public DateTime getDateVoided() {
 		return dateVoided;
 	}
 	
-	public void setDateVoided(Date dateVoided) {
+	public void setDateVoided(DateTime dateVoided) {
 		this.dateVoided = dateVoided;
 	}
 	
@@ -119,22 +112,13 @@ public abstract class BaseDataObject extends BaseDataEntity {
 	public void setServerVersion(Long version) {
 		this.serverVersion = version;
 	}
-
-	public String getClientApplicationVersionName() {
-		return clientApplicationVersionName;
-	}
-
-	public void setClientApplicationVersionName(String clientApplicationVersionName) {
-		this.clientApplicationVersionName = clientApplicationVersionName;
-	}
-
 	
 	public BaseDataObject withCreator(User creator) {
 		this.creator = creator;
 		return this;
 	}
 	
-	public BaseDataObject withDateCreated(Date dateCreated) {
+	public BaseDataObject withDateCreated(DateTime dateCreated) {
 		this.dateCreated = dateCreated;
 		return this;
 	}
@@ -144,7 +128,7 @@ public abstract class BaseDataObject extends BaseDataEntity {
 		return this;
 	}
 	
-	public BaseDataObject withDateEdited(Date dateEdited) {
+	public BaseDataObject withDateEdited(DateTime dateEdited) {
 		this.dateEdited = dateEdited;
 		return this;
 	}
@@ -154,7 +138,7 @@ public abstract class BaseDataObject extends BaseDataEntity {
 		return this;
 	}
 	
-	public BaseDataObject withDateVoided(Date dateVoided) {
+	public BaseDataObject withDateVoided(DateTime dateVoided) {
 		this.dateVoided = dateVoided;
 		return this;
 	}

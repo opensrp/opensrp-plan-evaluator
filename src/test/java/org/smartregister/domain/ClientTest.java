@@ -10,7 +10,6 @@ import nl.jqno.equalsverifier.Warning;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -62,9 +61,9 @@ public class ClientTest {
 		String firstName = "first";
 		String middleName = "middleName";
 		String lastName = "lastName";
-		Date birthDate = new Date(0l);
+		DateTime birthDate = new DateTime(0l);
 		boolean birthDateApprx = true;
-		Date deathDate = new Date(1l);
+		DateTime deathDate = new DateTime(1l);
 		boolean deathDateApprox = false;
 		String gender = "male";
 		String type = "type";

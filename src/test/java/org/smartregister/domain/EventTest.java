@@ -18,8 +18,6 @@ import com.openpojo.validation.test.impl.SetterTester;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 
-import java.util.Date;
-
 public class EventTest {
 	
 	@Test
@@ -118,7 +116,7 @@ public class EventTest {
 
 	@Test
 	public void testConstructor() {
-		Event event = new Event("baseEntityId", "eventType", new Date(), "entityType", "providerId",
+		Event event = new Event("baseEntityId", "eventType", new DateTime(), "entityType", "providerId",
 				"locationId", "formSubmissionId", "teamId", "team", "childLocationId",
 				1, 1);
 		assertEquals(event.getChildLocationId(), "childLocationId");
