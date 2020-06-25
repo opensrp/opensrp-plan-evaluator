@@ -75,7 +75,9 @@ public class PathEvaluatorLibrary {
 	 * @return results of expression or false if the expression is not valid
 	 */
 	public boolean evaluateBooleanExpression(Resource resource, String expression) {
-		
+		if (resource == null) {
+			return false;
+		}
 		try {
 			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, expression);
 			return nodes != null && nodes.iterator().hasNext()
@@ -102,7 +104,7 @@ public class PathEvaluatorLibrary {
 			return fhirPathEvaluator.evaluate(resource, expression).iterator().next().asElementNode();
 		}
 		catch (FHIRPathException e) {
-			logger.log(Level.SEVERE, "Error execuring expression "+expression, e);
+			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
 			return null;
 		}
 	}
