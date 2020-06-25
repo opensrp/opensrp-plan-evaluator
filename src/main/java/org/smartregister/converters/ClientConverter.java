@@ -14,66 +14,63 @@ import java.util.List;
 import java.util.Map;
 
 public class ClientConverter {
-
+	
 	public static Patient convertClientToPatientResource(Client client) {
 		java.lang.String strDate = ISODateTimeFormat.date().print(client.getBirthdate());
 		Date birthDate = Date.builder().value(strDate).build();
 		AdministrativeGender administrativeGender = AdministrativeGender.of(StringUtils.toRootLowerCase(client.getGender()));
-		HumanName firstName = HumanName.builder().given(String.builder().value(client.getFirstName()).build(),
-				String.builder().value(client.getMiddleName()).build()).
-				family(String.builder().value(client.getLastName()).build()).
-				text(String.builder().value(client.fullName()).build()).build();
+		
+		HumanName.Builder builder = HumanName.builder().given(String.of(client.getFirstName()))
+		        .family(String.of(client.getLastName())).text(String.of(client.fullName()));
+		if (StringUtils.isBlank(client.getMiddleName())) {
+			builder.given(String.of(client.getMiddleName()));
+		}
+		HumanName firstName = builder.build();
 		java.lang.String deceasedDate = ISODateTimeFormat.dateTime().print(client.getDeathdate());
 		DateTime deceasedDateTime = DateTime.builder().value(deceasedDate).build();
-
+		
 		Identifier identifier;
 		Collection<Identifier> identifierList = new ArrayList<>();
 		for (Map.Entry<java.lang.String, java.lang.String> entry : client.getIdentifiers().entrySet()) {
-			identifier = Identifier.builder()
-					.system(Uri.builder().value(entry.getKey()).build())
-					.value(String.builder().value(entry.getValue()).build())
-					.build();
+			identifier = Identifier.builder().system(Uri.builder().value(entry.getKey()).build())
+			        .value(String.builder().value(entry.getValue()).build()).build();
 			identifierList.add(identifier);
 		}
-
+		
 		CodeableConcept codeableConcept;
 		Extension extension;
 		Collection<Extension> extensions = new ArrayList<>();
 		Coding coding;
-
+		
 		if (client.getRelationships() != null) {
 			for (Map.Entry<java.lang.String, List<java.lang.String>> entry : client.getRelationships().entrySet()) {
 				for (java.lang.String entryValue : entry.getValue()) {
 					extension = Extension.builder().value(String.builder().value(entryValue).build()).url("relationships")
-							.build();
+					        .build();
 					extensions.add(extension);
 				}
 				coding = Coding.builder().extension(extensions).code(Code.code("relationship")).build();
 				codeableConcept = CodeableConcept.builder().text(String.builder().value(entry.getKey()).build())
-						.coding(coding)
-						.build();
+				        .coding(coding).build();
 				identifier = Identifier.builder().type(codeableConcept).build();
 				identifierList.add(identifier);
 			}
 		}
-
+		
 		if (client.getAttributes() != null) {
 			for (Map.Entry<java.lang.String, java.lang.Object> entry : client.getAttributes().entrySet()) {
 				if (entry.getValue() instanceof java.lang.String) {
 					coding = Coding.builder().code(Code.code("attribute")).build();
 					codeableConcept = CodeableConcept.builder().coding(coding).build();
-					identifier = Identifier.builder().type(codeableConcept)
-							.id(entry.getKey())
-							.value(String.builder().value(entry.getValue().toString()).build())
-							.build();
+					identifier = Identifier.builder().type(codeableConcept).id(entry.getKey())
+					        .value(String.builder().value(entry.getValue().toString()).build()).build();
 					identifierList.add(identifier);
 				}
 			}
 		}
-
-		Patient patient = Patient.builder().gender(administrativeGender).
-				name(firstName).deceased(deceasedDateTime).birthDate(birthDate).identifier(identifierList).
-				id(client.getBaseEntityId()).build();
+		
+		Patient patient = Patient.builder().gender(administrativeGender).name(firstName).deceased(deceasedDateTime)
+		        .birthDate(birthDate).identifier(identifierList).id(client.getBaseEntityId()).build();
 		return patient;
 	}
 }
