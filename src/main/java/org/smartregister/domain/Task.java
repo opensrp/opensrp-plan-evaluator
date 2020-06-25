@@ -6,10 +6,13 @@ import lombok.ToString;
 
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.util.List;
 
 @ToString
-public class Task {
+public class Task  implements Serializable{
+
+	private static final long serialVersionUID = -9118755114172291102L;
 
 	public enum TaskStatus {
 		@SerializedName("Draft")

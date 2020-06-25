@@ -161,7 +161,7 @@ public class PlanDefinition implements Comparable<PlanDefinition> {
 		return getName().equals(o.getName()) ? getName().compareTo(o.getIdentifier()) : getName().compareTo(o.getName());
 	}
 
-	static class UseContext {
+	public static class UseContext {
 		
 		private String code;
 		
@@ -216,8 +216,8 @@ public class PlanDefinition implements Comparable<PlanDefinition> {
 		 * <p>
 		 * This resource is completed for normal use.
 		 */
-		@SerializedName("completed")
-		COMPLETED("completed"),
+		@SerializedName("complete")
+		COMPLETED("complete"),
 		
 		/**
 		 * Unknown
