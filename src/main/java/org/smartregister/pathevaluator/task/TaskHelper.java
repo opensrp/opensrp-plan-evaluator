@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
+import org.smartregister.domain.DynamicValue;
 import org.smartregister.domain.ExecutionPeriod;
 import org.smartregister.domain.Task;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
@@ -45,11 +46,13 @@ public class TaskHelper {
 		task.setExecutionEndDate(getDateTime(action.getTimingPeriod(), false));
 		task.setAuthoredOn(DateTime.now());
 		task.setLastModified(DateTime.now());
-		if (action.getDynamicValue() != null && action.getDynamicValue().getExpression() != null &&
-				action.getDynamicValue().getExpression().getName().equals("defaultBusinessStatus")) {
-			task.setBusinessStatus(action.getDynamicValue().getExpression().getExpression());
-		} else {
-			task.setBusinessStatus("Not Visited");
+		for (DynamicValue dynamicValue : action.getDynamicValue()) {
+			if (dynamicValue != null && dynamicValue.getExpression() != null &&
+					dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
+				task.setBusinessStatus(dynamicValue.getExpression().getExpression());
+			} else {
+				task.setBusinessStatus("Not Visited");
+			}
 		}
 		task.setRequester(username);
 		task.setOwner(username);

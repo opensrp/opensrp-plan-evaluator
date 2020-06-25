@@ -90,12 +90,12 @@ public class TestData {
 			+ "\"text\": \"Location\"\n"
 			+ "},\n"
 			+ "\"definitionUri\": \"zambia_family_register.json\",\n"
-			+ "\"dynamicValue\": {\n"
+			+ "\"dynamicValue\": [{\n"
 			+ "\"expression\": {\n"
 			+ "\"name\": \"defaultBusinessStatus\",\n"
 			+ "\"expression\": \"expression\"\n"
 			+ "}\n"
-			+ "}\n"
+			+ "}]\n"
 			+ "}]\n"
 			+ "}";
 
