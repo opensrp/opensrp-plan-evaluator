@@ -146,7 +146,7 @@ public class ActionHelperTest {
 	
 	@Test
 	public void testGetFamilyMemberResources() {
-		subjectConcept.setText(ResourceType.FAMILY_MEMBER.value());
+		subjectConcept.setText(ResourceType.PERSON.value());
 		List<Patient> expected = Collections.singletonList(TestData.createPatient());
 		when(clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
@@ -183,11 +183,11 @@ public class ActionHelperTest {
 	
 	@Test
 	public void testGetFamilyMemberConditionResources() {
-		subjectConcept.setText(ResourceType.FAMILY_MEMBER.value());
+		subjectConcept.setText(ResourceType.PERSON.value());
 		List<Patient> expected = Collections.singletonList(TestData.createPatient());
-		when(clientProvider.getFamilyMembers(patient, ResourceType.FAMILY_MEMBER)).thenReturn(expected);
+		when(clientProvider.getFamilyMembers(patient, ResourceType.PERSON)).thenReturn(expected);
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
-		verify(clientProvider).getFamilyMembers(patient, ResourceType.FAMILY_MEMBER);
+		verify(clientProvider).getFamilyMembers(patient, ResourceType.PERSON);
 	}
 	
 	@Test

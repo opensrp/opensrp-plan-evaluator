@@ -56,7 +56,7 @@ public class ActionHelper {
 			case FAMILY:
 				return clientDao.findFamilyByJurisdiction(jurisdiction.getCode());
 			
-			case FAMILY_MEMBER:
+			case PERSON:
 				return clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 			
 			default:
@@ -102,7 +102,7 @@ public class ActionHelper {
 			case FAMILY:
 				return PathEvaluatorLibrary.getInstance().getClientProvider().getFamilies(resource, actionResourceType);
 			
-			case FAMILY_MEMBER:
+			case PERSON:
 				return PathEvaluatorLibrary.getInstance().getClientProvider().getFamilyMembers(resource, actionResourceType);
 			
 			case TASK:

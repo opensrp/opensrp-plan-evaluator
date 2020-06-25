@@ -71,7 +71,7 @@ public class ClientProviderTest {
 		patient = patient.toBuilder().identifier(Identifier.builder().id(ClientProvider.FAMILY).value(of(familyId)).build())
 		        .build();
 		when(clientDao.findClientById(familyId)).thenReturn(expected);
-		assertEquals(expected, clientProvider.getFamilies(patient, ResourceType.FAMILY_MEMBER));
+		assertEquals(expected, clientProvider.getFamilies(patient, ResourceType.PERSON));
 		verify(clientDao).findClientById(familyId);
 	}
 	
