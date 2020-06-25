@@ -29,7 +29,7 @@ public class TaskHelper {
 	 * 
 	 * @param resource entity task is being generated for
 	 * @param action entity used to create the task
-	 * @param username 
+	 * @param username
 	 */
 	public void generateTask(Resource resource, Action action, String planIdentifier, String jurisdiction, String username) {
 		Task task = new Task();
@@ -46,10 +46,12 @@ public class TaskHelper {
 		task.setExecutionEndDate(getDateTime(action.getTimingPeriod(), false));
 		task.setAuthoredOn(DateTime.now());
 		task.setLastModified(DateTime.now());
-		for (DynamicValue dynamicValue : action.getDynamicValue()) {
-			if (dynamicValue != null && dynamicValue.getExpression() != null &&
-					dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
-				task.setBusinessStatus(dynamicValue.getExpression().getExpression());
+		if (action.getDynamicValue() != null) {
+			for (DynamicValue dynamicValue : action.getDynamicValue()) {
+				if (dynamicValue != null && dynamicValue.getExpression() != null
+				        && dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
+					task.setBusinessStatus(dynamicValue.getExpression().getExpression());
+				}
 			}
 		}
 		if (task.getBusinessStatus() == null) {
@@ -57,7 +59,7 @@ public class TaskHelper {
 		}
 		task.setRequester(username);
 		task.setOwner(username);
-		TaskDao taskDao =  PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
+		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 		taskDao.saveTask(task);
 		logger.info("Created task " + task.toString());
 		
