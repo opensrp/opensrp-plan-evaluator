@@ -156,7 +156,7 @@ public class PlanDefinition {
 		this.experimental = experimental;
 	}
 
-	static class UseContext {
+	public static class UseContext {
 		
 		private String code;
 		
