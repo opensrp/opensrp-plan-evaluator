@@ -6,10 +6,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.openpojo.reflection.impl.PojoClassFactory;
@@ -110,9 +110,9 @@ public class BaseEntityTest {
 	public void testSuperObjectCreation() {
 		BaseEntity baseEntity = new BaseEntity();
 		
-		Date dateCreated = new Date(0l);
-		Date dateEdited = new Date(1l);
-		Date dateVoided = new Date(3l);
+		DateTime dateCreated = new DateTime(0l);
+		DateTime dateEdited = new DateTime(1l);
+		DateTime dateVoided = new DateTime(3l);
 		User editor = new User("dd");
 		String voidReason = "void";
 		User creator = new User("ee");
