@@ -17,7 +17,11 @@ public class Photo {
 	private String category;
 	
 	private DateTime dateCreated;
-	
+
+	private String filePath;
+
+	private int resourceId;
+
 	public Photo() {
 		
 	}
@@ -77,5 +81,20 @@ public class Photo {
 	public void setDateCreated(DateTime dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-	
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+
+	public int getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(int resourceId) {
+		this.resourceId = resourceId;
+	}
 }

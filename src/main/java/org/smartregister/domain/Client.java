@@ -121,7 +121,7 @@ public class Client extends BaseEntity {
 		        addresses, identifiers, attributes);
 		setClientType(clientType);
 	}
-	
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -302,7 +302,7 @@ public class Client extends BaseEntity {
 		}
 		return relations;
 	}
-	
+
 	@Override
 	public final boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o, "id", "revision");

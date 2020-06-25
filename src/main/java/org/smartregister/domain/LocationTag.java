@@ -13,6 +13,8 @@ public class LocationTag implements Serializable {
 	private String name;
 	
 	private String description;
+
+	private String locationId;
 	
 	public Long getId() {
 		return id;
@@ -45,5 +47,12 @@ public class LocationTag implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 }

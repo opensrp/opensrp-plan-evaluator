@@ -40,7 +40,7 @@ public abstract class BaseDataObject extends BaseDataEntity {
 	
 	@JsonProperty
 	private Integer clientDatabaseVersion;
-	
+
 	public User getCreator() {
 		return creator;
 	}

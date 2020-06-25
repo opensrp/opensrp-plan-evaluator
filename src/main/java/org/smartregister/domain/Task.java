@@ -6,10 +6,13 @@ import lombok.ToString;
 
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.util.List;
 
 @ToString
-public class Task {
+public class Task  implements Serializable{
+
+	private static final long serialVersionUID = -9118755114172291102L;
 
 	public enum TaskStatus {
 		@SerializedName("Draft")
@@ -21,6 +24,8 @@ public class Task {
 		FAILED, @SerializedName("Archived")
         ARCHIVED
 	}
+
+	public static final String[] INACTIVE_TASK_STATUS = new String[]{TaskStatus.CANCELLED.name(), TaskStatus.ARCHIVED.name()};
 
 	private String identifier;
 
@@ -63,6 +68,12 @@ public class Task {
 	private String location;
 
 	private String requester;
+
+	private String syncStatus;
+
+	private String structureId;
+
+	private Long rowid;
 
 	public String getIdentifier() {
 		return identifier;
@@ -224,4 +235,27 @@ public class Task {
 		this.requester = requester;
 	}
 
+	public String getSyncStatus() {
+		return syncStatus;
+	}
+
+	public void setSyncStatus(String syncStatus) {
+		this.syncStatus = syncStatus;
+	}
+
+	public String getStructureId() {
+		return structureId;
+	}
+
+	public void setStructureId(String structureId) {
+		this.structureId = structureId;
+	}
+
+	public Long getRowid() {
+		return rowid;
+	}
+
+	public void setRowid(Long rowid) {
+		this.rowid = rowid;
+	}
 }

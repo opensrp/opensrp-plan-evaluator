@@ -14,7 +14,9 @@ public class LocationProperty {
 		@SerializedName("Inactive")
 		INACTIVE,
 		@SerializedName("Pending Review")
-		PENDING_REVIEW;
+		PENDING_REVIEW,
+		@SerializedName("Not Eligible")
+		NOT_ELIGIBLE
 
 	};
 

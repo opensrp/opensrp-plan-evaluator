@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by samuelgithengi on 4/29/19.
  */
-public class PlanDefinition {
+public class PlanDefinition implements Comparable<PlanDefinition> {
 	
 	@JsonProperty
 	private String identifier;
@@ -156,7 +156,12 @@ public class PlanDefinition {
 		this.experimental = experimental;
 	}
 
-	static class UseContext {
+	@Override
+	public int compareTo(PlanDefinition o) {
+		return getName().equals(o.getName()) ? getName().compareTo(o.getIdentifier()) : getName().compareTo(o.getName());
+	}
+
+	public static class UseContext {
 		
 		private String code;
 		
@@ -211,8 +216,8 @@ public class PlanDefinition {
 		 * <p>
 		 * This resource is completed for normal use.
 		 */
-		@SerializedName("completed")
-		COMPLETED("completed"),
+		@SerializedName("complete")
+		COMPLETED("complete"),
 		
 		/**
 		 * Unknown

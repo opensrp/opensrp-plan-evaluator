@@ -45,7 +45,7 @@ public class Obs {
 	
 	@JsonProperty
 	private List<Object> humanReadableValues;
-	
+
 	public Obs() {
 	}
 	
@@ -103,7 +103,7 @@ public class Obs {
 	public void setParentCode(String parentCode) {
 		this.parentCode = parentCode;
 	}
-	
+
 	@JsonIgnore
 	public Object getValue() {
 		
@@ -234,7 +234,7 @@ public class Obs {
 		this.humanReadableValues = humanReadableValues;
 		return this;
 	}
-	
+
 	@Override
 	public final boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o, "set");
