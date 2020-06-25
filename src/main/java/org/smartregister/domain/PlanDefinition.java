@@ -211,8 +211,8 @@ public class PlanDefinition {
 		 * <p>
 		 * This resource is completed for normal use.
 		 */
-		@SerializedName("completed")
-		COMPLETED("completed"),
+		@SerializedName("complete")
+		COMPLETED("complete"),
 		
 		/**
 		 * Unknown
