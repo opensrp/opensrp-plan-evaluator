@@ -17,14 +17,19 @@ public class ClientConverter {
 	
 	public static Patient convertClientToPatientResource(Client client) {
 		
-		Patient.Builder builder = Patient.builder();
+		Patient.Builder builder = Patient.builder().id(client.getBaseEntityId());
 		java.lang.String strDate = ISODateTimeFormat.date().print(client.getBirthdate());
-		Date birthDate = Date.builder().value(strDate).build();
-		AdministrativeGender administrativeGender = AdministrativeGender.of(StringUtils.toRootLowerCase(client.getGender()));
+		builder.birthDate(Date.builder().value(strDate).build());
+		
+		if (StringUtils.isNotBlank(client.getGender())) {
+			builder.gender(AdministrativeGender.of(StringUtils.toRootLowerCase(client.getGender())));
+		} else {
+			builder.gender(AdministrativeGender.UNKNOWN);
+		}
 		
 		HumanName.Builder nameBuilder = HumanName.builder().given(String.of(client.getFirstName()))
 		        .family(String.of(client.getLastName())).text(String.of(client.fullName()));
-		if (StringUtils.isBlank(client.getMiddleName())) {
+		if (StringUtils.isNotBlank(client.getMiddleName())) {
 			nameBuilder.given(String.of(client.getMiddleName()));
 		}
 		builder.name(nameBuilder.build());
@@ -74,8 +79,7 @@ public class ClientConverter {
 			}
 		}
 		
-		Patient patient = builder.gender(administrativeGender)
-		        .birthDate(birthDate).identifier(identifierList).id(client.getBaseEntityId()).build();
+		Patient patient = builder.identifier(identifierList).build();
 		return patient;
 	}
 }
