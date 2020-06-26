@@ -18,5 +18,6 @@ public class Expression {
     private String name;
     private String language;
     private String expression;
+    private String reference;
     private SubjectConcept subjectConcept;
 }
