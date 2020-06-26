@@ -21,6 +21,10 @@ import com.ibm.fhir.model.resource.Resource;
  */
 public class ActionHelper {
 	
+	private LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
+	
+	private ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
+	
 	/**
 	 * Gets the resource type for the action
 	 * 
@@ -44,8 +48,6 @@ public class ActionHelper {
 	 */
 	public List<? extends DomainResource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
 		ResourceType resourceType = getResourceType(action);
-		LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
-		ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
 		switch (resourceType) {
 			case JURISDICTION:
 				
@@ -60,6 +62,28 @@ public class ActionHelper {
 			case PERSON:
 				return clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 			
+			default:
+				return null;
+		}
+	}
+	
+	/**
+	 * Gets the subject resources for the target entity that tasks should be generated against
+	 * 
+	 * @param action the action to evaluate
+	 * @param entity id for entity
+	 * @return resources that tasks should be generated against
+	 */
+	public List<? extends DomainResource> getSubjectResources(Action action, String entity) {
+		ResourceType resourceType = getResourceType(action);
+		switch (resourceType) {
+			case JURISDICTION:
+				return locationDao.findJurisdictionsById(entity);
+			case LOCATION:
+				return locationDao.findLocationsById(entity);
+			case FAMILY:
+			case PERSON:
+				return clientDao.findClientById(entity);
 			default:
 				return null;
 		}
