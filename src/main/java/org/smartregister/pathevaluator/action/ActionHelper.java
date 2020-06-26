@@ -73,7 +73,7 @@ public class ActionHelper {
 	 * @param id the resource id
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends DomainResource> getConditionSubjectResources(Condition condition, Action action, Resource resource,
+	public List<? extends Resource> getConditionSubjectResources(Condition condition, Action action, Resource resource,
 	        String planIdentifier) {
 		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectConcept());
 		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
@@ -89,7 +89,7 @@ public class ActionHelper {
 	 * @param actionResourceType the action subject concept
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends DomainResource> getConditionSubjectResources(Resource resource, String planIdentifier,
+	public List<? extends Resource> getConditionSubjectResources(Resource resource, String planIdentifier,
 	        ResourceType conditionResourceType, ResourceType actionResourceType) {
 		
 		switch (conditionResourceType) {

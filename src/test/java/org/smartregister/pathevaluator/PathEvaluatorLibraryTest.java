@@ -12,6 +12,7 @@ import java.util.Calendar;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.type.Date;
 import com.ibm.fhir.model.type.HumanName;
@@ -78,6 +79,19 @@ public class PathEvaluatorLibraryTest {
 		cal.add(Calendar.YEAR, -5);
 		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient,
 		    "@" + cal.get(Calendar.YEAR) + "  <= today() - 5 'years'"));
+	}
+	
+	@Test
+	public void testContainedExpressions() throws FHIRPathException {
+		Location location = TestData.createLocation();
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(location, "$this.contained.exists()"));
+		location = location.toBuilder().contained(patient).build();
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(location, "$this.contained.exists()"));
+		
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(location,
+		    "$this.contained.where(Patient.name.family = 'John').exists()"));
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(location,
+		    "$this.contained.where(Patient.name.family = 'Kelvin').exists()"));
 	}
 	
 }

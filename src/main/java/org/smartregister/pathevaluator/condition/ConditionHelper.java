@@ -33,13 +33,13 @@ public class ConditionHelper {
 	/**
 	 * Evaluates an action conditions on whether task generation should be executed
 	 * 
-	 * @param resource the resource being evaluated against
+	 * @param target the resource being evaluated against
 	 * @param action the action being evaluated
 	 * @param planIdentifier
 	 * @param triggerEvent
 	 * @return result of condition evaluation
 	 */
-	public boolean evaluateActionConditions(DomainResource resource, Action action, String planIdentifier,
+	public boolean evaluateActionConditions(DomainResource target, Action action, String planIdentifier,
 	        TriggerType triggerEvent) {
 		boolean isValid = true;
 		for (Condition condition : action.getCondition()) {
@@ -50,14 +50,16 @@ public class ConditionHelper {
 			}
 			SubjectConcept concept = condition.getExpression().getSubjectConcept();
 			if (concept != null) {
-				List<? extends DomainResource> resources = actionHelper.getConditionSubjectResources(condition, action, resource,
-				    planIdentifier);
-				if (resources != null) {
-					isValid = resources.stream().anyMatch(
-					    r -> pathEvaluatorLibrary.evaluateBooleanExpression(r, condition.getExpression().getExpression()));
+				@SuppressWarnings("unchecked")
+				List<Resource> resources = (List<Resource>) actionHelper.getConditionSubjectResources(condition, action,
+				    target, planIdentifier);
+				if (resources != null && !resources.isEmpty()) {
+					target.toBuilder().contained(resources).build();
+					isValid = pathEvaluatorLibrary.evaluateBooleanExpression(target,
+					    condition.getExpression().getExpression());
 				}
 			} else {
-				isValid = pathEvaluatorLibrary.evaluateBooleanExpression(resource,
+				isValid = pathEvaluatorLibrary.evaluateBooleanExpression(target,
 				    condition.getExpression().getExpression());
 			}
 			if (!isValid) {

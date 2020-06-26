@@ -19,6 +19,7 @@ import org.smartregister.pathevaluator.dao.TaskDao;
 import org.smartregister.pathevaluator.dao.TaskProvider;
 
 import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathElementNode;
 import com.ibm.fhir.path.FHIRPathNode;
@@ -75,7 +76,7 @@ public class PathEvaluatorLibrary {
 	 * @param expression the expression to evaluate
 	 * @return results of expression or false if the expression is not valid
 	 */
-	public boolean evaluateBooleanExpression(DomainResource resource, String expression) {
+	public boolean evaluateBooleanExpression(Resource resource, String expression) {
 		if (resource == null) {
 			return false;
 		}
