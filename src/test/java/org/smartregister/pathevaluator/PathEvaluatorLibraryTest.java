@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.type.Date;
 import com.ibm.fhir.model.type.HumanName;
@@ -51,6 +52,15 @@ public class PathEvaluatorLibraryTest {
 		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.name.family = 'Kelvin'"));
 		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.name.family = 'John'"));
 		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.birthDate >= @1990-12-19"));
+	}
+	
+	@Test
+	public void testIsExpressions() {
+		
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(TestData.createLocation(), "$this.is(FHIR.Location)"));
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "$this.is(FHIR.Patient)"));
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(TestData.createTask(), "$this.is(FHIR.Task)"));
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(TestData.createTask(), "$this.is(FHIR.Patient)"));
 	}
 	
 }
