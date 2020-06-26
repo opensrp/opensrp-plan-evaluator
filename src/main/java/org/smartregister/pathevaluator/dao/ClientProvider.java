@@ -3,7 +3,6 @@
  */
 package org.smartregister.pathevaluator.dao;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
