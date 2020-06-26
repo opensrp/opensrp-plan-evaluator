@@ -79,16 +79,17 @@ public class PathEvaluatorLibrary {
 		if (resource == null) {
 			return false;
 		}
+		String escapedExpression = StringEscapeUtils.unescapeHtml4(expression);
 		try {
-			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource,
-			    StringEscapeUtils.unescapeHtml4(expression));
+			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, escapedExpression);
 			return nodes != null && nodes.iterator().hasNext()
 			        ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean()
 			        : false;
 		}
 		catch (FHIRPathException e) {
-			logger.log(Level.SEVERE,
-			    "Error execuring expression " + expression + "resource " + ReflectionToStringBuilder.toString(resource), e);
+			logger.log(Level.SEVERE, "Error executing expression " + escapedExpression + " on resource \n"
+			        + ReflectionToStringBuilder.toString(resource),
+			    e);
 			return false;
 		}
 	}
