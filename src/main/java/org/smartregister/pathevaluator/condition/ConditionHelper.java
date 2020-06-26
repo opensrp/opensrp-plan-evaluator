@@ -44,7 +44,7 @@ public class ConditionHelper {
 		for (Condition condition : action.getCondition()) {
 			//this condition is not applicable for this triggering event, skip its evaluation
 			if (StringUtils.isNotBlank(condition.getExpression().getReference())
-			        && triggerEvent.getValue().equalsIgnoreCase(condition.getExpression().getReference())) {
+			        && !triggerEvent.getValue().equalsIgnoreCase(condition.getExpression().getReference())) {
 				continue;
 			}
 			SubjectConcept concept = condition.getExpression().getSubjectConcept();
