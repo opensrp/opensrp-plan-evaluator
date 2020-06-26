@@ -1,10 +1,10 @@
 package org.smartregister.pathevaluator.plan;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
+import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TriggerEventPayload;
 import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
@@ -14,10 +14,6 @@ import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
 import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
-import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.path.FHIRPathBooleanValue;
-import com.ibm.fhir.path.FHIRPathNode;
-import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
 
 /**
  * @author Samuel Githengi created on 06/09/20
@@ -42,20 +38,6 @@ public class PlanEvaluator {
 		this.username = username;
 	}
 	
-	private FHIRPathEvaluator fhirPathEvaluator = FHIRPathEvaluator.evaluator();
-	
-	public boolean evaluateBooleanExpression(Resource resource, String expression) {
-		
-		try {
-			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, expression);
-			return nodes != null ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean() : false;
-		}
-		catch (Exception e) {
-			return false;
-		}
-		
-	}
-	
 	/**
 	 * Evaluates plan after plan is saved on updated
 	 *
@@ -78,7 +60,13 @@ public class PlanEvaluator {
 	 * @param questionnaireResponse the questionnaireResponse that has just been submitted
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, QuestionnaireResponse questionnaireResponse) {
-		evaluatePlan(planDefinition, TriggerType.EVENT_SUBMISSION, null, questionnaireResponse);
+		QuestionnaireResponse.Item.Answer location = PathEvaluatorLibrary.getInstance()
+		        .evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='locationId'")
+		        .element().as(QuestionnaireResponse.Item.Answer.class);
+		
+		evaluatePlan(planDefinition, TriggerType.EVENT_SUBMISSION,
+		    new Jurisdiction(location.getValue().as(com.ibm.fhir.model.type.String.class).getValue()),
+		    questionnaireResponse);
 	}
 	
 	/**
