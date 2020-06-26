@@ -49,7 +49,8 @@ public class TriggerHelper {
 		}
 		boolean valid = false;
 		for (Trigger trigger : triggers) {
-			if (PLAN_ACTIVATION.equals(triggerEvent) || PLAN_JURISDICTION_MODIFICATION.equals(triggerEvent)) {
+			if ((PLAN_ACTIVATION == triggerEvent || PLAN_JURISDICTION_MODIFICATION == triggerEvent)
+			        && PLAN_ACTIVATION.getValue().equalsIgnoreCase(trigger.getName())) {
 				return true;
 			} else if (trigger.getExpression() != null) {
 				if (trigger.getExpression().getSubjectConcept() == null) {
