@@ -13,6 +13,7 @@ import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 
+import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Resource;
 
 /**
@@ -41,7 +42,7 @@ public class ActionHelper {
 	 * @param jurisdiction
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends Resource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
+	public List<? extends DomainResource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
 		ResourceType resourceType = getResourceType(action);
 		LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 		ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
@@ -72,7 +73,7 @@ public class ActionHelper {
 	 * @param id the resource id
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends Resource> getConditionSubjectResources(Condition condition, Action action, Resource resource,
+	public List<? extends DomainResource> getConditionSubjectResources(Condition condition, Action action, Resource resource,
 	        String planIdentifier) {
 		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectConcept());
 		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
@@ -88,7 +89,7 @@ public class ActionHelper {
 	 * @param actionResourceType the action subject concept
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends Resource> getConditionSubjectResources(Resource resource, String planIdentifier,
+	public List<? extends DomainResource> getConditionSubjectResources(Resource resource, String planIdentifier,
 	        ResourceType conditionResourceType, ResourceType actionResourceType) {
 		
 		switch (conditionResourceType) {

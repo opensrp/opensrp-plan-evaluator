@@ -13,6 +13,7 @@ import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 
+import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Resource;
 
 import lombok.NonNull;
@@ -38,7 +39,7 @@ public class ConditionHelper {
 	 * @param triggerEvent
 	 * @return result of condition evaluation
 	 */
-	public boolean evaluateActionConditions(Resource resource, Action action, String planIdentifier,
+	public boolean evaluateActionConditions(DomainResource resource, Action action, String planIdentifier,
 	        TriggerType triggerEvent) {
 		boolean isValid = true;
 		for (Condition condition : action.getCondition()) {
@@ -49,7 +50,7 @@ public class ConditionHelper {
 			}
 			SubjectConcept concept = condition.getExpression().getSubjectConcept();
 			if (concept != null) {
-				List<? extends Resource> resources = actionHelper.getConditionSubjectResources(condition, action, resource,
+				List<? extends DomainResource> resources = actionHelper.getConditionSubjectResources(condition, action, resource,
 				    planIdentifier);
 				if (resources != null) {
 					isValid = resources.stream().anyMatch(
