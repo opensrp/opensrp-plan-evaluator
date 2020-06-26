@@ -3,6 +3,8 @@
  */
 package org.smartregister.pathevaluator.dao;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.smartregister.pathevaluator.ResourceType;
@@ -42,6 +44,8 @@ public class ClientProvider extends BaseProvider {
 				return clientDao.findClientById(task.getFor().getReference().getValue());
 			case QUESTIONAIRRE_RESPONSE:
 				return clientDao.findClientById(resource.getId());
+			case FAMILY:
+				return Collections.singletonList((Patient)resource);
 			default:
 				return null;
 		}
@@ -60,6 +64,8 @@ public class ClientProvider extends BaseProvider {
 				return clientDao.findClientById(task.getFor().getReference().getValue());
 			case QUESTIONAIRRE_RESPONSE:
 				return clientDao.findClientById(resource.getId());
+			case PERSON:
+				return Collections.singletonList((Patient)resource);
 			default:
 				return null;
 		}

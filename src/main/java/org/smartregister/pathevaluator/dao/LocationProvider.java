@@ -3,6 +3,7 @@
  */
 package org.smartregister.pathevaluator.dao;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.smartregister.pathevaluator.ResourceType;
@@ -45,6 +46,8 @@ public class LocationProvider extends BaseProvider {
 				return locationDao.findLocationsById(task.getFor().getReference().getValue());
 			case QUESTIONAIRRE_RESPONSE:
 				return locationDao.findLocationsById(resource.getId());
+			case LOCATION:
+				return Collections.singletonList((Location) resource);
 			default:
 				return null;
 		}
@@ -66,6 +69,8 @@ public class LocationProvider extends BaseProvider {
 				Task task = (Task) resource;
 				String locationId = task.getGroupIdentifier().getValue().getValue();
 				return locationDao.findJurisdictionsById(locationId);
+			case JURISDICTION:
+				return Collections.singletonList((Location) resource);
 			default:
 				return null;
 		}
