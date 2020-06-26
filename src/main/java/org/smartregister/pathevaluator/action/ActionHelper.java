@@ -13,6 +13,7 @@ import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 
+import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Resource;
 
 /**
@@ -41,7 +42,7 @@ public class ActionHelper {
 	 * @param jurisdiction
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends Resource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
+	public List<? extends DomainResource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
 		ResourceType resourceType = getResourceType(action);
 		LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 		ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
@@ -56,7 +57,7 @@ public class ActionHelper {
 			case FAMILY:
 				return clientDao.findFamilyByJurisdiction(jurisdiction.getCode());
 			
-			case FAMILY_MEMBER:
+			case PERSON:
 				return clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 			
 			default:
@@ -102,7 +103,7 @@ public class ActionHelper {
 			case FAMILY:
 				return PathEvaluatorLibrary.getInstance().getClientProvider().getFamilies(resource, actionResourceType);
 			
-			case FAMILY_MEMBER:
+			case PERSON:
 				return PathEvaluatorLibrary.getInstance().getClientProvider().getFamilyMembers(resource, actionResourceType);
 			
 			case TASK:

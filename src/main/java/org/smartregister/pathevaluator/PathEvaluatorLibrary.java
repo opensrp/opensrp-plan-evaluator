@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.text.StringEscapeUtils;
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.ClientProvider;
 import org.smartregister.pathevaluator.dao.EventDao;
@@ -17,6 +18,7 @@ import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.dao.TaskDao;
 import org.smartregister.pathevaluator.dao.TaskProvider;
 
+import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathElementNode;
@@ -75,16 +77,20 @@ public class PathEvaluatorLibrary {
 	 * @return results of expression or false if the expression is not valid
 	 */
 	public boolean evaluateBooleanExpression(Resource resource, String expression) {
-		
+		if (resource == null) {
+			return false;
+		}
+		String escapedExpression = StringEscapeUtils.unescapeHtml4(expression);
 		try {
-			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, expression);
+			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, escapedExpression);
 			return nodes != null && nodes.iterator().hasNext()
 			        ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean()
 			        : false;
 		}
 		catch (FHIRPathException e) {
-			logger.log(Level.SEVERE,
-			    "Error execuring expression " + expression + "resource " + ReflectionToStringBuilder.toString(resource), e);
+			logger.log(Level.SEVERE, "Error executing expression " + escapedExpression + " on resource \n"
+			        + ReflectionToStringBuilder.toString(resource),
+			    e);
 			return false;
 		}
 	}
@@ -96,13 +102,13 @@ public class PathEvaluatorLibrary {
 	 * @param expression the expression to evaluate
 	 * @return results of expression
 	 */
-	public FHIRPathElementNode evaluateElementExpression(Resource resource, String expression) {
+	public FHIRPathElementNode evaluateElementExpression(DomainResource resource, String expression) {
 		
 		try {
 			return fhirPathEvaluator.evaluate(resource, expression).iterator().next().asElementNode();
 		}
 		catch (FHIRPathException e) {
-			logger.log(Level.SEVERE, "Error execuring expression "+expression, e);
+			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
 			return null;
 		}
 	}

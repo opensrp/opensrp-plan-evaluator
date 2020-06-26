@@ -13,10 +13,18 @@ import org.smartregister.domain.Action.SubjectConcept;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Builder(toBuilder=true)
+@Builder(toBuilder = true)
 public class Expression {
-    private String name;
-    private String language;
-    private String expression;
-    private SubjectConcept subjectConcept;
+	
+	private String description;
+	
+	private String name;
+	
+	private String language;
+	
+	private String expression;
+	
+	private String reference;
+	
+	private SubjectConcept subjectConcept;
 }

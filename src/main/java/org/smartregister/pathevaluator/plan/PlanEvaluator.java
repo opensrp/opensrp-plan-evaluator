@@ -104,7 +104,7 @@ public class PlanEvaluator {
 			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
 			    questionnaireResponse)) {
 				actionHelper.getSubjectResources(action, jurisdiction).forEach(resource -> {
-					if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier())) {
+					if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier(),triggerEvent)) {
 						taskHelper.generateTask(resource, action,planDefinition.getIdentifier(),jurisdiction.getCode(),username);
 					}
 				});

@@ -91,7 +91,7 @@ public class PlanEvaluatorTest {
 				return patients;
 			}
 		});
-		when(conditionHelper.evaluateActionConditions(patients.get(0), action, plan)).thenReturn(true);
+		when(conditionHelper.evaluateActionConditions(patients.get(0), action, plan,TriggerType.PLAN_ACTIVATION)).thenReturn(true);
 		when(triggerHelper.evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan, null)).thenReturn(true);
 		
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
@@ -100,7 +100,7 @@ public class PlanEvaluatorTest {
 		    null);
 		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any());
 		
-		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan);
+		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan,TriggerType.PLAN_ACTIVATION);
 		
 		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), jurisdiction.getCode(),username);
 	}

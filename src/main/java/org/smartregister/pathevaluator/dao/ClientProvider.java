@@ -32,7 +32,7 @@ public class ClientProvider extends BaseProvider {
 				return clientDao.findFamilyByJurisdiction(resource.getId());
 			case LOCATION:
 				return clientDao.findFamilyByResidence(resource.getId());
-			case FAMILY_MEMBER:
+			case PERSON:
 				Identifier familyId = getIdentifier((Patient) resource, FAMILY);
 				if (familyId != null) {
 					return clientDao.findClientById(familyId.getValue().getValue());

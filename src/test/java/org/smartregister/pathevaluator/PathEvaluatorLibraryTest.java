@@ -7,14 +7,18 @@ import static com.ibm.fhir.model.type.String.of;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.type.Date;
 import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Reference;
+import com.ibm.fhir.path.exception.FHIRPathException;
 
 /**
  * @author Samuel Githengi created on 06/10/20
@@ -51,6 +55,43 @@ public class PathEvaluatorLibraryTest {
 		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.name.family = 'Kelvin'"));
 		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.name.family = 'John'"));
 		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.birthDate >= @1990-12-19"));
+	}
+	
+	@Test
+	public void testIsExpressions() {
+		
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(TestData.createLocation(), "$this.is(FHIR.Location)"));
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "$this.is(FHIR.Patient)"));
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(TestData.createTask(), "$this.is(FHIR.Task)"));
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(TestData.createTask(), "$this.is(FHIR.Patient)"));
+	}
+	
+	@Test
+	public void testAgeExpressions() throws FHIRPathException {
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient, "Patient.birthDate <= today() - 5 'years'"));
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -1);
+		//1 year 
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(patient,
+		    "@" + cal.get(Calendar.YEAR) + "  <= today() - 5 'years'"));
+		
+		//5 year 
+		cal.add(Calendar.YEAR, -5);
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(patient,
+		    "@" + cal.get(Calendar.YEAR) + "  <= today() - 5 'years'"));
+	}
+	
+	@Test
+	public void testContainedExpressions() throws FHIRPathException {
+		Location location = TestData.createLocation();
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(location, "$this.contained.exists()"));
+		location = location.toBuilder().contained(patient).build();
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(location, "$this.contained.exists()"));
+		
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(location,
+		    "$this.contained.where(Patient.name.family = 'John').exists()"));
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(location,
+		    "$this.contained.where(Patient.name.family = 'Kelvin').exists()"));
 	}
 	
 }

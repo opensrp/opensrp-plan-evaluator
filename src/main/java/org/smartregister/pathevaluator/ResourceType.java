@@ -13,7 +13,7 @@ public enum ResourceType {
 	JURISDICTION("Jurisdiction"),
 	LOCATION("Location"),
 	FAMILY("Family"),
-	FAMILY_MEMBER("FamilyMmber"),
+	PERSON("Person"),
 	TASK("Task"),
 	QUESTIONAIRRE_RESPONSE("QuestionnaireResponse");
 	

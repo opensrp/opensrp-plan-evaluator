@@ -72,7 +72,7 @@ public class LocationProviderTest {
 		patient = patient.toBuilder()
 		        .identifier(Identifier.builder().id(LocationProvider.RESIDENCE).value(of(location.getId())).build()).build();
 		when(locationDao.findJurisdictionsById(location.getId())).thenReturn(expected);
-		assertEquals(expected, locationProvider.getLocations(patient, ResourceType.FAMILY_MEMBER));
+		assertEquals(expected, locationProvider.getLocations(patient, ResourceType.PERSON));
 		verify(locationDao).findJurisdictionsById(location.getId());
 	}
 	
@@ -111,7 +111,7 @@ public class LocationProviderTest {
 		        .identifier(Identifier.builder().id(LocationProvider.LOCATION_ID).value(of(location.getId())).build())
 		        .build();
 		when(locationDao.findJurisdictionsById(location.getId())).thenReturn(expected);
-		assertEquals(expected, locationProvider.getJurisdictions(patient, ResourceType.FAMILY_MEMBER));
+		assertEquals(expected, locationProvider.getJurisdictions(patient, ResourceType.PERSON));
 		verify(locationDao).findJurisdictionsById(location.getId());
 	}
 	

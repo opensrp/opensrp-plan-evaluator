@@ -34,7 +34,7 @@ public class LocationProvider extends BaseProvider {
 			case JURISDICTION:
 				return locationDao.findLocationByJurisdiction(resource.getId());
 			case FAMILY:
-			case FAMILY_MEMBER:
+			case PERSON:
 				Identifier residence = getIdentifier((Patient) resource, RESIDENCE);
 				if (residence != null) {
 					return locationDao.findJurisdictionsById(residence.getValue().getValue());
@@ -56,7 +56,7 @@ public class LocationProvider extends BaseProvider {
 			case QUESTIONAIRRE_RESPONSE:
 				return locationDao.findJurisdictionsById(resource.getId());
 			case FAMILY:
-			case FAMILY_MEMBER:
+			case PERSON:
 				Identifier location = getIdentifier((Patient) resource, LOCATION_ID);
 				if (location != null) {
 					return locationDao.findJurisdictionsById(location.getValue().getValue());
