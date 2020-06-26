@@ -88,7 +88,7 @@ public class ConditionHelperTest {
 	public void testEvaluateActionConditionWithSubject() {
 		condition = condition.toBuilder()
 		        .expression(
-		            expression.toBuilder().subjectConcept(new SubjectConcept("Task")).expression("Task.code.text='MDA_Round_1' and Task.businessStatus.text='Completed' ").build())
+		            expression.toBuilder().subjectConcept(new SubjectConcept("Task")).expression("$this.contained.where(Task.code.text='MDA_Round_1' and Task.businessStatus.text='Completed').exists()").build())
 		        .build();
 		action.getCondition().add(condition);
 		assertFalse(conditionHelper.evaluateActionConditions(patient, action,plan,TriggerType.PLAN_ACTIVATION));

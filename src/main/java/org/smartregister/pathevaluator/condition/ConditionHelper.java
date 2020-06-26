@@ -54,10 +54,10 @@ public class ConditionHelper {
 				List<Resource> resources = (List<Resource>) actionHelper.getConditionSubjectResources(condition, action,
 				    target, planIdentifier);
 				if (resources != null && !resources.isEmpty()) {
-					target.toBuilder().contained(resources).build();
-					isValid = pathEvaluatorLibrary.evaluateBooleanExpression(target,
-					    condition.getExpression().getExpression());
+					target=target.toBuilder().contained(resources).build();	
 				}
+				isValid = pathEvaluatorLibrary.evaluateBooleanExpression(target,
+				    condition.getExpression().getExpression());
 			} else {
 				isValid = pathEvaluatorLibrary.evaluateBooleanExpression(target,
 				    condition.getExpression().getExpression());
