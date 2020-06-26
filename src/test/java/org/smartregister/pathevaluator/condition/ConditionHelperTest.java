@@ -5,6 +5,7 @@ package org.smartregister.pathevaluator.condition;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -109,7 +110,7 @@ public class ConditionHelperTest {
 			        }
 		        });
 		assertTrue(conditionHelper.evaluateActionConditions(patient, action, plan, TriggerType.PLAN_ACTIVATION));
-		verify(actionHelper).getConditionSubjectResources(condition, action, patient, plan);
+		verify(actionHelper, times(2)).getConditionSubjectResources(condition, action, patient, plan);
 	}
 	
 	@Test
