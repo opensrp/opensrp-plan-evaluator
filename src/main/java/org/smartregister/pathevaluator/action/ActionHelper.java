@@ -99,7 +99,7 @@ public class ActionHelper {
 	 */
 	public List<? extends Resource> getConditionSubjectResources(Condition condition, Action action, Resource resource,
 	        String planIdentifier) {
-		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectConcept());
+		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectCodableConcept());
 		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
 		return getConditionSubjectResources(resource, planIdentifier, conditionResourceType, actionResourceType);
 	}

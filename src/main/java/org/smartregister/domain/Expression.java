@@ -26,5 +26,5 @@ public class Expression {
 	
 	private String reference;
 	
-	private SubjectConcept subjectConcept;
+	private SubjectConcept subjectCodableConcept;
 }
