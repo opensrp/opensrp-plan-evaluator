@@ -25,10 +25,12 @@ import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.PlanDefinition.PlanStatus;
+import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TestData;
 import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
+import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
@@ -52,6 +54,9 @@ public class PlanEvaluatorTest {
 	private ConditionHelper conditionHelper;
 	
 	@Mock
+	private LocationProvider locationProvider;
+	
+	@Mock
 	private TaskHelper taskHelper;
 	
 	private String plan = UUID.randomUUID().toString();
@@ -60,6 +65,7 @@ public class PlanEvaluatorTest {
 	
 	@Before
 	public void setUp() {
+		PathEvaluatorLibrary.init(null, null, null, null);
 		planEvaluator = new PlanEvaluator(username);
 		Whitebox.setInternalState(planEvaluator, "actionHelper", actionHelper);
 		Whitebox.setInternalState(planEvaluator, "conditionHelper", conditionHelper);
@@ -72,7 +78,7 @@ public class PlanEvaluatorTest {
 		PlanDefinition planDefinition = TestData.createPlan();
 		PlanDefinition planDefinition2 = null;
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
-		verify(actionHelper, never()).getSubjectResources(any(), any());
+		verify(actionHelper, never()).getSubjectResources(any(), any(Jurisdiction.class));
 	}
 	
 	@Test
@@ -91,18 +97,20 @@ public class PlanEvaluatorTest {
 				return patients;
 			}
 		});
-		when(conditionHelper.evaluateActionConditions(patients.get(0), action, plan,TriggerType.PLAN_ACTIVATION)).thenReturn(true);
+		when(conditionHelper.evaluateActionConditions(patients.get(0), action, plan, TriggerType.PLAN_ACTIVATION))
+		        .thenReturn(true);
 		when(triggerHelper.evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan, null)).thenReturn(true);
 		
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
 		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size();
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan,
 		    null);
-		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any());
+		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class));
 		
-		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan,TriggerType.PLAN_ACTIVATION);
+		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan, TriggerType.PLAN_ACTIVATION);
 		
-		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), jurisdiction.getCode(),username);
+		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), jurisdiction.getCode(),
+		    username);
 	}
 	
 }

@@ -38,6 +38,7 @@ public class ClientProvider extends BaseProvider {
 				if (familyId != null) {
 					return clientDao.findClientById(familyId.getValue().getValue());
 				}
+				return null;
 			case TASK:
 				Task task = (Task) resource;
 				return clientDao.findClientById(task.getFor().getReference().getValue());
