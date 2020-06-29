@@ -83,7 +83,7 @@ public class Event extends BaseDataObject {
 	
 	@JsonProperty
 	private String team;
-
+	
 	@JsonProperty
 	private String childLocationId;
 	
@@ -109,31 +109,32 @@ public class Event extends BaseDataObject {
 		setTeamId(teamId);
 		setTeam(team);
 	}
-
+	
 	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
-				 String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion,
-				 Integer clientDatabaseVersion) {
+	    String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion,
+	    Integer clientDatabaseVersion) {
 		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team);
 		setClientApplicationVersion(clientApplicationVersion);
 		setClientDatabaseVersion(clientDatabaseVersion);
 	}
-
-    public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
-                 String locationId, String formSubmissionId, String teamId, String team, String childLocationId,
-				 Integer clientApplicationVersion, Integer clientDatabaseVersion) {
-
-        this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team, clientApplicationVersion, clientDatabaseVersion);
-        setChildLocationId(childLocationId);
-    }
-
+	
+	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
+	    String locationId, String formSubmissionId, String teamId, String team, String childLocationId,
+	    Integer clientApplicationVersion, Integer clientDatabaseVersion) {
+		
+		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team,
+		        clientApplicationVersion, clientDatabaseVersion);
+		setChildLocationId(childLocationId);
+	}
+	
 	public String getChildLocationId() {
 		return childLocationId;
 	}
-
+	
 	public void setChildLocationId(String childLocationId) {
 		this.childLocationId = childLocationId;
 	}
-
+	
 	public List<Obs> getObs() {
 		if (obs == null) {
 			obs = new ArrayList<>();
@@ -373,12 +374,12 @@ public class Event extends BaseDataObject {
 		this.entityType = entityType;
 		return this;
 	}
-
+	
 	public Event withChildLocationId(String childLocationId) {
 		setChildLocationId(childLocationId);
 		return this;
 	}
-
+	
 	/**
 	 * WARNING: Overrides all existing obs
 	 *
@@ -396,6 +397,30 @@ public class Event extends BaseDataObject {
 		}
 		obs.add(observation);
 		return this;
+	}
+	
+	public Obs findObs(String parentId, boolean nonEmpty, String... fieldIds) {
+		Obs res = null;
+		for (String f : fieldIds) {
+			for (Obs o : getObs()) {
+				// if parent is specified and not matches leave and move forward
+				if (StringUtils.isNotBlank(parentId) && !o.getParentCode().equalsIgnoreCase(parentId)) {
+					continue;
+				}
+				
+				if (f.equalsIgnoreCase(o.getFieldCode()) || f.equalsIgnoreCase(o.getFormSubmissionField())) {
+					// obs is found and first  one.. should throw exception if multiple obs found with same names/ids
+					if (nonEmpty && o.getValues().isEmpty()) {
+						continue;
+					}
+					if (res == null) {
+						res = o;
+					} else
+						throw new RuntimeException("Multiple obs found with name or ids specified ");
+				}
+			}
+		}
+		return res;
 	}
 	
 	@Override
