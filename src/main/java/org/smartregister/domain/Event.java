@@ -21,7 +21,7 @@ public class Event extends BaseDataObject {
 	
 	@JsonIgnore
 	private String eventId;
-	  
+	
 	@JsonProperty
 	private Map<String, String> identifiers;
 	
@@ -107,17 +107,18 @@ public class Event extends BaseDataObject {
 		this.version = System.currentTimeMillis();
 	}
 	
-	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
-	    String locationId, String formSubmissionId, String teamId, String team) {
+	public Event(String baseEntityId, String eventId, String eventType, DateTime eventDate, String entityType,
+	    String providerId, String locationId, String formSubmissionId, String teamId, String team) {
 		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId);
 		setTeamId(teamId);
 		setTeam(team);
+		setEventId(eventId);
 	}
 	
 	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
 	    String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion,
 	    Integer clientDatabaseVersion) {
-		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team);
+		this(baseEntityId, null, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team);
 		setClientApplicationVersion(clientApplicationVersion);
 		setClientDatabaseVersion(clientDatabaseVersion);
 	}
@@ -129,6 +130,14 @@ public class Event extends BaseDataObject {
 		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team,
 		        clientApplicationVersion, clientDatabaseVersion);
 		setChildLocationId(childLocationId);
+	}
+	
+	public String getEventId() {
+		return eventId;
+	}
+	
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
 	}
 	
 	public String getChildLocationId() {
