@@ -46,6 +46,12 @@ public class Client extends BaseEntity {
 	
 	@JsonProperty
 	private Map<String, List<String>> relationships;
+
+	@JsonProperty
+	private String teamId;
+
+	@JsonProperty
+	private String locationId;
 	
 	protected Client() {
 		
@@ -121,6 +127,17 @@ public class Client extends BaseEntity {
 		        addresses, identifiers, attributes);
 		setClientType(clientType);
 	}
+
+	public Client(String baseEntityId, String firstName, String middleName, String lastName, DateTime birthdate,
+			DateTime deathdate, Boolean birthdateApprox, Boolean deathdateApprox, String gender, List<Address> addresses,
+			Map<String, String> identifiers, Map<String, Object> attributes, String clientType, String teamId, String locationId) {
+		this(baseEntityId, firstName, middleName, lastName, birthdate, deathdate, birthdateApprox, deathdateApprox, gender,
+				addresses, identifiers, attributes);
+		setClientType(clientType);
+		setTeamId(teamId);
+		setLocationId(locationId);
+	}
+
 
 	public String getFirstName() {
 		return firstName;
@@ -215,7 +232,23 @@ public class Client extends BaseEntity {
 	public void setRelationships(Map<String, List<String>> relationships) {
 		this.relationships = relationships;
 	}
-	
+
+	public String getTeamId() {
+		return teamId;
+	}
+
+	public void setTeamId(String teamId) {
+		this.teamId = teamId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
 	public Client withFirstName(String firstName) {
 		this.firstName = firstName;
 		return this;
@@ -257,6 +290,16 @@ public class Client extends BaseEntity {
 	
 	public Client withGender(Gender gender) {
 		this.gender = gender.name();
+		return this;
+	}
+
+	public Client withLocationId(String locationId) {
+		this.locationId = locationId;
+		return this;
+	}
+
+	public Client withTeamId(String teamId) {
+		this.teamId = teamId;
 		return this;
 	}
 	
