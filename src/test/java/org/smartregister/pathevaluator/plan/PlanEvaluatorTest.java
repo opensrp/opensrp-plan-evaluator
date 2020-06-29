@@ -30,7 +30,6 @@ import org.smartregister.pathevaluator.TestData;
 import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
-import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
@@ -52,9 +51,6 @@ public class PlanEvaluatorTest {
 	
 	@Mock
 	private ConditionHelper conditionHelper;
-	
-	@Mock
-	private LocationProvider locationProvider;
 	
 	@Mock
 	private TaskHelper taskHelper;
