@@ -61,7 +61,7 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, QuestionnaireResponse questionnaireResponse) {
 		QuestionnaireResponse.Item.Answer location = PathEvaluatorLibrary.getInstance()
-		        .evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='locationId'")
+		        .evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='locationId').answer")
 		        .element().as(QuestionnaireResponse.Item.Answer.class);
 		
 		evaluatePlan(planDefinition, TriggerType.EVENT_SUBMISSION,

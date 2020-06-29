@@ -4,6 +4,7 @@
 package org.smartregister.pathevaluator.plan;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,7 @@ import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
 import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -78,7 +80,7 @@ public class PlanEvaluatorTest {
 	}
 	
 	@Test
-	public void testEvaluatePlanEvaluatesCondtions() {
+	public void testEvaluatePlanEvaluatesConditions() {
 		PlanDefinition planDefinition = TestData.createPlan();
 		planDefinition.setIdentifier(plan);
 		planDefinition.setStatus(PlanStatus.ACTIVE);
@@ -107,6 +109,40 @@ public class PlanEvaluatorTest {
 		
 		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), jurisdiction.getCode(),
 		    username);
+	}
+	
+	@Test
+	public void testEvaluatePlanWithQuestionnaireEvaluatesConditions() {
+		PlanDefinition planDefinition = TestData.createPlan();
+		planDefinition.setIdentifier(plan);
+		planDefinition.setStatus(PlanStatus.ACTIVE);
+		
+		QuestionnaireResponse questionnaire = TestData.createResponse();
+		List<Patient> patients = Collections.singletonList(TestData.createPatient());
+		Action action = planDefinition.getActions().get(0);
+		String entity = questionnaire.getSubject().getReference().getValue();
+		when(actionHelper.getSubjectResources(action, entity)).thenAnswer(new Answer<List<Patient>>() {
+			
+			@Override
+			public List<Patient> answer(InvocationOnMock invocation) throws Throwable {
+				return patients;
+			}
+		});
+		when(conditionHelper.evaluateActionConditions(patients.get(0), action, plan, TriggerType.EVENT_SUBMISSION))
+		        .thenReturn(true);
+		when(triggerHelper.evaluateTrigger(eq(action.getTrigger()), eq(TriggerType.EVENT_SUBMISSION), eq(plan),
+		    any(QuestionnaireResponse.class))).thenReturn(true);
+		
+		planEvaluator.evaluatePlan(planDefinition, questionnaire);
+		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size();
+		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.EVENT_SUBMISSION, plan,
+		    questionnaire);
+		verify(actionHelper).getSubjectResources(action, "098787kml-jsks09");
+		
+		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan, TriggerType.EVENT_SUBMISSION);
+		
+		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), "123343430mmmj", username);
+		
 	}
 	
 }

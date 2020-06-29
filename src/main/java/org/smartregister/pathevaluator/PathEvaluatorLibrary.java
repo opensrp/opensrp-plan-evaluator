@@ -4,6 +4,7 @@
 package org.smartregister.pathevaluator;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,7 +106,8 @@ public class PathEvaluatorLibrary {
 	public FHIRPathElementNode evaluateElementExpression(DomainResource resource, String expression) {
 		
 		try {
-			return fhirPathEvaluator.evaluate(resource, expression).iterator().next().asElementNode();
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
+			return iterator.hasNext() ? iterator.next().asElementNode() : null;
 		}
 		catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
