@@ -73,7 +73,7 @@ public class EventConverter {
 					answer = QuestionnaireResponse.Item.Answer.builder()
 					        .value(String.builder().value(entry.getValue()).build()).build();
 					item = QuestionnaireResponse.Item.builder().linkId(String.builder().value(entry.getKey()).build())
-					        .answer(answer).build();
+					        .answer(answer).definition(Uri.of("details")).build();
 					items.add(item);
 				}
 			}
