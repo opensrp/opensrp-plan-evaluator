@@ -1,7 +1,9 @@
 package org.smartregister.pathevaluator.plan;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
@@ -61,7 +63,8 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, QuestionnaireResponse questionnaireResponse) {
 		QuestionnaireResponse.Item.Answer location = PathEvaluatorLibrary.getInstance()
-		        .evaluateElementExpression(questionnaireResponse, "QuestionnaireResponse.item.where(linkId='locationId').answer")
+		        .evaluateElementExpression(questionnaireResponse,
+		            "QuestionnaireResponse.item.where(linkId='locationId').answer")
 		        .element().as(QuestionnaireResponse.Item.Answer.class);
 		
 		evaluatePlan(planDefinition, TriggerType.EVENT_SUBMISSION,
@@ -99,16 +102,25 @@ public class PlanEvaluator {
 					    questionnaireResponse.getSubject().getReference().getValue());
 				} else {
 					resources = actionHelper.getSubjectResources(action, jurisdiction);
+					
 				}
 				resources.forEach(resource -> {
-					if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier(),
-					    triggerEvent)) {
-						taskHelper.generateTask(resource, action, planDefinition.getIdentifier(), jurisdiction.getCode(),
-						    username);
+					if (questionnaireResponse != null) {
+						evaluateCondition(planDefinition, triggerEvent, jurisdiction,
+						    questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(), action);
+					} else {
+						evaluateCondition(planDefinition, triggerEvent, jurisdiction, resource, action);
 					}
 				});
 			}
 		});
+	}
+	
+	private void evaluateCondition(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
+	        DomainResource resource, Action action) {
+		if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier(), triggerEvent)) {
+			taskHelper.generateTask(resource, action, planDefinition.getIdentifier(), jurisdiction.getCode(), username);
+		}
 	}
 	
 }
