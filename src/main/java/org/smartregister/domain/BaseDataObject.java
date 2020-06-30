@@ -153,6 +153,13 @@ public abstract class BaseDataObject extends BaseDataEntity {
 		return this;
 	}
 	
+	public BaseDataObject withServerVersion(long serverVersion) {
+		this.serverVersion = serverVersion;
+		return this;
+	}
+	
+	
+	
 	public BaseDataObject withClientApplicationVersion(Integer clientApplicationVersion) {
 		this.clientApplicationVersion = clientApplicationVersion;
 		return this;

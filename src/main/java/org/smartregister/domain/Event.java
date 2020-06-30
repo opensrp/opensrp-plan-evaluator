@@ -115,6 +115,12 @@ public class Event extends BaseDataObject {
 		setEventId(eventId);
 	}
 	
+	public Event(String baseEntityId, String eventId, String eventType, DateTime eventDate, String entityType,
+	    String providerId, String locationId, String formSubmissionId) {
+		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId);
+		setEventId(eventId);
+	}
+	
 	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
 	    String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion,
 	    Integer clientDatabaseVersion) {
