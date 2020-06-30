@@ -3,7 +3,6 @@ package org.smartregister.pathevaluator.plan;
 import java.util.Collections;
 import java.util.List;
 
-import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
@@ -105,22 +104,16 @@ public class PlanEvaluator {
 					
 				}
 				resources.forEach(resource -> {
-					if (questionnaireResponse != null) {
-						evaluateCondition(planDefinition, triggerEvent, jurisdiction,
-						    questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(), action);
-					} else {
-						evaluateCondition(planDefinition, triggerEvent, jurisdiction, resource, action);
+					if (conditionHelper.evaluateActionConditions(
+					    questionnaireResponse == null ? resource
+					            : questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
+					    action, planDefinition.getIdentifier(), triggerEvent)) {
+						taskHelper.generateTask(resource, action, planDefinition.getIdentifier(), jurisdiction.getCode(),
+						    username,questionnaireResponse);
 					}
 				});
 			}
 		});
-	}
-	
-	private void evaluateCondition(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
-	        DomainResource resource, Action action) {
-		if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier(), triggerEvent)) {
-			taskHelper.generateTask(resource, action, planDefinition.getIdentifier(), jurisdiction.getCode(), username);
-		}
 	}
 	
 }

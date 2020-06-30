@@ -5,7 +5,7 @@ package org.smartregister.pathevaluator.dao;
 
 import java.util.List;
 
-import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Task;
 
 /**
@@ -28,6 +28,6 @@ public interface TaskDao {
 	 * @param task
 	 * @param resource
 	 */
-	void saveTask(org.smartregister.domain.Task task, DomainResource resource);
+	void saveTask(org.smartregister.domain.Task task, QuestionnaireResponse questionnaireResponse);
 	
 }
