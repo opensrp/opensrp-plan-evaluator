@@ -14,6 +14,7 @@ import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 
 import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
 
 /**
@@ -101,6 +102,9 @@ public class ActionHelper {
 	        String planIdentifier) {
 		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectCodableConcept());
 		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
+		if (resource instanceof QuestionnaireResponse) {
+			conditionResourceType = ResourceType.QUESTIONAIRRE_RESPONSE;
+		}
 		return getConditionSubjectResources(resource, planIdentifier, conditionResourceType, actionResourceType);
 	}
 	
@@ -115,7 +119,6 @@ public class ActionHelper {
 	 */
 	public List<? extends Resource> getConditionSubjectResources(Resource resource, String planIdentifier,
 	        ResourceType conditionResourceType, ResourceType actionResourceType) {
-		
 		switch (conditionResourceType) {
 			case JURISDICTION:
 				return PathEvaluatorLibrary.getInstance().getLocationProvider().getJurisdictions(resource,
