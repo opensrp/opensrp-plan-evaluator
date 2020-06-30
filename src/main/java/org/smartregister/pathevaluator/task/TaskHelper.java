@@ -60,7 +60,7 @@ public class TaskHelper {
 		task.setRequester(username);
 		task.setOwner(username);
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		taskDao.saveTask(task);
+		taskDao.saveTask(task,resource);
 		logger.info("Created task " + task.toString());
 		
 	}
