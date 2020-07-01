@@ -32,37 +32,40 @@ public class TaskHelper {
 	 * @param username
 	 */
 	public void generateTask(Resource resource, Action action, String planIdentifier, String jurisdiction, String username) {
-		Task task = new Task();
-		task.setIdentifier(UUID.randomUUID().toString());
-		task.setPlanIdentifier(planIdentifier);
-		task.setGroupIdentifier(jurisdiction);
-		task.setStatus(Task.TaskStatus.READY);
-		task.setPriority(3);
-		task.setCode(action.getCode());
-		task.setDescription(action.getDescription());
-		task.setFocus(action.getIdentifier());
-		task.setForEntity(resource.getId());
-		task.setExecutionStartDate(getDateTime(action.getTimingPeriod(), true));
-		task.setExecutionEndDate(getDateTime(action.getTimingPeriod(), false));
-		task.setAuthoredOn(DateTime.now());
-		task.setLastModified(DateTime.now());
-		if (action.getDynamicValue() != null) {
-			for (DynamicValue dynamicValue : action.getDynamicValue()) {
-				if (dynamicValue != null && dynamicValue.getExpression() != null
-				        && dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
-					task.setBusinessStatus(dynamicValue.getExpression().getExpression());
+		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
+		if (taskDao.checkIfTaskExists(resource.getId(), planIdentifier,action.getCode())) {
+			logger.info("Task already exists");
+		} else {
+			Task task = new Task();
+			task.setIdentifier(UUID.randomUUID().toString());
+			task.setPlanIdentifier(planIdentifier);
+			task.setGroupIdentifier(jurisdiction);
+			task.setStatus(Task.TaskStatus.READY);
+			task.setPriority(3);
+			task.setCode(action.getCode());
+			task.setDescription(action.getDescription());
+			task.setFocus(action.getIdentifier());
+			task.setForEntity(resource.getId());
+			task.setExecutionStartDate(getDateTime(action.getTimingPeriod(), true));
+			task.setExecutionEndDate(getDateTime(action.getTimingPeriod(), false));
+			task.setAuthoredOn(DateTime.now());
+			task.setLastModified(DateTime.now());
+			if (action.getDynamicValue() != null) {
+				for (DynamicValue dynamicValue : action.getDynamicValue()) {
+					if (dynamicValue != null && dynamicValue.getExpression() != null
+							&& dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
+						task.setBusinessStatus(dynamicValue.getExpression().getExpression());
+					}
 				}
 			}
+			if (task.getBusinessStatus() == null) {
+				task.setBusinessStatus("Not Visited");
+			}
+			task.setRequester(username);
+			task.setOwner(username);
+			taskDao.saveTask(task);
+			logger.info("Created task " + task.toString());
 		}
-		if (task.getBusinessStatus() == null) {
-			task.setBusinessStatus("Not Visited");
-		}
-		task.setRequester(username);
-		task.setOwner(username);
-		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		taskDao.saveTask(task);
-		logger.info("Created task " + task.toString());
-		
 	}
 	
 	private DateTime getDateTime(ExecutionPeriod executionPeriod, boolean start) {

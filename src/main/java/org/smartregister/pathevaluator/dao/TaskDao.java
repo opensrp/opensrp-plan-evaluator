@@ -22,5 +22,7 @@ public interface TaskDao {
 	List<Task> findTasksForEntity(String id, String planIdentifier);
 
 	void saveTask(org.smartregister.domain.Task task);
+
+	boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code);
 	
 }
