@@ -3,6 +3,7 @@
  */
 package org.smartregister.pathevaluator.plan;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -17,6 +18,8 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -56,6 +59,9 @@ public class PlanEvaluatorTest {
 	
 	@Mock
 	private TaskHelper taskHelper;
+	
+	@Captor
+	private ArgumentCaptor<QuestionnaireResponse> questionnaireCaptor;
 	
 	private String plan = UUID.randomUUID().toString();
 	
@@ -108,7 +114,7 @@ public class PlanEvaluatorTest {
 		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan, TriggerType.PLAN_ACTIVATION);
 		
 		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), jurisdiction.getCode(),
-		    username);
+		    username, null);
 	}
 	
 	@Test
@@ -128,7 +134,7 @@ public class PlanEvaluatorTest {
 				return patients;
 			}
 		});
-		when(conditionHelper.evaluateActionConditions(patients.get(0), action, plan, TriggerType.EVENT_SUBMISSION))
+		when(conditionHelper.evaluateActionConditions(any(), eq(action), eq(plan), eq(TriggerType.EVENT_SUBMISSION)))
 		        .thenReturn(true);
 		when(triggerHelper.evaluateTrigger(eq(action.getTrigger()), eq(TriggerType.EVENT_SUBMISSION), eq(plan),
 		    any(QuestionnaireResponse.class))).thenReturn(true);
@@ -139,9 +145,16 @@ public class PlanEvaluatorTest {
 		    questionnaire);
 		verify(actionHelper).getSubjectResources(action, "098787kml-jsks09");
 		
-		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan, TriggerType.EVENT_SUBMISSION);
+		verify(conditionHelper).evaluateActionConditions(questionnaireCaptor.capture(), eq(action), eq(plan),
+		    eq(TriggerType.EVENT_SUBMISSION));
 		
-		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), "123343430mmmj", username);
+		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), "123343430mmmj", username,
+		    questionnaire);
+		
+		QuestionnaireResponse actual = questionnaireCaptor.getValue();
+		assertEquals(questionnaire.getId(), actual.getId());
+		assertEquals(questionnaire.getItem().size(), actual.getItem().size());
+		assertEquals(patients.get(0), actual.getContained().get(0));
 		
 	}
 	
