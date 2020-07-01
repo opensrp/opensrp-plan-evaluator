@@ -5,9 +5,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 
 public abstract class BaseDataObject extends BaseDataEntity {
-
+	
 	private static final long serialVersionUID = 1L;
-	 
+	
 	@JsonProperty
 	private User creator;
 	
@@ -33,14 +33,14 @@ public abstract class BaseDataObject extends BaseDataEntity {
 	private String voidReason;
 	
 	@JsonProperty
-	private Long serverVersion = System.currentTimeMillis();
+	private long serverVersion ;
 	
 	@JsonProperty
 	private Integer clientApplicationVersion;
 	
 	@JsonProperty
 	private Integer clientDatabaseVersion;
-
+	
 	public User getCreator() {
 		return creator;
 	}
@@ -157,8 +157,6 @@ public abstract class BaseDataObject extends BaseDataEntity {
 		this.serverVersion = serverVersion;
 		return this;
 	}
-	
-	
 	
 	public BaseDataObject withClientApplicationVersion(Integer clientApplicationVersion) {
 		this.clientApplicationVersion = clientApplicationVersion;
