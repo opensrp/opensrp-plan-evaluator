@@ -16,7 +16,7 @@ public class EventConverter {
 	
 	public static QuestionnaireResponse convertEventToEncounterResource(Event event) {
 		Collection<QuestionnaireResponse.Item> items = new ArrayList<>();
-		Canonical eventType = Canonical.builder().id("eventType").value(event.getEventType().replace(" ", "_")).build();
+		Canonical eventType = Canonical.builder().id("eventType").value(event.getEventType().trim().replace(" ", "_")).build();
 		
 		QuestionnaireResponse.Item.Answer locationIdAnswer = QuestionnaireResponse.Item.Answer.builder()
 		        .value(String.builder().value(event.getLocationId()).build()).build();
