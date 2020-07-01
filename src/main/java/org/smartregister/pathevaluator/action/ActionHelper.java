@@ -14,12 +14,17 @@ import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 
 import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
 
 /**
  * @author Samuel Githengi created on 06/15/20
  */
 public class ActionHelper {
+	
+	private LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
+	
+	private ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
 	
 	/**
 	 * Gets the resource type for the action
@@ -44,8 +49,6 @@ public class ActionHelper {
 	 */
 	public List<? extends DomainResource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
 		ResourceType resourceType = getResourceType(action);
-		LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
-		ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
 		switch (resourceType) {
 			case JURISDICTION:
 				
@@ -66,6 +69,28 @@ public class ActionHelper {
 	}
 	
 	/**
+	 * Gets the subject resources for the target entity that tasks should be generated against
+	 * 
+	 * @param action the action to evaluate
+	 * @param entity id for entity
+	 * @return resources that tasks should be generated against
+	 */
+	public List<? extends DomainResource> getSubjectResources(Action action, String entity) {
+		ResourceType resourceType = getResourceType(action);
+		switch (resourceType) {
+			case JURISDICTION:
+				return locationDao.findJurisdictionsById(entity);
+			case LOCATION:
+				return locationDao.findLocationsById(entity);
+			case FAMILY:
+			case PERSON:
+				return clientDao.findClientById(entity);
+			default:
+				return null;
+		}
+	}
+	
+	/**
 	 * Gets the subject resources of the resource id that tasks should be generated against
 	 *
 	 * @param condition
@@ -75,8 +100,11 @@ public class ActionHelper {
 	 */
 	public List<? extends Resource> getConditionSubjectResources(Condition condition, Action action, Resource resource,
 	        String planIdentifier) {
-		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectConcept());
+		ResourceType conditionResourceType = ResourceType.from(condition.getExpression().getSubjectCodableConcept());
 		ResourceType actionResourceType = ResourceType.from(action.getSubjectCodableConcept());
+		if (resource instanceof QuestionnaireResponse) {
+			conditionResourceType = ResourceType.QUESTIONAIRRE_RESPONSE;
+		}
 		return getConditionSubjectResources(resource, planIdentifier, conditionResourceType, actionResourceType);
 	}
 	
@@ -91,7 +119,6 @@ public class ActionHelper {
 	 */
 	public List<? extends Resource> getConditionSubjectResources(Resource resource, String planIdentifier,
 	        ResourceType conditionResourceType, ResourceType actionResourceType) {
-		
 		switch (conditionResourceType) {
 			case JURISDICTION:
 				return PathEvaluatorLibrary.getInstance().getLocationProvider().getJurisdictions(resource,

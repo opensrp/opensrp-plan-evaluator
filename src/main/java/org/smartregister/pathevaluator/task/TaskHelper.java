@@ -15,7 +15,8 @@ import org.smartregister.domain.Task;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
-import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -30,8 +31,10 @@ public class TaskHelper {
 	 * @param resource entity task is being generated for
 	 * @param action entity used to create the task
 	 * @param username
+	 * @param questionnaireResponse
 	 */
-	public void generateTask(Resource resource, Action action, String planIdentifier, String jurisdiction, String username) {
+	public void generateTask(DomainResource resource, Action action, String planIdentifier, String jurisdiction,
+	        String username, QuestionnaireResponse questionnaireResponse) {
 		Task task = new Task();
 		task.setIdentifier(UUID.randomUUID().toString());
 		task.setPlanIdentifier(planIdentifier);
@@ -60,7 +63,7 @@ public class TaskHelper {
 		task.setRequester(username);
 		task.setOwner(username);
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		taskDao.saveTask(task);
+		taskDao.saveTask(task, questionnaireResponse);
 		logger.info("Created task " + task.toString());
 		
 	}

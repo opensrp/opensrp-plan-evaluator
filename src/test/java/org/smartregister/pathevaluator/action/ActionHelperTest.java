@@ -102,7 +102,7 @@ public class ActionHelperTest {
 		jurisdiction = new Jurisdiction("12123");
 		when(action.getSubjectCodableConcept()).thenReturn(subjectConcept);
 		patient = TestData.createPatient();
-		expression = Expression.builder().expression("Patient.name.family = 'John'").subjectConcept(subjectConcept).build();
+		expression = Expression.builder().expression("Patient.name.family = 'John'").subjectCodableConcept(subjectConcept).build();
 		condition = Condition.builder().kind("applicability").expression(expression).build();
 	}
 	

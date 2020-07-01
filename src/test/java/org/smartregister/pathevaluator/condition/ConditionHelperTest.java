@@ -94,7 +94,7 @@ public class ConditionHelperTest {
 	@Test
 	public void testEvaluateActionConditionWithSubject() {
 		condition = condition.toBuilder()
-		        .expression(expression.toBuilder().subjectConcept(new SubjectConcept("Task")).expression(
+		        .expression(expression.toBuilder().subjectCodableConcept(new SubjectConcept("Task")).expression(
 		            "$this.contained.where(Task.code.text='MDA_Round_1' and Task.businessStatus.text='Completed').exists()")
 		                .build())
 		        .build();
@@ -117,7 +117,7 @@ public class ConditionHelperTest {
 	public void testEvaluateActionConditionSkippedIfDifferentTrigger() {
 		Whitebox.setInternalState(conditionHelper, "pathEvaluatorLibrary", pathEvaluatorLibrary);
 		condition = condition.toBuilder().expression(expression.toBuilder()
-		        .reference(TriggerType.EVENT_SUBMISSION.getValue()).subjectConcept(new SubjectConcept("Task"))
+		        .reference(TriggerType.EVENT_SUBMISSION.getValue()).subjectCodableConcept(new SubjectConcept("Task"))
 		        .expression(
 		            "$this.contained.where(Task.code.text='MDA_Round_1' and Task.businessStatus.text='Completed').exists()")
 		        .build()).build();

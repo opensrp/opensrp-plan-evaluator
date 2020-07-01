@@ -77,7 +77,7 @@ public class ClientProviderTest {
 	
 	@Test
 	public void testgetFamilyForFamilyMemberWithoutRelationship() {
-		assertNull(clientProvider.getFamilies(patient, ResourceType.FAMILY));
+		assertNull(clientProvider.getFamilies(patient, ResourceType.PERSON));
 		verifyNoInteractions(clientDao);
 	}
 	

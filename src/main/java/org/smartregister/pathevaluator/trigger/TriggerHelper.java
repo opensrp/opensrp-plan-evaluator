@@ -53,13 +53,13 @@ public class TriggerHelper {
 			        && PLAN_ACTIVATION.getValue().equalsIgnoreCase(trigger.getName())) {
 				return true;
 			} else if (trigger.getExpression() != null) {
-				if (trigger.getExpression().getSubjectConcept() == null) {
+				if (trigger.getExpression().getSubjectCodableConcept() == null) {
 					valid = pathEvaluatorLibrary.evaluateBooleanExpression(questionnaireResponse,
 					    trigger.getExpression().getExpression());
 				} else {
 					valid = actionHelper
 					        .getConditionSubjectResources(questionnaireWithEntityIdId, planIdentifier,
-					            ResourceType.from(trigger.getExpression().getSubjectConcept().getText()),
+					            ResourceType.from(trigger.getExpression().getSubjectCodableConcept().getText()),
 					            ResourceType.QUESTIONAIRRE_RESPONSE)
 					        .stream().anyMatch(resource -> pathEvaluatorLibrary.evaluateBooleanExpression(resource,
 					            trigger.getExpression().getExpression()));
