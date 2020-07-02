@@ -26,6 +26,12 @@ import org.smartregister.pathevaluator.dao.EventDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
+import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+import static org.smartregister.pathevaluator.TestData.createPlanV1;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 
@@ -48,13 +54,13 @@ public class TaskHelperTest {
 	
 	@Mock
 	private QuestionnaireResponse questionnaireResponse;
-	
+
 	@Mock
 	private Action action;
 	
 	@Captor
 	private ArgumentCaptor<Task> taskCaptor;
-	
+
 	private Patient patient;
 	
 	@Before
@@ -77,7 +83,7 @@ public class TaskHelperTest {
 		assertEquals(planIdentifier, task.getPlanIdentifier());
 		assertEquals("Not Visited", task.getBusinessStatus());
 	}
-	
+
 	@Test
 	public void testGenerateTaskWithDefaultBusinessStatus() {
 		String planIdentifier = UUID.randomUUID().toString();
@@ -91,5 +97,15 @@ public class TaskHelperTest {
 		assertEquals(jurisdiction, task.getGroupIdentifier());
 		assertEquals(planIdentifier, task.getPlanIdentifier());
 		assertEquals("expression", task.getBusinessStatus());
+	}
+
+	@Test
+	public void testShouldNotGenerateTask() {
+		String planIdentifier = UUID.randomUUID().toString();
+		String jurisdiction = "12123";
+		PlanDefinition planDefinition = createPlanV1();
+		when(taskDao.checkIfTaskExists(anyString(),anyString(),anyString())).thenReturn(true);
+		taskHelper.generateTask(patient, planDefinition.getActions().get(0), planIdentifier, jurisdiction, "testUser", null);
+		verify(taskDao, never()).saveTask(any(Task.class), any(QuestionnaireResponse.class));
 	}
 }

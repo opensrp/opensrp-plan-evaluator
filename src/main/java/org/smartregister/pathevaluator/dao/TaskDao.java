@@ -21,13 +21,15 @@ public interface TaskDao {
 	 * @return the tasks for a resource in a plan
 	 */
 	List<Task> findTasksForEntity(String id, String planIdentifier);
-	
+
 	/**
 	 * Saves a task
-	 * 
+	 *
 	 * @param task
 	 * @param resource
 	 */
 	void saveTask(org.smartregister.domain.Task task, QuestionnaireResponse questionnaireResponse);
+
+	boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code);
 	
 }
