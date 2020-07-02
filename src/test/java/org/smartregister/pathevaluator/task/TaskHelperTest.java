@@ -17,6 +17,8 @@ import org.smartregister.pathevaluator.dao.*;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.smartregister.pathevaluator.TestData.createPlanV1;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -64,5 +66,15 @@ public class TaskHelperTest {
 		PlanDefinition planDefinition = createPlanV1();
 		Mockito.doNothing().when(taskDao).saveTask(any(Task.class));
 		taskHelper.generateTask(patient, planDefinition.getActions().get(0), planIdentifier, jurisdiction, "testUser");
+	}
+
+	@Test
+	public void testShouldNotGenerateTask() {
+		String planIdentifier = UUID.randomUUID().toString();
+		String jurisdiction = "12123";
+		PlanDefinition planDefinition = createPlanV1();
+		when(taskDao.checkIfTaskExists(anyString(),anyString(),anyString())).thenReturn(true);
+		taskHelper.generateTask(patient, planDefinition.getActions().get(0), planIdentifier, jurisdiction, "testUser");
+		verify(taskDao, never()).saveTask(any(Task.class));
 	}
 }
