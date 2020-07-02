@@ -103,11 +103,11 @@ public class TriggerHelperTest {
 	}
 	
 	@Test
-	public void testEvaluateTriggerWithDependentResources() {
+	public void testEvaluateTriggerWithDsependentResources() {
 		SubjectConcept subjectConcept = new SubjectConcept("Task");
 		Expression expression = Expression.builder()
 		        .expression("Task.code.text='MDA_Round_1' and Task.businessStatus.text='Completed'")
-		        .subjectConcept(subjectConcept).build();
+		        .subjectCodableConcept(subjectConcept).build();
 		Trigger trigger = Trigger.builder().expression(expression).expression(expression).build();
 		assertFalse(triggerHelper.evaluateTrigger(Collections.singleton(trigger), TriggerType.EVENT_SUBMISSION,
 		    planIdentifier, questionnaireResponse));

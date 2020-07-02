@@ -5,6 +5,7 @@ package org.smartregister.pathevaluator.dao;
 
 import java.util.List;
 
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Task;
 
 /**
@@ -21,7 +22,13 @@ public interface TaskDao {
 	 */
 	List<Task> findTasksForEntity(String id, String planIdentifier);
 
-	void saveTask(org.smartregister.domain.Task task);
+	/**
+	 * Saves a task
+	 *
+	 * @param task
+	 * @param resource
+	 */
+	void saveTask(org.smartregister.domain.Task task, QuestionnaireResponse questionnaireResponse);
 
 	boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code);
 	

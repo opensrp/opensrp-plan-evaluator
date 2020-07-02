@@ -45,7 +45,9 @@ public class Obs {
 	
 	@JsonProperty
 	private List<Object> humanReadableValues;
-
+	
+	private boolean saveObsAsArray;
+	
 	public Obs() {
 	}
 	
@@ -70,6 +72,24 @@ public class Obs {
 		addToValueList(value);
 		this.comments = comments;
 		this.formSubmissionField = formSubmissionField;
+	}
+	
+	public Obs(String fieldType, String fieldDataType, String fieldCode, String parentCode, List<Object> values,
+	    String comments, String formSubmissionField, List<Object> humanReadableValues) {
+		this.setFieldType(fieldType);
+		this.fieldDataType = fieldDataType;
+		this.fieldCode = fieldCode;
+		this.parentCode = parentCode;
+		this.values = values;
+		this.comments = comments;
+		this.formSubmissionField = formSubmissionField;
+		this.humanReadableValues = humanReadableValues;
+	}
+	
+	public Obs(String fieldType, String fieldDataType, String fieldCode, String parentCode, List<Object> values,
+	    String comments, String formSubmissionField, List<Object> humanReadableValues, boolean saveObsAsArray) {
+		this(fieldType, fieldDataType, fieldCode, parentCode, values, comments, formSubmissionField, humanReadableValues);
+		this.saveObsAsArray = saveObsAsArray;
 	}
 	
 	public String getFieldType() {
@@ -103,7 +123,7 @@ public class Obs {
 	public void setParentCode(String parentCode) {
 		this.parentCode = parentCode;
 	}
-
+	
 	@JsonIgnore
 	public Object getValue() {
 		
@@ -162,6 +182,14 @@ public class Obs {
 	
 	public void setEffectiveDatetime(DateTime effectiveDatetime) {
 		this.effectiveDatetime = effectiveDatetime;
+	}
+	
+	public boolean isSaveObsAsArray() {
+		return saveObsAsArray;
+	}
+	
+	public void setSaveObsAsArray(boolean saveObsAsArray) {
+		this.saveObsAsArray = saveObsAsArray;
 	}
 	
 	public Obs withFieldType(String fieldType) {
@@ -234,7 +262,39 @@ public class Obs {
 		this.humanReadableValues = humanReadableValues;
 		return this;
 	}
-
+	
+	public Obs addToHumanReadableValuesList(Object humanReadableValue) {
+		if (humanReadableValues == null) {
+			humanReadableValues = new ArrayList<Object>();
+		}
+		humanReadableValues.add(humanReadableValue);
+		return this;
+	}
+	
+	public Obs withHumanReadableValue(Object humanReadableValue) {
+		return addToHumanReadableValuesList(humanReadableValue);
+	}
+	
+	public Obs withsaveObsAsArray(boolean saveObsAsArray) {
+		setSaveObsAsArray(saveObsAsArray);
+		return this;
+	}
+	
+	public Object getHumanReadableValue() {
+		if (humanReadableValues.size() > 1) {
+			throw new RuntimeException(
+			        "Multiset values can not be handled like single valued fields. Use function getValues");
+		}
+		if (humanReadableValues == null || humanReadableValues.size() == 0) {
+			return null;
+		}
+		return humanReadableValues.get(0);
+	}
+	
+	public void setHumanReadableValue(Object humanReadableValue) {
+		addToHumanReadableValuesList(humanReadableValue);
+	}
+	
 	@Override
 	public final boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o, "set");

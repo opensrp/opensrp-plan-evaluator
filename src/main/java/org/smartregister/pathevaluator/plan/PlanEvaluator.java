@@ -1,22 +1,20 @@
 package org.smartregister.pathevaluator.plan;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
-import org.smartregister.pathevaluator.TriggerType;
+import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TriggerEventPayload;
+import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
 import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
+import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
-import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.path.FHIRPathBooleanValue;
-import com.ibm.fhir.path.FHIRPathNode;
-import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
 
 /**
  * @author Samuel Githengi created on 06/09/20
@@ -32,29 +30,15 @@ public class PlanEvaluator {
 	private TriggerHelper triggerHelper;
 	
 	private String username;
-
+	
 	public PlanEvaluator(String username) {
 		actionHelper = new ActionHelper();
 		conditionHelper = new ConditionHelper(actionHelper);
 		taskHelper = new TaskHelper();
 		triggerHelper = new TriggerHelper(actionHelper);
-		this.username=username;
+		this.username = username;
 	}
-
-	private FHIRPathEvaluator fhirPathEvaluator = FHIRPathEvaluator.evaluator();
-
-	public boolean evaluateBooleanExpression(Resource resource, String expression) {
-
-		try {
-			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, expression);
-			return nodes != null ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean() : false;
-		}
-		catch (Exception e) {
-			return false;
-		}
-
-	}
-
+	
 	/**
 	 * Evaluates plan after plan is saved on updated
 	 *
@@ -67,9 +51,9 @@ public class PlanEvaluator {
 		        || triggerEvent.getTriggerEvent().equals(TriggerType.PLAN_JURISDICTION_MODIFICATION))) {
 			evaluatePlan(planDefinition, triggerEvent.getTriggerEvent(), triggerEvent.getJurisdictions());
 		}
-
+		
 	}
-
+	
 	/**
 	 * Evaluates a plan if an encounter is submitted
 	 *
@@ -77,8 +61,16 @@ public class PlanEvaluator {
 	 * @param questionnaireResponse the questionnaireResponse that has just been submitted
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, QuestionnaireResponse questionnaireResponse) {
+		QuestionnaireResponse.Item.Answer location = PathEvaluatorLibrary.getInstance()
+		        .evaluateElementExpression(questionnaireResponse,
+		            "QuestionnaireResponse.item.where(linkId='locationId').answer")
+		        .element().as(QuestionnaireResponse.Item.Answer.class);
+		
+		evaluatePlan(planDefinition, TriggerType.EVENT_SUBMISSION,
+		    new Jurisdiction(location.getValue().as(com.ibm.fhir.model.type.String.class).getValue()),
+		    questionnaireResponse);
 	}
-
+	
 	/**
 	 * Evaluates a plan for task generation
 	 *
@@ -90,7 +82,7 @@ public class PlanEvaluator {
 		jurisdictions.parallelStream()
 		        .forEach(jurisdiction -> evaluatePlan(planDefinition, triggerEvent, jurisdiction, null));
 	}
-
+	
 	/**
 	 * Evaluates a plan for task generation
 	 *
@@ -103,13 +95,25 @@ public class PlanEvaluator {
 		planDefinition.getActions().forEach(action -> {
 			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
 			    questionnaireResponse)) {
-				actionHelper.getSubjectResources(action, jurisdiction).forEach(resource -> {
-					if (conditionHelper.evaluateActionConditions(resource, action, planDefinition.getIdentifier(),triggerEvent)) {
-						taskHelper.generateTask(resource, action,planDefinition.getIdentifier(),jurisdiction.getCode(),username);
+				List<? extends DomainResource> resources;
+				if (questionnaireResponse != null) {
+					resources = actionHelper.getSubjectResources(action,
+					    questionnaireResponse.getSubject().getReference().getValue());
+				} else {
+					resources = actionHelper.getSubjectResources(action, jurisdiction);
+					
+				}
+				resources.forEach(resource -> {
+					if (conditionHelper.evaluateActionConditions(
+					    questionnaireResponse == null ? resource
+					            : questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
+					    action, planDefinition.getIdentifier(), triggerEvent)) {
+						taskHelper.generateTask(resource, action, planDefinition.getIdentifier(), jurisdiction.getCode(),
+						    username,questionnaireResponse);
 					}
 				});
 			}
 		});
 	}
-
+	
 }

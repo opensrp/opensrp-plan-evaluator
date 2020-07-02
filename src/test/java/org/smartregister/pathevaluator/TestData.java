@@ -126,8 +126,10 @@ public class TestData {
 		        .answer(Answer.builder().value(of("Residential Structure")).build()).build();
 		Item businessStatus = Item.builder().linkId(of("business_status"))
 		        .answer(Answer.builder().value(of("Not Visited")).build()).build();
+		Item location = Item.builder().linkId(of("locationId"))
+		        .answer(Answer.builder().value(of("123343430mmmj")).build()).build();
 		return QuestionnaireResponse.builder().status(QuestionnaireResponseStatus.COMPLETED)
-		        .subject(Reference.builder().reference(of("098787kml-jsks09")).build()).item(structureType, businessStatus)
+		        .subject(Reference.builder().reference(of("098787kml-jsks09")).build()).item(structureType, businessStatus,location)
 		        .build();
 	}
 

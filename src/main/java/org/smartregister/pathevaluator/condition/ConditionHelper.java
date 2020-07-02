@@ -48,7 +48,7 @@ public class ConditionHelper {
 			        && !triggerEvent.getValue().equalsIgnoreCase(condition.getExpression().getReference())) {
 				continue;
 			}
-			SubjectConcept concept = condition.getExpression().getSubjectConcept();
+			SubjectConcept concept = condition.getExpression().getSubjectCodableConcept();
 			if (concept != null) {
 				@SuppressWarnings("unchecked")
 				List<Resource> resources = (List<Resource>) actionHelper.getConditionSubjectResources(condition, action,

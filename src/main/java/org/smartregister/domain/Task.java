@@ -61,7 +61,7 @@ public class Task  implements Serializable{
 	@SerializedName("note")
 	private List<Note> notes;
 
-	private Long serverVersion;
+	private long serverVersion;
 
 	private String reasonReference;
 
