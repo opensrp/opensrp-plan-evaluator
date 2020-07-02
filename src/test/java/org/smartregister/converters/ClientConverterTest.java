@@ -72,7 +72,7 @@ public class ClientConverterTest {
 		client.setFirstName("John");
 		client.setMiddleName("Lewis");
 		client.setLastName("Johny");
-		client.setGender("male");
+		client.setGender("unknown");
 		Patient patient = ClientConverter.convertClientToPatientResource(client);
 		assertNotNull(patient);
 		assertEquals(client.getGender(), patient.getGender().getValueAsEnumConstant().value());
