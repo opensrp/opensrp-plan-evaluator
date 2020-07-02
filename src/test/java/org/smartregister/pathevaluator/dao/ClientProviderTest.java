@@ -6,9 +6,7 @@ package org.smartregister.pathevaluator.dao;
 import static com.ibm.fhir.model.type.String.of;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.smartregister.pathevaluator.TestData.createResponse;
 
 import java.util.Collections;
@@ -92,6 +90,19 @@ public class ClientProviderTest {
 		assertEquals(expected, clientProvider.getFamilies(task, ResourceType.TASK));
 		verify(clientDao).findClientById(task.getFor().getReference().getValue());
 	}
+
+	@Test
+	public void testGetFamiliesForQuestionnareResponse() {
+		when(clientDao.findClientById(questionnaireResponse.getId())).thenReturn(expected);
+		assertEquals(expected, clientProvider.getFamilies(questionnaireResponse, ResourceType.QUESTIONAIRRE_RESPONSE));
+		verify(clientDao).findClientById(questionnaireResponse.getId());
+	}
+
+	@Test
+	public void testGetFamiliesForFamily() {
+		assertEquals(expected, clientProvider.getFamilies(patient, ResourceType.FAMILY));
+		verify(clientDao,never()).findClientById(task.getFor().getReference().getValue());
+	}
 	
 	@Test
 	public void testGetFamilyMembersForFamily() {
@@ -126,6 +137,12 @@ public class ClientProviderTest {
 		when(clientDao.findFamilyMemberyByJurisdiction(task.getId())).thenReturn(expected);
 		assertEquals(expected, clientProvider.getFamilyMembers(task, ResourceType.JURISDICTION));
 		verify(clientDao).findFamilyMemberyByJurisdiction(task.getId());
+	}
+
+	@Test
+	public void testGetFamiliesForPerson() {
+		assertEquals(expected, clientProvider.getFamilyMembers(patient, ResourceType.PERSON));
+		verify(clientDao,never()).findClientById(patient.getId());
 	}
 
 }

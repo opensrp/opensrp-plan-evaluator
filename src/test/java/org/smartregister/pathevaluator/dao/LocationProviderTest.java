@@ -137,4 +137,17 @@ public class LocationProviderTest {
 		assertEquals(expected, locationProvider.getJurisdictions(task, ResourceType.TASK));
 		verify(locationDao).findJurisdictionsById(task.getGroupIdentifier().getValue().getValue());
 	}
+
+	@Test
+	public void testGetJurisdictionsForQuestionarreResponse() {
+		when(locationDao.findJurisdictionsById(questionnaireResponse.getId())).thenReturn(expected);
+		assertEquals(expected, locationProvider.getJurisdictions(questionnaireResponse, ResourceType.QUESTIONAIRRE_RESPONSE));
+		verify(locationDao).findJurisdictionsById(questionnaireResponse.getId());
+	}
+
+	@Test
+	public void testGetJurisdictionsForJurisdiction() {
+		assertEquals(expected, locationProvider.getJurisdictions(location, ResourceType.JURISDICTION));
+		verify(locationDao,never()).findJurisdictionsById(questionnaireResponse.getId());
+	}
 }
