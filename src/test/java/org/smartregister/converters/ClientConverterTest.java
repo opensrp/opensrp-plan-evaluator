@@ -86,11 +86,7 @@ public class ClientConverterTest {
 		assertEquals(client.getDeathdate().toString("yyyy-MM-dd'T'HH:mm'Z'"),
 				patient.getDeceased().as(com.ibm.fhir.model.type.DateTime.class).getValue().toString());
 		PathEvaluatorLibrary.init(null, null, null,null);
-		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(patient, "Patient.identifier.where(system='opensrp_id')");
-		Identifier identifierNode = node.element().as(Identifier.class);
-		assertEquals("20366639", identifierNode.getValue().getValue());
-
-		node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(patient, "Patient.identifier.type.where(text='family')");
+		FHIRPathElementNode node = PathEvaluatorLibrary.getInstance().evaluateElementExpression(patient, "Patient.identifier.type.where(text='family')");
 		CodeableConcept familyNode = node.element().as(CodeableConcept.class);
 		assertEquals(1, familyNode.getCoding().get(0).getExtension().size());
 		assertEquals("e6d3ea63-1309-4302-bd93-a6d0571cc645", familyNode.getCoding().get(0).getExtension().get(0).getValue().as(com.ibm.fhir.model.type.String.class).getValue());
