@@ -29,10 +29,7 @@ import org.mockito.stubbing.Answer;
 import org.smartregister.domain.Action.SubjectConcept;
 import org.smartregister.domain.Expression;
 import org.smartregister.domain.Trigger;
-import org.smartregister.pathevaluator.PathEvaluatorLibrary;
-import org.smartregister.pathevaluator.ResourceType;
-import org.smartregister.pathevaluator.TestData;
-import org.smartregister.pathevaluator.TriggerType;
+import org.smartregister.pathevaluator.*;
 import org.smartregister.pathevaluator.action.ActionHelper;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
@@ -126,5 +123,11 @@ public class TriggerHelperTest {
 		
 		assertTrue(triggerHelper.evaluateTrigger(Collections.singleton(trigger), TriggerType.EVENT_SUBMISSION,
 		    planIdentifier, questionnaireResponse));
+	}
+
+	@Test(expected = ResourceTypeUnknownException.class)
+	public void testResourceTypeFromThrowsException() {
+		SubjectConcept subjectConcept = new SubjectConcept("Task1");
+		ResourceType.from(subjectConcept);
 	}
 }
