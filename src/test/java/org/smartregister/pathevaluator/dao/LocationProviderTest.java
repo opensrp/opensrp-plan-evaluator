@@ -101,7 +101,6 @@ public class LocationProviderTest {
 
 	@Test
 	public void testGetLocationsForLocations() {
-		when(locationDao.findLocationsById(location.getId())).thenReturn(expectedLocation);
 		assertEquals(expected, locationProvider.getLocations(location, ResourceType.LOCATION));
 		verify(locationDao,never()).findLocationsById(location.getId());
 	}
