@@ -9,16 +9,19 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.smartregister.pathevaluator.TestData.createResponse;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.smartregister.domain.Jurisdiction;
 import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.TestData;
 
@@ -43,7 +46,9 @@ public class ClientProviderTest {
 	private Location location = TestData.createLocation();
 	
 	private Task task = TestData.createTask();
-	
+
+	private QuestionnaireResponse questionnaireResponse = createResponse();
+
 	private List<Patient> expected = Collections.singletonList(patient);
 	
 	@Before
@@ -108,4 +113,19 @@ public class ClientProviderTest {
 		assertEquals(expected, clientProvider.getFamilyMembers(task, ResourceType.TASK));
 		verify(clientDao).findClientById(task.getFor().getReference().getValue());
 	}
+
+	@Test
+	public void testGetFamilyMembersForQuestionaarreResponse() {
+		when(clientDao.findClientById(questionnaireResponse.getId())).thenReturn(expected);
+		assertEquals(expected, clientProvider.getFamilyMembers(questionnaireResponse, ResourceType.QUESTIONAIRRE_RESPONSE));
+		verify(clientDao).findClientById(questionnaireResponse.getId());
+	}
+
+	@Test
+	public void testGetFamilyMembersForJurisdiction() {
+		when(clientDao.findFamilyMemberyByJurisdiction(task.getId())).thenReturn(expected);
+		assertEquals(expected, clientProvider.getFamilyMembers(task, ResourceType.JURISDICTION));
+		verify(clientDao).findFamilyMemberyByJurisdiction(task.getId());
+	}
+
 }
