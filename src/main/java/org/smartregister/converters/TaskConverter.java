@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.ISODateTimeFormat;
+import org.smartregister.domain.Note;
 
 import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.Annotation;
@@ -54,13 +55,15 @@ public class TaskConverter {
 		Element author;
 		DateTime time;
 		
-		for (int i = 0; i < domainTask.getNotes().size(); i++) {
-			text = Markdown.builder().value(domainTask.getNotes().get(i).getText()).build();
-			java.lang.String strDate = ISODateTimeFormat.dateTime().print(domainTask.getNotes().get(i).getTime());
-			time = DateTime.builder().value(strDate).build();
-			author = String.builder().value(domainTask.getNotes().get(i).getAuthorString()).build();
-			annotation = Annotation.builder().text(text).time(time).author(author).build();
-			annotationList.add(annotation);
+		if (domainTask.getNotes() != null) {
+			for (Note note : domainTask.getNotes()) {
+				text = Markdown.builder().value(note.getText()).build();
+				java.lang.String strDate = ISODateTimeFormat.dateTime().print(note.getTime());
+				time = DateTime.builder().value(strDate).build();
+				author = String.builder().value(note.getAuthorString()).build();
+				annotation = Annotation.builder().text(text).time(time).author(author).build();
+				annotationList.add(annotation);
+			}
 		}
 		
 		if (StringUtils.isNotBlank(domainTask.getRequester())) {
@@ -68,11 +71,10 @@ public class TaskConverter {
 		}
 		
 		Reference owner = Reference.builder().reference(String.builder().value(domainTask.getOwner()).build()).build();
-			
+		
 		if (StringUtils.isNotBlank(domainTask.getReasonReference())) {
 			builder.statusReason(CodeableConcept.builder().text(String.of(domainTask.getReasonReference())).build());
 		}
-		
 		
 		java.lang.String authoredOnString = ISODateTimeFormat.dateTime().print(domainTask.getAuthoredOn());
 		DateTime authoredOn = DateTime.builder().value(authoredOnString).build();
