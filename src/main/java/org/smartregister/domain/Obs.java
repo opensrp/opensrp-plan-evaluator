@@ -292,7 +292,6 @@ public class Obs {
 		return humanReadableValues.get(0);
 	}
 
-	@JsonIgnore
 	public void setHumanReadableValue(Object humanReadableValue) {
 		addToHumanReadableValuesList(humanReadableValue);
 	}
