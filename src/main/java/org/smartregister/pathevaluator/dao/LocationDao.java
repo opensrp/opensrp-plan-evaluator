@@ -35,5 +35,7 @@ public interface LocationDao {
 	 * @return the structures in a jurisdiction
 	 */
 	List<Location> findLocationByJurisdiction(String jurisdiction);
+
+	List<Location> findChildLocationByJurisdiction(boolean returnGeometry, String id);
 	
 }
