@@ -5,10 +5,13 @@ package org.smartregister.pathevaluator;
 
 import static com.ibm.fhir.model.type.String.of;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.utils.DateTypeConverter;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
@@ -136,5 +139,16 @@ public class TestData {
 	public static PlanDefinition createPlanV1() {
 		//TODO : Define expression
 		return gson.fromJson(plan_1, PlanDefinition.class);
+	}
+
+	public static TriggerEventPayload createTriggerEventPayload() {
+		List<Jurisdiction> jurisdictionList = new ArrayList<>();
+		Jurisdiction jurisdiction = new Jurisdiction();
+		jurisdiction.setCode("test-jurisdiction");
+		jurisdictionList.add(jurisdiction);
+		TriggerEventPayload triggerEventPayload = new TriggerEventPayload();
+		triggerEventPayload.setTriggerEvent(TriggerType.PLAN_ACTIVATION);
+		triggerEventPayload.setJurisdictions(jurisdictionList);
+		return triggerEventPayload;
 	}
 }

@@ -36,6 +36,6 @@ public interface LocationDao {
 	 */
 	List<Location> findLocationByJurisdiction(String jurisdiction);
 
-	List<Location> findChildLocationByJurisdiction(boolean returnGeometry, String id);
+	List<String> findChildLocationByJurisdiction(String id);
 	
 }
