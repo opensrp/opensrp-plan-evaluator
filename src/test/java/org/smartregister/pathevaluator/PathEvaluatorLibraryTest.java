@@ -93,5 +93,10 @@ public class PathEvaluatorLibraryTest {
 		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(location,
 		    "$this.contained.where(Patient.name.family = 'Kelvin').exists()"));
 	}
+
+	@Test
+	public void testEvaluateBooleanExpressionWithResourceAsNull() {
+		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(null, "$this.contained.exists()"));
+	}
 	
 }

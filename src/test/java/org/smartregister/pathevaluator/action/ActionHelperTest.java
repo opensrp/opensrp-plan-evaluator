@@ -83,6 +83,8 @@ public class ActionHelperTest {
 	private Condition condition;
 	
 	private Expression expression;
+
+	private QuestionnaireResponse questionnaireResponse;
 	
 	private String plan = UUID.randomUUID().toString();
 	
@@ -102,6 +104,7 @@ public class ActionHelperTest {
 		jurisdiction = new Jurisdiction("12123");
 		when(action.getSubjectCodableConcept()).thenReturn(subjectConcept);
 		patient = TestData.createPatient();
+		questionnaireResponse = TestData.createResponse();
 		expression = Expression.builder().expression("Patient.name.family = 'John'").subjectCodableConcept(subjectConcept).build();
 		condition = Condition.builder().kind("applicability").expression(expression).build();
 	}
@@ -206,6 +209,15 @@ public class ActionHelperTest {
 		when(eventProvider.getEvents(patient, plan)).thenReturn(expected);
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
 		verify(eventProvider).getEvents(patient, plan);
+	}
+
+	@Test
+	public void testGetQuestionnaireConditionResourcesV2() {
+		subjectConcept.setText(ResourceType.QUESTIONAIRRE_RESPONSE.value());
+		List<QuestionnaireResponse> expected = Collections.singletonList(TestData.createResponse());
+		when(eventProvider.getEvents(questionnaireResponse, plan)).thenReturn(expected);
+		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, questionnaireResponse, plan));
+		verify(eventProvider).getEvents(questionnaireResponse, plan);
 	}
 	
 }

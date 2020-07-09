@@ -45,7 +45,7 @@ public class Obs {
 	
 	@JsonProperty
 	private List<Object> humanReadableValues;
-	
+
 	private boolean saveObsAsArray;
 	
 	public Obs() {
@@ -279,7 +279,8 @@ public class Obs {
 		setSaveObsAsArray(saveObsAsArray);
 		return this;
 	}
-	
+
+	@JsonIgnore
 	public Object getHumanReadableValue() {
 		if (humanReadableValues.size() > 1) {
 			throw new RuntimeException(
@@ -290,7 +291,7 @@ public class Obs {
 		}
 		return humanReadableValues.get(0);
 	}
-	
+
 	public void setHumanReadableValue(Object humanReadableValue) {
 		addToHumanReadableValuesList(humanReadableValue);
 	}
