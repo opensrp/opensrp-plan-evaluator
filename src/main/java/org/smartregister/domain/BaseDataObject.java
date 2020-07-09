@@ -109,7 +109,7 @@ public abstract class BaseDataObject extends BaseDataEntity {
 		return serverVersion;
 	}
 	
-	public void setServerVersion(Long version) {
+	public void setServerVersion(long version) {
 		this.serverVersion = version;
 	}
 	
