@@ -141,14 +141,4 @@ public class TestData {
 		return gson.fromJson(plan_1, PlanDefinition.class);
 	}
 
-	public static TriggerEventPayload createTriggerEventPayload() {
-		List<Jurisdiction> jurisdictionList = new ArrayList<>();
-		Jurisdiction jurisdiction = new Jurisdiction();
-		jurisdiction.setCode("test-jurisdiction");
-		jurisdictionList.add(jurisdiction);
-		TriggerEventPayload triggerEventPayload = new TriggerEventPayload();
-		triggerEventPayload.setTriggerEvent(TriggerType.PLAN_ACTIVATION);
-		triggerEventPayload.setJurisdictions(jurisdictionList);
-		return triggerEventPayload;
-	}
 }
