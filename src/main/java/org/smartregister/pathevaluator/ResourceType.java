@@ -15,8 +15,9 @@ public enum ResourceType {
 	FAMILY("Family"),
 	PERSON("Person"),
 	TASK("Task"),
-	QUESTIONAIRRE_RESPONSE("QuestionnaireResponse");
-	
+	QUESTIONAIRRE_RESPONSE("QuestionnaireResponse"),
+	GLOBAL_TASK("Global.Task");
+
 	private String value;
 	
 	private ResourceType(String value) {
