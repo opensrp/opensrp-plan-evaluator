@@ -70,6 +70,20 @@ public class TaskHelper {
 			logger.info("Created task " + task.toString());
 		}
 	}
+
+	public void updateTask(DomainResource resource, Action action) {
+		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
+		Task task = taskDao.getTaskById(resource.getId());
+		for (DynamicValue dynamicValue : action.getDynamicValue()) {
+			if (dynamicValue.getPath().equals("status")) {
+				task.setStatus(Task.TaskStatus.valueOf(dynamicValue.getExpression().getExpression()));
+			}
+			if (dynamicValue.getPath().equals("businessStatus")) {
+				task.setBusinessStatus(dynamicValue.getExpression().getExpression());
+			}
+		}
+		taskDao.updateTask(task);
+	}
 	
 	private DateTime getDateTime(ExecutionPeriod executionPeriod, boolean start) {
 		if (executionPeriod != null) {
