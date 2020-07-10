@@ -11,6 +11,7 @@ import org.smartregister.pathevaluator.TriggerEventPayload;
 import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
+import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
@@ -29,6 +30,8 @@ public class PlanEvaluator {
 	private TaskHelper taskHelper;
 	
 	private TriggerHelper triggerHelper;
+
+	private LocationDao locationDao;
 	
 	private String username;
 	
@@ -81,7 +84,13 @@ public class PlanEvaluator {
 	 */
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, List<Jurisdiction> jurisdictions) {
 		jurisdictions.parallelStream()
-		        .forEach(jurisdiction -> evaluatePlan(planDefinition, triggerEvent, jurisdiction, null));
+				.forEach(jurisdiction -> {
+					evaluatePlan(planDefinition, triggerEvent, jurisdiction, null);
+					List<String> locationIds = locationDao.findChildLocationByJurisdiction(jurisdiction.getCode());
+					for (String locationId : locationIds) {
+						evaluatePlan(planDefinition, triggerEvent, new Jurisdiction(locationId), null);
+					}
+				});
 	}
 	
 	/**
