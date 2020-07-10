@@ -112,6 +112,7 @@ public class PlanEvaluatorTest {
 		});
 		when(conditionHelper.evaluateActionConditions(patients.get(0), action, plan, TriggerType.PLAN_ACTIVATION))
 		        .thenReturn(true);
+		when(triggerHelper.evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan, null)).thenReturn(true);
 		when(locationDao.findChildLocationByJurisdiction(anyString())).thenReturn(jurisdictionList);
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
 		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size()
