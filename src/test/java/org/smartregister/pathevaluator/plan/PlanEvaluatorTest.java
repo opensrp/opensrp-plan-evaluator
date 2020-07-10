@@ -148,10 +148,8 @@ public class PlanEvaluatorTest {
 		});
 		when(conditionHelper.evaluateActionConditions(any(), eq(action), eq(plan), eq(TriggerType.EVENT_SUBMISSION)))
 		        .thenReturn(true);
-		when(locationDao.findChildLocationByJurisdiction(anyString())).thenReturn(jurisdictionList);
 		when(triggerHelper.evaluateTrigger(eq(action.getTrigger()), eq(TriggerType.EVENT_SUBMISSION), eq(plan),
 		    any(QuestionnaireResponse.class))).thenReturn(true);
-		
 		planEvaluator.evaluatePlan(planDefinition, questionnaire);
 		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size();
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.EVENT_SUBMISSION, plan,
