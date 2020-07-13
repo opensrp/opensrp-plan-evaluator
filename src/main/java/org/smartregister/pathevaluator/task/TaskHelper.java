@@ -3,7 +3,9 @@
  */
 package org.smartregister.pathevaluator.task;
 
+import java.lang.reflect.Field;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
@@ -73,15 +75,24 @@ public class TaskHelper {
 
 	public void updateTask(DomainResource resource, Action action) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		Task task = taskDao.getTaskById(resource.getId());
-		for (DynamicValue dynamicValue : action.getDynamicValue()) {
-			if (dynamicValue.getPath().equals("status")) {
-				task.setStatus(Task.TaskStatus.valueOf(dynamicValue.getExpression().getExpression()));
-			}
-			if (dynamicValue.getPath().equals("businessStatus")) {
-				task.setBusinessStatus(dynamicValue.getExpression().getExpression());
+		Task task = taskDao.getTaskByEntityId(resource.getId());
+		try {
+			for (DynamicValue dynamicValue : action.getDynamicValue()) {
+				Field aField = task.getClass().getDeclaredField(dynamicValue.getPath());
+				aField.setAccessible(true);
+				if (aField.getType().isAssignableFrom(Task.TaskStatus.class)) {
+					aField.set(task, Task.TaskStatus.get(dynamicValue.getExpression().getExpression()));
+				} else if (aField.getType().isAssignableFrom(String.class)) {
+					aField.set(task, dynamicValue.getExpression().getExpression());
+				} else {
+					throw new IllegalArgumentException();
+				}
 			}
 		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Exception occurred while updating properties using Reflection" + e);
+		}
+
 		taskDao.updateTask(task);
 	}
 	

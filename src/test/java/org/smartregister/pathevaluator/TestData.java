@@ -7,11 +7,16 @@ import static com.ibm.fhir.model.type.String.of;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.smartregister.domain.Jurisdiction;
+import org.smartregister.domain.Action;
+import org.smartregister.domain.DynamicValue;
+import org.smartregister.domain.Expression;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.utils.DateTypeConverter;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
@@ -102,6 +107,8 @@ public class TestData {
 			+ "}]\n"
 			+ "}";
 
+	public static String TASK_JSON  = "{\"identifier\":\"tsk11231jh22\",\"planIdentifier\":\"IRS_2018_S1\",\"groupIdentifier\":\"2018_IRS-3734{\",\"status\":\"Ready\",\"businessStatus\":\"Not Visited\",\"priority\":3,\"code\":\"IRS\",\"description\":\"Spray House\",\"focus\":\"IRS Visit\",\"for\":\"location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc\",\"executionStartDate\":\"2018-11-10T2200\",\"executionEndDate\":null,\"authoredOn\":\"2018-10-31T0700\",\"lastModified\":\"2018-10-31T0700\",\"owner\":\"demouser\",\"note\":[{\"authorString\":\"demouser\",\"time\":\"2018-01-01T0800\",\"text\":\"This should be assigned to patrick.\"}],\"serverVersion\":0,\"reasonReference\":\"reasonrefuuid\",\"location\":\"catchment1\",\"requester\":\"chw1\",\"syncStatus\":null,\"structureId\":null,\"rowid\":null}";
+
 	public static PlanDefinition createPlan() {
 		return gson.fromJson(plan, PlanDefinition.class);
 	}
@@ -139,6 +146,39 @@ public class TestData {
 	public static PlanDefinition createPlanV1() {
 		//TODO : Define expression
 		return gson.fromJson(plan_1, PlanDefinition.class);
+	}
+
+	public static org.smartregister.domain.Task createDomainTask() {
+       return gson.fromJson(TASK_JSON, org.smartregister.domain.Task.class);
+	}
+
+	public static Action createAction(){
+		Action action = new Action();
+		Set<DynamicValue> dynamicValues = new HashSet<>();
+		DynamicValue dynamicValue = new DynamicValue();
+		Expression expression = new Expression();
+		expression.setExpression("Cancelled");
+		dynamicValue.setPath("status");
+		dynamicValue.setExpression(expression);
+		dynamicValues.add(dynamicValue);
+
+		dynamicValue = new DynamicValue();
+		expression = new Expression();
+		expression.setExpression("Family Already Registered");
+		dynamicValue.setPath("businessStatus");
+		dynamicValue.setExpression(expression);
+		dynamicValues.add(dynamicValue);
+
+		dynamicValue = new DynamicValue();
+		expression = new Expression();
+		expression.setExpression("Family Already Registered");
+		dynamicValue.setPath("businessStatus");
+		dynamicValue.setExpression(expression);
+		dynamicValues.add(dynamicValue);
+
+		action.setType(Action.ActionType.UPDATE);
+		action.setDynamicValue(dynamicValues);
+		return action;
 	}
 
 }
