@@ -24,7 +24,9 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
  * @author Samuel Githengi created on 06/15/20
  */
 public class TaskHelper {
-	
+
+	private PathEvaluatorLibrary pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
+
 	private static Logger logger = Logger.getLogger(TaskHelper.class.getSimpleName());
 	
 	/**
@@ -81,9 +83,9 @@ public class TaskHelper {
 				Field aField = task.getClass().getDeclaredField(dynamicValue.getPath());
 				aField.setAccessible(true);
 				if (aField.getType().isAssignableFrom(Task.TaskStatus.class)) {
-					aField.set(task, Task.TaskStatus.get(dynamicValue.getExpression().getExpression()));
+					aField.set(task, Task.TaskStatus.get(pathEvaluatorLibrary.evaluateStringExpression(resource,dynamicValue.getExpression().getExpression()).string()));
 				} else if (aField.getType().isAssignableFrom(String.class)) {
-					aField.set(task, dynamicValue.getExpression().getExpression());
+					aField.set(task, pathEvaluatorLibrary.evaluateStringExpression(resource,dynamicValue.getExpression().getExpression()).string());
 				} else {
 					throw new IllegalArgumentException();
 				}
