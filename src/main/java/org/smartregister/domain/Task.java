@@ -7,7 +7,9 @@ import lombok.ToString;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ToString
 public class Task  implements Serializable{
@@ -22,7 +24,23 @@ public class Task  implements Serializable{
 		IN_PROGRESS, @SerializedName("Completed")
 		COMPLETED, @SerializedName("Failed")
 		FAILED, @SerializedName("Archived")
-        ARCHIVED
+        ARCHIVED;
+
+		private static final Map<String, TaskStatus> lookup = new HashMap<String, TaskStatus>();
+
+		static {
+			lookup.put("Draft", TaskStatus.DRAFT);
+			lookup.put("Ready", TaskStatus.READY);
+			lookup.put("Cancelled", TaskStatus.CANCELLED);
+			lookup.put("In Progress", TaskStatus.IN_PROGRESS);
+			lookup.put("Completed", TaskStatus.COMPLETED);
+			lookup.put("Failed", TaskStatus.FAILED);
+			lookup.put("Archived", TaskStatus.ARCHIVED);
+		}
+
+		public static TaskStatus get(String algorithm) {
+			return lookup.get(algorithm);
+		}
 	}
 
 	public static final String[] INACTIVE_TASK_STATUS = new String[]{TaskStatus.CANCELLED.name(), TaskStatus.ARCHIVED.name()};
