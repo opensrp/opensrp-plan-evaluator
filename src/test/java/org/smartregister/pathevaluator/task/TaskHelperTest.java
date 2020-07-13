@@ -123,7 +123,7 @@ public class TaskHelperTest {
 		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
 		Task updatedTask = taskCaptor.getValue();
 		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
-//		assertEquals("Family Already Registered", updatedTask.getBusinessStatus());
-//		assertEquals("CANCELLED", updatedTask.getStatus().name());
+		assertEquals("Family Already Registered", updatedTask.getBusinessStatus());
+		assertEquals("CANCELLED", updatedTask.getStatus().name());
 	}
 }
