@@ -24,6 +24,7 @@ import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathElementNode;
 import com.ibm.fhir.path.FHIRPathNode;
+import com.ibm.fhir.path.FHIRPathStringValue;
 import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
 import com.ibm.fhir.path.exception.FHIRPathException;
 
@@ -108,6 +109,18 @@ public class PathEvaluatorLibrary {
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().asElementNode() : null;
+		}
+		catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
+			return null;
+		}
+	}
+	
+	public FHIRPathStringValue evaluateStringExpression(DomainResource resource, String expression) {
+		
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
+			return iterator.hasNext() ? iterator.next().as(FHIRPathStringValue.class) : null;
 		}
 		catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
