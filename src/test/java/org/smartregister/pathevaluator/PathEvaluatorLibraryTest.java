@@ -4,6 +4,7 @@
 package org.smartregister.pathevaluator;
 
 import static com.ibm.fhir.model.type.String.of;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -18,6 +19,7 @@ import com.ibm.fhir.model.type.Date;
 import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Reference;
+import com.ibm.fhir.path.FHIRPathStringValue;
 import com.ibm.fhir.path.exception.FHIRPathException;
 
 /**
@@ -93,10 +95,19 @@ public class PathEvaluatorLibraryTest {
 		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(location,
 		    "$this.contained.where(Patient.name.family = 'Kelvin').exists()"));
 	}
-
+	
 	@Test
 	public void testEvaluateBooleanExpressionWithResourceAsNull() {
 		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(null, "$this.contained.exists()"));
+	}
+	
+	@Test
+	public void testEvaluateActionExpressions() {
+		FHIRPathStringValue node = pathEvaluatorLibrary.evaluateStringExpression(patient, "$this.id");
+		assertEquals(patient.getId(), node.string());
+		
+		node = pathEvaluatorLibrary.evaluateStringExpression(patient, "'Cancelled'");
+		assertEquals("Cancelled", node.string());
 	}
 	
 }
