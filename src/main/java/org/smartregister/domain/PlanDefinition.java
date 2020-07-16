@@ -1,5 +1,6 @@
 package org.smartregister.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.joda.time.LocalDate;
@@ -10,8 +11,10 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by samuelgithengi on 4/29/19.
  */
-public class PlanDefinition implements Comparable<PlanDefinition> {
-	
+public class PlanDefinition implements Comparable<PlanDefinition> , Serializable {
+
+	private static final long serialVersionUID = 7928849685467336510L;
+
 	@JsonProperty
 	private String identifier;
 	
