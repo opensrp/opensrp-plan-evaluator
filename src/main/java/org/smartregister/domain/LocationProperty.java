@@ -39,6 +39,8 @@ public class LocationProperty {
 	private Date effectiveEndDate;
 
 	private int version;
+	
+	private String username;
 
 	private transient Map<String, String> customProperties = new HashMap<>();
 
@@ -128,4 +130,14 @@ public class LocationProperty {
 	public void setCustomProperties(Map<String, String> customProperties) {
 		this.customProperties = customProperties;
 	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	
 }
