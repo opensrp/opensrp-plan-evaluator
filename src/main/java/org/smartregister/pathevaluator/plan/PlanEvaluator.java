@@ -12,6 +12,7 @@ import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
 import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.QueuingHelper;
 import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
@@ -34,15 +35,22 @@ public class PlanEvaluator {
 	private LocationDao locationDao;
 	
 	private String username;
+
+	private QueuingHelper queuingHelper;
 	
 	public PlanEvaluator(String username) {
+		this(username,null);
+	}
+
+	public PlanEvaluator(String username, QueuingHelper queuingHelper) {
 		actionHelper = new ActionHelper();
 		conditionHelper = new ConditionHelper(actionHelper);
 		taskHelper = new TaskHelper();
 		triggerHelper = new TriggerHelper(actionHelper);
 		this.username = username;
+		this.queuingHelper = queuingHelper;
 	}
-	
+
 	/**
 	 * Evaluates plan after plan is saved on updated
 	 *
@@ -88,7 +96,7 @@ public class PlanEvaluator {
 					evaluatePlan(planDefinition, triggerEvent, jurisdiction, null);
 					List<String> locationIds = locationDao.findChildLocationByJurisdiction(jurisdiction.getCode());
 					for (String locationId : locationIds) {
-						evaluatePlan(planDefinition, triggerEvent, new Jurisdiction(locationId), null);
+						queuingHelper.addToQueue(planDefinition.getIdentifier(),triggerEvent,locationId);
 					}
 				});
 	}
@@ -99,7 +107,7 @@ public class PlanEvaluator {
 	 * @param planDefinition the plan being evaluated
 	 * @param questionnaireResponse {@link QuestionnaireResponse} just submitted
 	 */
-	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
+	public void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
 		
 		planDefinition.getActions().forEach(action -> {
