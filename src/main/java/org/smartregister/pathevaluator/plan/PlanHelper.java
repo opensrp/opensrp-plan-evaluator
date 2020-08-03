@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * @author Samuel Githengi created on 06/11/20
  */
 public class PlanHelper {
-
+	
 	/**
 	 * Get the plan Trigger event
 	 *
@@ -26,14 +26,17 @@ public class PlanHelper {
 	 * @return the Trigger event
 	 */
 	public static TriggerEventPayload evaluatePlanModification(PlanDefinition planDefinition,
-			PlanDefinition existingPlanDefinition) {
-		if (existingPlanDefinition == null && planDefinition.getStatus().equals(PlanStatus.ACTIVE)) {
-
+	        PlanDefinition existingPlanDefinition) {
+		if ((existingPlanDefinition == null && planDefinition.getStatus().equals(PlanStatus.ACTIVE))
+		        || (!PlanStatus.ACTIVE.equals(existingPlanDefinition.getStatus())
+		                && planDefinition.getStatus().equals(PlanStatus.ACTIVE))) {
+			
 			return new TriggerEventPayload(TriggerType.PLAN_ACTIVATION, planDefinition.getJurisdiction());
-
+			
 		} else if (existingPlanDefinition != null && planDefinition.getStatus().equals(PlanStatus.ACTIVE)) {
-
+			
 			// check for jurisdiction change
+			/**@formatter:off*/
 			Set<String> existingJurisdictions = existingPlanDefinition.getJurisdiction()
 					.stream()
 					.map(Jurisdiction::getCode)
@@ -43,10 +46,10 @@ public class PlanHelper {
 					.stream()
 					.filter(j -> !existingJurisdictions.contains(j.getCode()))
 					.collect(Collectors.toList());
-
+			/**@formatter:on*/
 			return new TriggerEventPayload(TriggerType.PLAN_JURISDICTION_MODIFICATION, modifiedJurisdictions);
 		}
 		return null;
 	}
-
+	
 }
