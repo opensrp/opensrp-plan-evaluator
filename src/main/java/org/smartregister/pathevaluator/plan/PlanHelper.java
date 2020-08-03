@@ -28,7 +28,7 @@ public class PlanHelper {
 	public static TriggerEventPayload evaluatePlanModification(PlanDefinition planDefinition,
 	        PlanDefinition existingPlanDefinition) {
 		if ((existingPlanDefinition == null && planDefinition.getStatus().equals(PlanStatus.ACTIVE))
-		        || (!PlanStatus.ACTIVE.equals(existingPlanDefinition.getStatus())
+		        || (existingPlanDefinition != null && !PlanStatus.ACTIVE.equals(existingPlanDefinition.getStatus())
 		                && planDefinition.getStatus().equals(PlanStatus.ACTIVE))) {
 			
 			return new TriggerEventPayload(TriggerType.PLAN_ACTIVATION, planDefinition.getJurisdiction());
