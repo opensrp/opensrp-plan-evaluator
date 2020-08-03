@@ -30,7 +30,7 @@ public class PlanEvaluator {
 	private TaskHelper taskHelper;
 	
 	private TriggerHelper triggerHelper;
-
+	
 	private LocationDao locationDao;
 	
 	private String username;
@@ -41,6 +41,7 @@ public class PlanEvaluator {
 		taskHelper = new TaskHelper();
 		triggerHelper = new TriggerHelper(actionHelper);
 		this.username = username;
+		this.locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 	}
 	
 	/**
@@ -83,14 +84,13 @@ public class PlanEvaluator {
 	 * @param jurisdictions
 	 */
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, List<Jurisdiction> jurisdictions) {
-		jurisdictions.parallelStream()
-				.forEach(jurisdiction -> {
-					evaluatePlan(planDefinition, triggerEvent, jurisdiction, null);
-					List<String> locationIds = locationDao.findChildLocationByJurisdiction(jurisdiction.getCode());
-					for (String locationId : locationIds) {
-						evaluatePlan(planDefinition, triggerEvent, new Jurisdiction(locationId), null);
-					}
-				});
+		jurisdictions.parallelStream().forEach(jurisdiction -> {
+			evaluatePlan(planDefinition, triggerEvent, jurisdiction, null);
+			List<String> locationIds = locationDao.findChildLocationByJurisdiction(jurisdiction.getCode());
+			for (String locationId : locationIds) {
+				evaluatePlan(planDefinition, triggerEvent, new Jurisdiction(locationId), null);
+			}
+		});
 	}
 	
 	/**
@@ -122,9 +122,9 @@ public class PlanEvaluator {
 							taskHelper.updateTask(resource, action);
 						} else {
 							taskHelper.generateTask(resource, action, planDefinition.getIdentifier(), jurisdiction.getCode(),
-									username, questionnaireResponse);
+							    username, questionnaireResponse);
 						}
-
+						
 					}
 				});
 			}
