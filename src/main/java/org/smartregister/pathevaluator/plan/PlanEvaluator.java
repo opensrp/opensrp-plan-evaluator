@@ -138,5 +138,8 @@ public class PlanEvaluator {
 			}
 		});
 	}
-	
+
+	public void setLocationDao(LocationDao locationDao) {
+		this.locationDao = locationDao;
+	}
 }
