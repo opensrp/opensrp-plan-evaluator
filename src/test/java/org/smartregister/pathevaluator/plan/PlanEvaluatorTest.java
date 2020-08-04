@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
@@ -37,6 +38,7 @@ import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
 import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.QueuingHelper;
 import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
@@ -65,6 +67,9 @@ public class PlanEvaluatorTest {
 
 	@Mock
 	private LocationDao locationDao;
+
+	@Mock
+	private QueuingHelper queuingHelper;
 	
 	@Captor
 	private ArgumentCaptor<QuestionnaireResponse> questionnaireCaptor;
@@ -82,6 +87,7 @@ public class PlanEvaluatorTest {
 		Whitebox.setInternalState(planEvaluator, "taskHelper", taskHelper);
 		Whitebox.setInternalState(planEvaluator, "triggerHelper", triggerHelper);
 		Whitebox.setInternalState(planEvaluator, "locationDao", locationDao);
+		Whitebox.setInternalState(planEvaluator, "queuingHelper", queuingHelper);
 	}
 	
 	@Test
@@ -114,9 +120,9 @@ public class PlanEvaluatorTest {
 		        .thenReturn(true);
 		when(triggerHelper.evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan, null)).thenReturn(true);
 		when(locationDao.findChildLocationByJurisdiction(anyString())).thenReturn(jurisdictionList);
+		Mockito.doNothing().when(queuingHelper).addToQueue(anyString(),any(TriggerType.class),anyString());
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
-		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size()
-				+ planDefinition.getActions().size() * (planDefinition.getJurisdiction().size() * jurisdictionList.size());
+		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size();
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan,
 		    null);
 		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class));
