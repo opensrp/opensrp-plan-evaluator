@@ -40,7 +40,7 @@ public class TaskHelper {
 	public void generateTask(DomainResource resource, Action action, String planIdentifier, String jurisdiction,
 	        String username, QuestionnaireResponse questionnaireResponse) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		if (taskDao.checkIfTaskExists(resource.getId(), planIdentifier,action.getCode())) {
+		if (taskDao.checkIfTaskExists(resource.getId(),jurisdiction, planIdentifier,action.getCode())) {
 			logger.info("Task already exists");
 		} else {
 			Task task = new Task();

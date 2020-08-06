@@ -2,7 +2,11 @@ package org.smartregister.pathevaluator.task;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.smartregister.pathevaluator.TestData.createPlanV1;
 
 import java.util.UUID;
@@ -26,12 +30,6 @@ import org.smartregister.pathevaluator.dao.EventDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.smartregister.pathevaluator.TestData.createPlanV1;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 
@@ -107,7 +105,7 @@ public class TaskHelperTest {
 		String planIdentifier = UUID.randomUUID().toString();
 		String jurisdiction = "12123";
 		PlanDefinition planDefinition = createPlanV1();
-		when(taskDao.checkIfTaskExists(anyString(),anyString(),anyString())).thenReturn(true);
+		when(taskDao.checkIfTaskExists(anyString(),anyString(),anyString(),anyString())).thenReturn(true);
 		taskHelper.generateTask(patient, planDefinition.getActions().get(0), planIdentifier, jurisdiction, "testUser", null);
 		verify(taskDao, never()).saveTask(any(Task.class), any(QuestionnaireResponse.class));
 	}
