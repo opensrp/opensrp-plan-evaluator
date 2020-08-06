@@ -1,9 +1,12 @@
 package org.smartregister.domain;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class PhysicalLocation {
-	
+public class PhysicalLocation implements Serializable {
+
+	private static final long serialVersionUID = -4863877528673921296L;
+
 	private String type;
 	
 	private String id;

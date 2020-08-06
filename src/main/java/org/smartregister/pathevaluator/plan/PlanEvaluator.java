@@ -3,6 +3,7 @@ package org.smartregister.pathevaluator.plan;
 import java.util.Collections;
 import java.util.List;
 
+import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
@@ -10,6 +11,8 @@ import org.smartregister.pathevaluator.TriggerEventPayload;
 import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
+import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.QueuingHelper;
 import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
@@ -28,17 +31,27 @@ public class PlanEvaluator {
 	private TaskHelper taskHelper;
 	
 	private TriggerHelper triggerHelper;
+
+	private LocationDao locationDao;
 	
 	private String username;
-	
+
+	private QueuingHelper queuingHelper;
+
 	public PlanEvaluator(String username) {
+		this(username,null);
+	}
+
+	public PlanEvaluator(String username, QueuingHelper queuingHelper) {
 		actionHelper = new ActionHelper();
 		conditionHelper = new ConditionHelper(actionHelper);
 		taskHelper = new TaskHelper();
 		triggerHelper = new TriggerHelper(actionHelper);
 		this.username = username;
+		this.locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
+		this.queuingHelper = queuingHelper;
 	}
-	
+
 	/**
 	 * Evaluates plan after plan is saved on updated
 	 *
@@ -79,8 +92,13 @@ public class PlanEvaluator {
 	 * @param jurisdictions
 	 */
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, List<Jurisdiction> jurisdictions) {
-		jurisdictions.parallelStream()
-		        .forEach(jurisdiction -> evaluatePlan(planDefinition, triggerEvent, jurisdiction, null));
+		jurisdictions.parallelStream().forEach(jurisdiction -> {
+			evaluatePlan(planDefinition, triggerEvent, jurisdiction, null);
+			List<String> locationIds = locationDao.findChildLocationByJurisdiction(jurisdiction.getCode());
+			for (String locationId : locationIds) {
+				queuingHelper.addToQueue(planDefinition.getIdentifier(),triggerEvent,locationId);
+			}
+		});
 	}
 	
 	/**
@@ -89,7 +107,7 @@ public class PlanEvaluator {
 	 * @param planDefinition the plan being evaluated
 	 * @param questionnaireResponse {@link QuestionnaireResponse} just submitted
 	 */
-	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
+	public void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
 		
 		planDefinition.getActions().forEach(action -> {
@@ -108,12 +126,17 @@ public class PlanEvaluator {
 					    questionnaireResponse == null ? resource
 					            : questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
 					    action, planDefinition.getIdentifier(), triggerEvent)) {
-						taskHelper.generateTask(resource, action, planDefinition.getIdentifier(), jurisdiction.getCode(),
-						    username,questionnaireResponse);
+						if (action.getType().equals(Action.ActionType.UPDATE)) {
+							taskHelper.updateTask(resource, action);
+						} else {
+							taskHelper.generateTask(resource, action, planDefinition.getIdentifier(), jurisdiction.getCode(),
+							    username, questionnaireResponse);
+						}
+
 					}
 				});
 			}
 		});
 	}
-	
+
 }

@@ -2,6 +2,7 @@ package org.smartregister.domain;
 
 import java.util.Set;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,13 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Action {
+
+    public enum ActionType {
+        @SerializedName("create") CREATE,
+        @SerializedName("update") UPDATE,
+        @SerializedName("remove") REMOVE,
+        @SerializedName("fire-event") FIRE_EVENT
+    }
 
     private String identifier;
 
@@ -42,6 +50,8 @@ public class Action {
     private String definitionUri;
 
     private Set<DynamicValue> dynamicValue;
+
+    private ActionType type = ActionType.CREATE;
 
     @AllArgsConstructor
     @NoArgsConstructor

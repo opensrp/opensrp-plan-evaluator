@@ -62,12 +62,15 @@ public class TaskHelperTest {
 	private ArgumentCaptor<Task> taskCaptor;
 
 	private Patient patient;
+
+	private com.ibm.fhir.model.resource.Task taskResource;
 	
 	@Before
 	public void setUp() {
 		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao);
 		taskHelper = new TaskHelper();
 		patient = TestData.createPatient();
+		taskResource = TestData.createTask();
 	}
 	
 	@Test
@@ -107,5 +110,20 @@ public class TaskHelperTest {
 		when(taskDao.checkIfTaskExists(anyString(),anyString(),anyString())).thenReturn(true);
 		taskHelper.generateTask(patient, planDefinition.getActions().get(0), planIdentifier, jurisdiction, "testUser", null);
 		verify(taskDao, never()).saveTask(any(Task.class), any(QuestionnaireResponse.class));
+	}
+
+	@Test
+	public void testUpdateTask() {
+		Task task = TestData.createDomainTask();
+		Action action = TestData.createAction();
+
+		when(taskDao.getTaskByEntityId(anyString())).thenReturn(task);
+		Mockito.doNothing().when(taskDao).updateTask(any(Task.class));
+		taskHelper.updateTask(taskResource, action);
+		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
+		Task updatedTask = taskCaptor.getValue();
+		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
+		assertEquals("Family Already Registered", updatedTask.getBusinessStatus());
+		assertEquals("CANCELLED", updatedTask.getStatus().name());
 	}
 }

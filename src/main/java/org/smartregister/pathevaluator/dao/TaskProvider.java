@@ -32,5 +32,11 @@ public class TaskProvider extends BaseProvider {
 		return taskDao.findTasksForEntity(resource.getId(), planIdentifier);
 		
 	}
+
+	public List<Task> getAllTasks(String id) {
+
+		return taskDao.findAllTasksForEntity(id);
+
+	}
 	
 }

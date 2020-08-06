@@ -31,5 +31,11 @@ public interface TaskDao {
 	void saveTask(org.smartregister.domain.Task task, QuestionnaireResponse questionnaireResponse);
 
 	boolean checkIfTaskExists(String baseEntityId,String juridiction, String planIdentifier, String code);
-	
+
+	List<Task> findAllTasksForEntity(String id);
+
+	org.smartregister.domain.Task getTaskByEntityId(String id);
+
+	void updateTask(org.smartregister.domain.Task task);
+
 }

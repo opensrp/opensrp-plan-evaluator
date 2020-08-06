@@ -219,5 +219,14 @@ public class ActionHelperTest {
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, questionnaireResponse, plan));
 		verify(eventProvider).getEvents(questionnaireResponse, plan);
 	}
+
+	@Test
+	public void testGetGlobalTaskConditionResources() {
+		subjectConcept.setText(ResourceType.GLOBAL_TASK.value());
+		List<Task> expected = Collections.singletonList(TestData.createTask());
+		when(taskProvider.getAllTasks(patient.getId())).thenReturn(expected);
+		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
+		verify(taskProvider).getAllTasks(patient.getId());
+	}
 	
 }

@@ -46,4 +46,14 @@ public class TaskProviderTest {
 		assertEquals(expected, taskProvider.getTasks(patient, planIdentifier));
 		verify(taskDao).findTasksForEntity(patient.getId(), planIdentifier);
 	}
+
+	@Test
+	public void testGetAllTasks() {
+		Patient patient = TestData.createPatient();
+		List<Task> expected = Collections.singletonList(TestData.createTask());
+		String planIdentifier = UUID.randomUUID().toString();
+		when(taskDao.findAllTasksForEntity(patient.getId())).thenReturn(expected);
+		assertEquals(expected, taskProvider.getAllTasks(patient.getId()));
+		verify(taskDao).findAllTasksForEntity(patient.getId());
+	}
 }
