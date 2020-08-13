@@ -99,7 +99,7 @@ public class PlanEvaluatorTest {
 	}
 	
 	@Test
-	public void testEvaluatePlanEvaluatesConditions() {
+	public void testEvaluatePlanThroughQueue() {
 		PlanDefinition planDefinition = TestData.createPlan();
 		List<String> jurisdictionList = new ArrayList<>();
 		jurisdictionList.add("jurisdiction");
@@ -126,11 +126,7 @@ public class PlanEvaluatorTest {
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan,
 		    null);
 		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class));
-		
-		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan, TriggerType.PLAN_ACTIVATION);
-		
-		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), jurisdiction.getCode(),
-		    username, null);
+
 	}
 	
 	@Test
