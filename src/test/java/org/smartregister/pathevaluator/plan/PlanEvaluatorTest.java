@@ -116,8 +116,6 @@ public class PlanEvaluatorTest {
 				return patients;
 			}
 		});
-		when(conditionHelper.evaluateActionConditions(patients.get(0), action, plan, TriggerType.PLAN_ACTIVATION))
-		        .thenReturn(true);
 		when(triggerHelper.evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan, null)).thenReturn(true);
 		when(locationDao.findChildLocationByJurisdiction(anyString())).thenReturn(jurisdictionList);
 		Mockito.doNothing().when(queuingHelper).addToQueue(anyString(),any(TriggerType.class),anyString());
