@@ -124,7 +124,7 @@ public class PlanEvaluatorTest {
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan,
 		    null);
 		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class));
-
+		verify(queuingHelper,times(1)).addToQueue(anyString(),any(TriggerType.class),anyString());
 	}
 	
 	@Test
