@@ -99,7 +99,7 @@ public class PlanEvaluatorTest {
 	}
 	
 	@Test
-	public void testEvaluatePlanEvaluatesConditions() {
+	public void testEvaluatePlanThroughQueue() {
 		PlanDefinition planDefinition = TestData.createPlan();
 		List<String> jurisdictionList = new ArrayList<>();
 		jurisdictionList.add("jurisdiction");
@@ -116,8 +116,6 @@ public class PlanEvaluatorTest {
 				return patients;
 			}
 		});
-		when(conditionHelper.evaluateActionConditions(patients.get(0), action, plan, TriggerType.PLAN_ACTIVATION))
-		        .thenReturn(true);
 		when(triggerHelper.evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan, null)).thenReturn(true);
 		when(locationDao.findChildLocationByJurisdiction(anyString())).thenReturn(jurisdictionList);
 		Mockito.doNothing().when(queuingHelper).addToQueue(anyString(),any(TriggerType.class),anyString());
@@ -126,11 +124,7 @@ public class PlanEvaluatorTest {
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan,
 		    null);
 		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class));
-		
-		verify(conditionHelper).evaluateActionConditions(patients.get(0), action, plan, TriggerType.PLAN_ACTIVATION);
-		
-		verify(taskHelper).generateTask(patients.get(0), action, planDefinition.getIdentifier(), jurisdiction.getCode(),
-		    username, null);
+		verify(queuingHelper,times(1)).addToQueue(anyString(),any(TriggerType.class),anyString());
 	}
 	
 	@Test
