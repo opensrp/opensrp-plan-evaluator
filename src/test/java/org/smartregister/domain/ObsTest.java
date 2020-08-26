@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -73,7 +75,7 @@ public class ObsTest {
 		List<Object> values = new ArrayList<>();
 		values.add("dd");
 		values.add("d");
-		Obs obs = new Obs().withValues(values);
+		Obs obs = new Obs("", "", "", "", null, "", "", null).withValues(values);
 		
 		obs.addToValueList("dd");
 		
@@ -92,10 +94,11 @@ public class ObsTest {
 		String value = "sd";
 		String comment = "comment";
 		String formSubmission = "formSubmission";
+		Map<String, Object> keyValPairs = new HashMap<>();
 		
 		Obs obs = new Obs().withFieldType(fieldType).withFieldDataType(dataType).withFieldCode(fieldCode)
 		        .withParentCode(parentCode).withValue(value).withComments(comment).withFormSubmissionField(formSubmission)
-		        .withEffectiveDatetime(new DateTime(0l)).withHumanReadableValues(values);
+		        .withEffectiveDatetime(new DateTime(0l)).withHumanReadableValues(values).withKeyValPairs(keyValPairs);
 		
 		assertEquals(fieldType, obs.getFieldType());
 		assertEquals(fieldCode, obs.getFieldCode());
@@ -106,5 +109,6 @@ public class ObsTest {
 		assertEquals(formSubmission, obs.getFormSubmissionField());
 		assertEquals(new DateTime(0l), obs.getEffectiveDatetime());
 		assertEquals(values, obs.getHumanReadableValues());
+		assertEquals(keyValPairs, obs.getKeyValPairs());
 	}
 }
