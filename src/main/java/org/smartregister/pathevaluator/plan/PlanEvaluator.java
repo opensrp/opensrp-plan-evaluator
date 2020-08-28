@@ -94,13 +94,11 @@ public class PlanEvaluator {
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, List<Jurisdiction> jurisdictions) {
 		jurisdictions.parallelStream().forEach(jurisdiction -> {
 			evaluatePlan(planDefinition, triggerEvent, jurisdiction, null);
-			List<String> locationIds = locationDao.findChildLocationByJurisdiction(jurisdiction.getCode());
-			for (String locationId : locationIds) {
-				queuingHelper.addToQueue(planDefinition.getIdentifier(),triggerEvent,locationId);
-			}
+			locationDao.findChildLocationByJurisdiction(jurisdiction.getCode()).parallelStream().forEach(
+			    locationId -> queuingHelper.addToQueue(planDefinition.getIdentifier(), triggerEvent, locationId));
 		});
 	}
-
+	
 	/**
 	 * Evaluates a plan for task generation
 	 *
