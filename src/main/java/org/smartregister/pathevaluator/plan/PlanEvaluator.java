@@ -23,17 +23,17 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
  * @author Samuel Githengi created on 06/09/20
  */
 public class PlanEvaluator {
-	
+
 	private ActionHelper actionHelper;
-	
+
 	private ConditionHelper conditionHelper;
-	
+
 	private TaskHelper taskHelper;
-	
+
 	private TriggerHelper triggerHelper;
 
 	private LocationDao locationDao;
-	
+
 	private String username;
 
 	private QueuingHelper queuingHelper;
@@ -64,9 +64,9 @@ public class PlanEvaluator {
 		        || triggerEvent.getTriggerEvent().equals(TriggerType.PLAN_JURISDICTION_MODIFICATION))) {
 			evaluatePlan(planDefinition, triggerEvent.getTriggerEvent(), triggerEvent.getJurisdictions());
 		}
-		
+
 	}
-	
+
 	/**
 	 * Evaluates a plan if an encounter is submitted
 	 *
@@ -78,12 +78,12 @@ public class PlanEvaluator {
 		        .evaluateElementExpression(questionnaireResponse,
 		            "QuestionnaireResponse.item.where(linkId='locationId').answer")
 		        .element().as(QuestionnaireResponse.Item.Answer.class);
-		
+
 		evaluatePlan(planDefinition, TriggerType.EVENT_SUBMISSION,
 		    new Jurisdiction(location.getValue().as(com.ibm.fhir.model.type.String.class).getValue()),
 		    questionnaireResponse);
 	}
-	
+
 	/**
 	 * Evaluates a plan for task generation
 	 *
@@ -94,10 +94,8 @@ public class PlanEvaluator {
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, List<Jurisdiction> jurisdictions) {
 		jurisdictions.parallelStream().forEach(jurisdiction -> {
 			evaluatePlan(planDefinition, triggerEvent, jurisdiction, null);
-			List<String> locationIds = locationDao.findChildLocationByJurisdiction(jurisdiction.getCode());
-			for (String locationId : locationIds) {
-				queuingHelper.addToQueue(planDefinition.getIdentifier(),triggerEvent,locationId);
-			}
+			locationDao.findChildLocationByJurisdiction(jurisdiction.getCode()).parallelStream().forEach(
+			    locationId -> queuingHelper.addToQueue(planDefinition.getIdentifier(), triggerEvent, locationId));
 		});
 	}
 	
@@ -109,7 +107,7 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
-		
+
 		planDefinition.getActions().forEach(action -> {
 			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
 			    questionnaireResponse)) {
@@ -119,24 +117,36 @@ public class PlanEvaluator {
 					    questionnaireResponse.getSubject().getReference().getValue());
 				} else {
 					resources = actionHelper.getSubjectResources(action, jurisdiction);
-					
+
 				}
 				resources.forEach(resource -> {
-					if (conditionHelper.evaluateActionConditions(
-					    questionnaireResponse == null ? resource
-					            : questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
-					    action, planDefinition.getIdentifier(), triggerEvent)) {
-						if (action.getType().equals(Action.ActionType.UPDATE)) {
-							taskHelper.updateTask(resource, action);
-						} else {
-							taskHelper.generateTask(resource, action, planDefinition.getIdentifier(), jurisdiction.getCode(),
-							    username, questionnaireResponse);
-						}
+					if (triggerEvent.equals(TriggerType.EVENT_SUBMISSION)) {
+						evaluateResource(resource, questionnaireResponse, action, planDefinition.getIdentifier(),
+								jurisdiction.getCode(), triggerEvent);
+					} else {
+						queuingHelper.addToQueue(resource.toString(), questionnaireResponse, action,
+								planDefinition.getIdentifier(), jurisdiction.getCode(), triggerEvent);
 
 					}
 				});
 			}
 		});
+	}
+
+	public void evaluateResource(DomainResource resource, QuestionnaireResponse questionnaireResponse,
+			Action action, String planIdentifier, String jurisdictionCode, TriggerType triggerEvent) {
+		if (conditionHelper.evaluateActionConditions(
+				questionnaireResponse == null ? resource
+						: questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
+				action, planIdentifier, triggerEvent)) {
+			if (action.getType().equals(Action.ActionType.UPDATE)) {
+				taskHelper.updateTask(resource, action);
+			} else {
+				taskHelper.generateTask(resource, action, planIdentifier, jurisdictionCode,
+						username, questionnaireResponse);
+			}
+
+		}
 	}
 
 }

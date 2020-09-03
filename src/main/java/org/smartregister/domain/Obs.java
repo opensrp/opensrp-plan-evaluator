@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -45,6 +46,9 @@ public class Obs {
 	
 	@JsonProperty
 	private List<Object> humanReadableValues;
+
+	@JsonProperty
+	private Map<String, Object> keyValPairs;
 
 	private boolean saveObsAsArray;
 	
@@ -90,6 +94,13 @@ public class Obs {
 	    String comments, String formSubmissionField, List<Object> humanReadableValues, boolean saveObsAsArray) {
 		this(fieldType, fieldDataType, fieldCode, parentCode, values, comments, formSubmissionField, humanReadableValues);
 		this.saveObsAsArray = saveObsAsArray;
+	}
+
+	public Obs(String fieldType, String fieldDataType, String fieldCode, String parentCode,
+			   Map<String, Object> keyValPairs, List<Object> values, List<Object> humanReadableValues,
+			   String comments, String formSubmissionField, boolean saveObsAsArray) {
+		this(fieldType, fieldDataType, fieldCode, parentCode, values, comments, formSubmissionField, humanReadableValues, saveObsAsArray);
+		setKeyValPairs(keyValPairs);
 	}
 	
 	public String getFieldType() {
@@ -309,5 +320,27 @@ public class Obs {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+
+	public Set<String> getSet() {
+		return set;
+	}
+
+	public void setSet(Set<String> set) {
+		this.set = set;
+	}
+
+	public Map<String, Object> getKeyValPairs() {
+		return keyValPairs;
+	}
+
+	public void setKeyValPairs(Map<String, Object> keyValPairs) {
+		this.keyValPairs = keyValPairs;
+	}
+
+	public Obs withKeyValPairs(Map<String, Object> keyValPairs) {
+		setKeyValPairs(keyValPairs);
+		return this;
 	}
 }
