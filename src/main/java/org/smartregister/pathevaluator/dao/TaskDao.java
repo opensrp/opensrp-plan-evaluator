@@ -36,6 +36,6 @@ public interface TaskDao {
 
 	org.smartregister.domain.Task getTaskByIdentifier(String id);
 
-	void updateTask(org.smartregister.domain.Task task);
+	boolean updateTask(org.smartregister.domain.Task task);
 
 }
