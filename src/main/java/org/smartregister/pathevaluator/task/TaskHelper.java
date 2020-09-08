@@ -77,7 +77,7 @@ public class TaskHelper {
 
 	public void updateTask(DomainResource resource, Action action) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		Task task = taskDao.getTaskByEntityId(resource.getId());
+		Task task = taskDao.getTaskByIdentifier(resource.getId());
 		try {
 			for (DynamicValue dynamicValue : action.getDynamicValue()) {
 				Field aField = task.getClass().getDeclaredField(dynamicValue.getPath());

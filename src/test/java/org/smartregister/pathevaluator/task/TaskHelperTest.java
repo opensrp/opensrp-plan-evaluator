@@ -115,7 +115,7 @@ public class TaskHelperTest {
 		Task task = TestData.createDomainTask();
 		Action action = TestData.createAction();
 
-		when(taskDao.getTaskByEntityId(anyString())).thenReturn(task);
+		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
 		Mockito.doNothing().when(taskDao).updateTask(any(Task.class));
 		taskHelper.updateTask(taskResource, action);
 		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
