@@ -34,7 +34,7 @@ public interface TaskDao {
 
 	List<Task> findAllTasksForEntity(String id);
 
-	org.smartregister.domain.Task getTaskByEntityId(String id);
+	org.smartregister.domain.Task getTaskByIdentifier(String id);
 
 	void updateTask(org.smartregister.domain.Task task);
 
