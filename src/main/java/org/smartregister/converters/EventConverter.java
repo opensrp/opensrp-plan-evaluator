@@ -96,10 +96,19 @@ public class EventConverter {
 						answer = QuestionnaireResponse.Item.Answer.builder().extension(extensions).build();
 					}
 				}
-				
-				item = QuestionnaireResponse.Item.builder().linkId(String.builder().value(obs.getFieldCode()).build())
-				        .answer(answer).build();
-				items.add(item);
+
+				java.lang.String obsIdentifier = obs.getFieldCode();
+
+				if (obsIdentifier == null || obsIdentifier.isEmpty()) {
+					obsIdentifier = obs.getFormSubmissionField();
+				}
+
+				// Skip this obs if it doesn't have a key
+				if (obsIdentifier != null && !obsIdentifier.isEmpty()) {
+					item = QuestionnaireResponse.Item.builder().linkId(String.builder().value(obsIdentifier).build())
+							.answer(answer).build();
+					items.add(item);
+				}
 			}
 		}
 		
