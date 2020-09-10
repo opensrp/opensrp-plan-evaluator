@@ -44,6 +44,6 @@ public interface TaskDao {
 	 * @return org.smartregister.domain.Task if the operation was successful. Returns null 
 	 * if the operation failed.
 	 */
-	Task updateTask(org.smartregister.domain.Task task);
+	org.smartregister.domain.Task updateTask(org.smartregister.domain.Task task);
 
 }
