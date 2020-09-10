@@ -36,6 +36,14 @@ public interface TaskDao {
 
 	org.smartregister.domain.Task getTaskByIdentifier(String id);
 
-	boolean updateTask(org.smartregister.domain.Task task);
+	/**
+	 * Updates the task in the repository and returns the updated task if the 
+	 * update is successful. 
+	 * 
+	 * @param task
+	 * @return org.smartregister.domain.Task if the operation was successful. Returns null 
+	 * if the operation failed.
+	 */
+	Task updateTask(org.smartregister.domain.Task task);
 
 }
