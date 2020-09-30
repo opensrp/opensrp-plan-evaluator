@@ -3,6 +3,9 @@ package org.smartregister.domain;
 import java.io.Serializable;
 import java.util.Set;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(of = "id")
 public class PhysicalLocation implements Serializable {
 
 	private static final long serialVersionUID = -4863877528673921296L;
