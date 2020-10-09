@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.ibm.fhir.model.resource.Bundle;
+import com.ibm.fhir.path.FHIRPathResourceNode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.text.StringEscapeUtils;
 import org.smartregister.pathevaluator.dao.ClientDao;
@@ -68,6 +70,9 @@ public class PathEvaluatorLibrary {
 	 * @return the instance
 	 */
 	public static PathEvaluatorLibrary getInstance() {
+		if (instance == null) {
+			PathEvaluatorLibrary.init(null, null, null, null);
+		}
 		return instance;
 	}
 	
@@ -127,5 +132,55 @@ public class PathEvaluatorLibrary {
 			return null;
 		}
 	}
-	
+
+	/**
+	 * Evaluates a String expression on a bundle for an expression and returns a String result or null
+	 *
+	 * @param bundle
+	 * @param expression
+	 * @return
+	 */
+	public String extractStringFromBundle(Bundle bundle, String expression) {
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			return iterator.hasNext() ? iterator.next().asElementNode().getValue().asStringValue().string() : null;
+		}
+		catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
+			return null;
+		}
+	}
+
+	/**
+	 * Evaluates a String expression on a bundle for an expression and returns a Resource result or null
+	 *
+	 * @param bundle
+	 * @param expression
+	 * @return
+	 */
+	public Resource extractResourceFromBundle(Bundle bundle, String expression) {
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			return iterator.hasNext() ? iterator.next().asResourceNode().resource() : null;
+		} catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
+			return null;
+		}
+	}
+
+	public void setLocationProvider(LocationProvider locationProvider) {
+		this.locationProvider = locationProvider;
+	}
+
+	public void setClientProvider(ClientProvider clientProvider) {
+		this.clientProvider = clientProvider;
+	}
+
+	public void setTaskProvider(TaskProvider taskProvider) {
+		this.taskProvider = taskProvider;
+	}
+
+	public void setEventProvider(EventProvider eventProvider) {
+		this.eventProvider = eventProvider;
+	}
 }

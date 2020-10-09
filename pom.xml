@@ -6,7 +6,7 @@
 
 	<artifactId>opensrp-plan-evaluator</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.6-SNAPSHOT</version>
+	<version>0.1.1jsaslKSAS83123-SNAPSHOT</version>
 	<name>OpenSRP  Plan Evaluator</name>
 	<description>OpenSRP  Plan Evaluator Library</description>
 	<url>https://github.com/OpenSRP/opensrp-plan-evaluator</url>
