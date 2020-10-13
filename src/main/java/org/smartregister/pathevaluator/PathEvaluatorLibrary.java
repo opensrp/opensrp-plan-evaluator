@@ -3,15 +3,17 @@
  */
 package org.smartregister.pathevaluator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.ibm.fhir.model.resource.Bundle;
-import com.ibm.fhir.path.FHIRPathResourceNode;
+import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.model.type.Element;
+import com.ibm.fhir.path.FHIRPathBooleanValue;
+import com.ibm.fhir.path.FHIRPathElementNode;
+import com.ibm.fhir.path.FHIRPathNode;
+import com.ibm.fhir.path.FHIRPathStringValue;
+import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
+import com.ibm.fhir.path.exception.FHIRPathException;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.text.StringEscapeUtils;
 import org.smartregister.pathevaluator.dao.ClientDao;
@@ -23,16 +25,12 @@ import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.dao.TaskDao;
 import org.smartregister.pathevaluator.dao.TaskProvider;
 
-import com.ibm.fhir.model.resource.DomainResource;
-import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.path.FHIRPathBooleanValue;
-import com.ibm.fhir.path.FHIRPathElementNode;
-import com.ibm.fhir.path.FHIRPathNode;
-import com.ibm.fhir.path.FHIRPathStringValue;
-import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
-import com.ibm.fhir.path.exception.FHIRPathException;
-
-import lombok.Getter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -134,7 +132,7 @@ public class PathEvaluatorLibrary {
 	}
 
 	/**
-	 * Evaluates a String expression on a bundle for an expression and returns a String result or null
+	 * Evaluates a String expression on a bundle and returns a String result or null
 	 *
 	 * @param bundle
 	 * @param expression
@@ -152,23 +150,23 @@ public class PathEvaluatorLibrary {
 
 
 	/**
-	 * Evaluates a String expression on a bundle for an expression and returns a List of String results 
+	 * Evaluates a String expression on a bundle and returns a List of String results
 	 *
 	 * @param bundle
 	 * @param expression
 	 * @return
 	 */
 	public List<String> extractStringsFromBundle(Bundle bundle, String expression) {
-		List<String> vals = new ArrayList<>();
+		List<String> strs = new ArrayList<>();
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
 			while (iterator.hasNext()) {
-				vals.add(convertElementNodeValToStr(iterator.next().asElementNode()));
+				strs.add(convertElementNodeValToStr(iterator.next().asElementNode()));
 			}
 		} catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
 		}
-		return vals;
+		return strs;
 	}
 	
 	private String convertElementNodeValToStr(FHIRPathElementNode fhirPathElementNode) {
@@ -176,7 +174,28 @@ public class PathEvaluatorLibrary {
 	}
 	
 	/**
-	 * Evaluates a String expression on a bundle for an expression and returns a Resource result or null
+	 * Evaluates a String expression on a bundle and returns a Resource result or null
+	 *
+	 * @param bundle
+	 * @param expression
+	 * @return
+	 */
+	public List<Element> extractElementsFromBundle(Bundle bundle, String expression) {
+		List<Element> elements = new ArrayList<>();
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			while (iterator.hasNext()) {
+				elements.add(iterator.next().asElementNode().element());
+			}
+		} catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
+			return null;
+		}
+		return elements;
+	}
+
+	/**
+	 * Evaluates a String expression on a bundle and returns a Resource result or null
 	 *
 	 * @param bundle
 	 * @param expression
