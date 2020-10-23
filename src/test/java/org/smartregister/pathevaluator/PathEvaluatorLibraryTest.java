@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Calendar;
+import java.util.List;
 
 import com.ibm.fhir.model.format.Format;
 import com.ibm.fhir.model.parser.FHIRParser;
@@ -124,6 +125,15 @@ public class PathEvaluatorLibraryTest {
 		assertEquals("Collect blood sample", str);
 		str = pathEvaluatorLibrary.extractStringFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.where(identifier.where(value='620d3142-0a70-de75-88bb-8ad688195663')).capability.where(type.where(text='instructions')).description.text");
 		assertEquals("Collect 2 blood samples", str);
+	}
+
+	@Test
+	public void testExtractStringsFromBundleShouldReturnAllRelevantStrings() throws Exception {
+		List<String> strs = pathEvaluatorLibrary.extractStringsFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.identifier.value");
+		assertTrue(strs.contains("620d3142-0a70-de75-88bb-8ad688195663"));
+		assertTrue(strs.contains("8020a21e-671e-0c31-717a-bf6735800677"));
+		assertTrue(strs.contains("d8d7a874-2760-a382-de82-59c07fee0db6"));
+		assertTrue(strs.contains("47540dbf-ec9a-4c06-c684-eb626795b332"));
 	}
 
 	private Bundle getDeviceDefinitionBundle() throws Exception {
