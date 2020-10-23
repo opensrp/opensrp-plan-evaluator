@@ -17,6 +17,7 @@ import java.util.List;
 import com.ibm.fhir.model.format.Format;
 import com.ibm.fhir.model.parser.FHIRParser;
 import com.ibm.fhir.model.resource.Bundle;
+import com.ibm.fhir.model.type.Element;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -136,19 +137,17 @@ public class PathEvaluatorLibraryTest {
 		assertTrue(strs.contains("47540dbf-ec9a-4c06-c684-eb626795b332"));
 	}
 
+	@Test
+	public void testExtractElementsFromBundleShouldGetAllRelevantElements() throws Exception {
+		List<Element> elements = pathEvaluatorLibrary.extractElementsFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.where(identifier.where(value='d3fdac0e-061e-b068-2bed-5a95e803636f')).property.where(type.where(text='RDTScan Configuration')).valueCode");
+		assertEquals(9, elements.size());
+	}
+
 	private Bundle getDeviceDefinitionBundle() throws Exception {
 		if (deviceDefinitionBundle == null) {
 			InputStream stream = getClass().getClassLoader().getResourceAsStream("DeviceDefinition.json");
 			deviceDefinitionBundle = FHIRParser.parser(Format.JSON).parse(stream);
 		}
 		return deviceDefinitionBundle;
-	}
-
-	public static String getTestFilePath() {
-		return getBasePackageFilePath() + "src/main/java/org/smartregister/pathevaluator" + File.separator;
-	}
-
-	public static String getBasePackageFilePath() {
-		return Paths.get(".").toAbsolutePath().normalize().toString() + File.separator;
 	}
 }
