@@ -8,8 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Calendar;
 
+import com.ibm.fhir.model.format.Format;
+import com.ibm.fhir.model.parser.FHIRParser;
+import com.ibm.fhir.model.resource.Bundle;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,6 +36,8 @@ public class PathEvaluatorLibraryTest {
 	private PathEvaluatorLibrary pathEvaluatorLibrary;
 	
 	private Patient patient;
+
+	private Bundle deviceDefinitionBundle;
 	
 	@Before
 	public void startUp() {
@@ -109,5 +117,28 @@ public class PathEvaluatorLibraryTest {
 		node = pathEvaluatorLibrary.evaluateStringExpression(patient, "'Cancelled'");
 		assertEquals("Cancelled", node.string());
 	}
-	
+
+	@Test
+	public void testExtractStringFromBundleShouldReturnCorrectString() throws Exception {
+		String str = pathEvaluatorLibrary.extractStringFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.where(identifier.where(value='d3fdac0e-061e-b068-2bed-5a95e803636f')).capability.where(type.where(text='instructions')).description.text");
+		assertEquals("Collect blood sample", str);
+		str = pathEvaluatorLibrary.extractStringFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.where(identifier.where(value='620d3142-0a70-de75-88bb-8ad688195663')).capability.where(type.where(text='instructions')).description.text");
+		assertEquals("Collect 2 blood samples", str);
+	}
+
+	private Bundle getDeviceDefinitionBundle() throws Exception {
+		if (deviceDefinitionBundle == null) {
+			InputStream stream = getClass().getClassLoader().getResourceAsStream("DeviceDefinition.json");
+			deviceDefinitionBundle = FHIRParser.parser(Format.JSON).parse(stream);
+		}
+		return deviceDefinitionBundle;
+	}
+
+	public static String getTestFilePath() {
+		return getBasePackageFilePath() + "src/main/java/org/smartregister/pathevaluator" + File.separator;
+	}
+
+	public static String getBasePackageFilePath() {
+		return Paths.get(".").toAbsolutePath().normalize().toString() + File.separator;
+	}
 }

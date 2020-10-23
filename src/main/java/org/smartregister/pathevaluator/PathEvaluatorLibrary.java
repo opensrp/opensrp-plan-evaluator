@@ -132,12 +132,14 @@ public class PathEvaluatorLibrary {
 	}
 
 	/**
-	 * Evaluates a String expression on a bundle and returns a String result or null
+	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a String result
+	 * or null if the query fails or doesn't have results
 	 *
 	 * @param bundle
 	 * @param expression
 	 * @return
 	 */
+	
 	public String extractStringFromBundle(Bundle bundle, String expression) {
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
@@ -150,7 +152,8 @@ public class PathEvaluatorLibrary {
 
 
 	/**
-	 * Evaluates a String expression on a bundle and returns a List of String results
+	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a List of String results
+	 * or null if the query fails or doesn't have results
 	 *
 	 * @param bundle
 	 * @param expression
@@ -168,18 +171,25 @@ public class PathEvaluatorLibrary {
 		}
 		return strs;
 	}
-	
+
+	/**
+	 * Returns a {@link FHIRPathElementNode}'s value as a String
+	 * @param fhirPathElementNode
+	 * @return
+	 */
 	private String convertElementNodeValToStr(FHIRPathElementNode fhirPathElementNode) {
 		return fhirPathElementNode.getValue().asStringValue().string();
 	}
 	
 	/**
-	 * Evaluates a String expression on a bundle and returns a Resource result or null
+	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a List of {@link Element}s
+	 * or null if the query fails or doesn't have results
 	 *
 	 * @param bundle
 	 * @param expression
 	 * @return
 	 */
+	
 	public List<Element> extractElementsFromBundle(Bundle bundle, String expression) {
 		List<Element> elements = new ArrayList<>();
 		try {
@@ -195,12 +205,14 @@ public class PathEvaluatorLibrary {
 	}
 
 	/**
-	 * Evaluates a String expression on a bundle and returns a Resource result or null
+	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a {@link Resource} result
+	 * or null if the query fails or doesn't have results
 	 *
 	 * @param bundle
 	 * @param expression
 	 * @return
 	 */
+	
 	public Resource extractResourceFromBundle(Bundle bundle, String expression) {
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
@@ -209,21 +221,5 @@ public class PathEvaluatorLibrary {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
 			return null;
 		}
-	}
-
-	public void setLocationProvider(LocationProvider locationProvider) {
-		this.locationProvider = locationProvider;
-	}
-
-	public void setClientProvider(ClientProvider clientProvider) {
-		this.clientProvider = clientProvider;
-	}
-
-	public void setTaskProvider(TaskProvider taskProvider) {
-		this.taskProvider = taskProvider;
-	}
-
-	public void setEventProvider(EventProvider eventProvider) {
-		this.eventProvider = eventProvider;
 	}
 }
