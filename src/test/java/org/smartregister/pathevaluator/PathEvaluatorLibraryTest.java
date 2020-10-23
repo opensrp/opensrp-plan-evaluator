@@ -3,35 +3,31 @@
  */
 package org.smartregister.pathevaluator;
 
-import static com.ibm.fhir.model.type.String.of;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.Calendar;
-import java.util.List;
-
 import com.ibm.fhir.model.format.Format;
 import com.ibm.fhir.model.parser.FHIRParser;
 import com.ibm.fhir.model.resource.Bundle;
 import com.ibm.fhir.model.resource.DeviceDefinition;
-import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.model.type.Element;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.type.Date;
+import com.ibm.fhir.model.type.Element;
 import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.path.FHIRPathStringValue;
 import com.ibm.fhir.path.exception.FHIRPathException;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.List;
+
+import static com.ibm.fhir.model.type.String.of;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Samuel Githengi created on 06/10/20
@@ -125,10 +121,8 @@ public class PathEvaluatorLibraryTest {
 
 	@Test
 	public void testExtractStringFromBundleShouldReturnCorrectString() throws Exception {
-		String str = pathEvaluatorLibrary.extractStringFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.where(identifier.where(value='d3fdac0e-061e-b068-2bed-5a95e803636f')).capability.where(type.where(text='instructions')).description.text");
-		assertEquals("Collect blood sample", str);
-		str = pathEvaluatorLibrary.extractStringFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.where(identifier.where(value='620d3142-0a70-de75-88bb-8ad688195663')).capability.where(type.where(text='instructions')).description.text");
-		assertEquals("Collect 2 blood samples", str);
+		verifyCorrectStringIsExtracted("d3fdac0e-061e-b068-2bed-5a95e803636f", "Collect blood sample");
+		verifyCorrectStringIsExtracted("620d3142-0a70-de75-88bb-8ad688195663", "Collect 2 blood samples");
 	}
 
 	@Test
@@ -150,6 +144,11 @@ public class PathEvaluatorLibraryTest {
 	public void testextractResourceFromBundleShouldExtractCorrectResource() throws Exception {
 		verifyResourceIsExtracted("d3fdac0e-061e-b068-2bed-5a95e803636f");
 		verifyResourceIsExtracted("cf4443a1-f582-74ea-be89-ae53b5fd7bfe");
+	}
+
+	private void verifyCorrectStringIsExtracted(String resourceId, String expectedString) throws Exception {
+		String str = pathEvaluatorLibrary.extractStringFromBundle(getDeviceDefinitionBundle(), String.format("$this.entry.resource.where(identifier.where(value='%s')).capability.where(type.where(text='instructions')).description.text", resourceId));
+		assertEquals(expectedString, str);
 	}
 
 	private void verifyResourceIsExtracted(String resourceId) throws Exception {
