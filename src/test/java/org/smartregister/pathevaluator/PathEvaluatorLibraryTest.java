@@ -6,6 +6,7 @@ package org.smartregister.pathevaluator;
 import static com.ibm.fhir.model.type.String.of;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -17,6 +18,8 @@ import java.util.List;
 import com.ibm.fhir.model.format.Format;
 import com.ibm.fhir.model.parser.FHIRParser;
 import com.ibm.fhir.model.resource.Bundle;
+import com.ibm.fhir.model.resource.DeviceDefinition;
+import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.model.type.Element;
 import org.junit.Before;
 import org.junit.Test;
@@ -141,6 +144,18 @@ public class PathEvaluatorLibraryTest {
 	public void testExtractElementsFromBundleShouldGetAllRelevantElements() throws Exception {
 		List<Element> elements = pathEvaluatorLibrary.extractElementsFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.where(identifier.where(value='d3fdac0e-061e-b068-2bed-5a95e803636f')).property.where(type.where(text='RDTScan Configuration')).valueCode");
 		assertEquals(9, elements.size());
+	}
+
+	@Test
+	public void testextractResourceFromBundleShouldExtractCorrectResource() throws Exception {
+		verifyResourceIsExtracted("d3fdac0e-061e-b068-2bed-5a95e803636f");
+		verifyResourceIsExtracted("cf4443a1-f582-74ea-be89-ae53b5fd7bfe");
+	}
+
+	private void verifyResourceIsExtracted(String resourceId) throws Exception {
+		DeviceDefinition resource = (DeviceDefinition) pathEvaluatorLibrary.extractResourceFromBundle(getDeviceDefinitionBundle(), String.format("$this.entry.resource.where(identifier.where(value='%s')))", resourceId));
+		assertNotNull(resource);
+		assertEquals(resourceId, resource.getIdentifier().get(0).getValue().getValue());
 	}
 
 	private Bundle getDeviceDefinitionBundle() throws Exception {
