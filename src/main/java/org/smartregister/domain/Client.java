@@ -11,6 +11,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
+import org.smartregister.annotation.DataMask;
+import org.smartregister.annotation.DataMask.MaskType;
 import org.smartregister.common.Gender;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,17 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Client extends BaseEntity {
 	
 	@JsonProperty
+	@DataMask
 	private String firstName;
 	
 	@JsonProperty
+	@DataMask
 	private String middleName;
 	
 	@JsonProperty
+	@DataMask
 	private String lastName;
 	
+	@DataMask(type = MaskType.DATE)
 	@JsonProperty
 	private DateTime birthdate;
 	
+	@DataMask(type = MaskType.DATE)
 	@JsonProperty
 	private DateTime deathdate;
 	
