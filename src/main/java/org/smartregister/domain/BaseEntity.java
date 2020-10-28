@@ -1,18 +1,18 @@
 package org.smartregister.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.smartregister.annotation.DataMask;
-import org.smartregister.annotation.DataMask.MaskType;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.smartregister.datamask.DataMask;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseEntity extends BaseDataObject {
@@ -21,15 +21,14 @@ public class BaseEntity extends BaseDataObject {
 	private String baseEntityId;
 	
 	@JsonProperty
-	@DataMask(type = MaskType.MAP)
+	@DataMask
 	private Map<String, String> identifiers;
 	
 	@JsonProperty
-	@DataMask(type = MaskType.ADDRESS)
 	private List<Address> addresses;
 	
 	@JsonProperty
-	@DataMask(type = MaskType.MAP)
+	@DataMask
 	private Map<String, Object> attributes;
 	
 	@JsonProperty

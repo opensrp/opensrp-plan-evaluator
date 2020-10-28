@@ -11,9 +11,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
-import org.smartregister.annotation.DataMask;
-import org.smartregister.annotation.DataMask.MaskType;
 import org.smartregister.common.Gender;
+import org.smartregister.datamask.DataMask;
+import org.smartregister.datamask.DataMask.MaskType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
