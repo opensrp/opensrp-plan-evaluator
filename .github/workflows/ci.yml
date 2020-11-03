@@ -23,4 +23,7 @@ jobs:
     - name: Run Unit tests with Maven
       run: mvn -B clean test jacoco:report --file pom.xml 
     - name: Upload coveralls report
-      run: mvn -B coveralls:report --file pom.xml -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+      run: |
+         mvn -B coveralls:report --file pom.xml -DrepoToken="$COVERALLS_REPO_TOKEN"
