@@ -21,6 +21,7 @@ import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.model.type.String;
 import com.ibm.fhir.model.type.Uri;
 import com.ibm.fhir.model.type.code.TaskIntent;
+import com.ibm.fhir.model.type.code.TaskPriority;
 import com.ibm.fhir.model.type.code.TaskStatus;
 
 public class TaskConverter {
@@ -39,8 +40,10 @@ public class TaskConverter {
 		if (StringUtils.isNotBlank(domainTask.getLocation())) {
 			builder.location(Reference.builder().reference(String.of(domainTask.getLocation())).build());
 		}
-		//		TaskPriority priority = TaskPriority.builder().id("priority").value(java.lang.String.valueOf(domainTask.getPriority())).build();
-		//TODO : Need to set priority as its an enum in FIHR
+		
+		if (domainTask.getPriority() != null) {
+			builder.priority(TaskPriority.builder().value(domainTask.getPriority().name()).build());
+		}
 		
 		Reference focus = Reference.builder().reference(String.builder().value(domainTask.getFocus()).build()).build();
 		

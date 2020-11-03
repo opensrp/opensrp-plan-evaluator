@@ -48,7 +48,7 @@ public class TaskHelper {
 			task.setPlanIdentifier(planIdentifier);
 			task.setGroupIdentifier(jurisdiction);
 			task.setStatus(Task.TaskStatus.READY);
-			task.setPriority(3);
+			task.setPriority(Task.TaskPriority.ROUTINE);
 			task.setCode(action.getCode());
 			task.setDescription(action.getDescription());
 			task.setFocus(action.getIdentifier());
