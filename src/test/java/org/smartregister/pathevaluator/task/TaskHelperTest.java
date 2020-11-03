@@ -146,4 +146,22 @@ public class TaskHelperTest {
 		assertEquals("CANCELLED", updatedTask.getStatus().name());
 		assertEquals(TaskPriority.STAT, updatedTask.getPriority());
 	}
+	
+	@Test
+	public void testUpdateTaskWithDynamicvaluesWithUnknownType() {
+		Task task = TestData.createDomainTask();
+		Action action = TestData.createAction();
+		action.getDynamicValue().add(new DynamicValue("priority", Expression.builder().expression("'stat'").build()));
+		action.getDynamicValue().add(new DynamicValue("priority", Expression.builder().expression("'stat'").build()));
+
+		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
+		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
+		taskHelper.updateTask(taskResource, action);
+		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
+		Task updatedTask = taskCaptor.getValue();
+		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
+		assertEquals("Family Already Registered", updatedTask.getBusinessStatus());
+		assertEquals("CANCELLED", updatedTask.getStatus().name());
+		assertEquals(TaskPriority.STAT, updatedTask.getPriority());
+	}
 }

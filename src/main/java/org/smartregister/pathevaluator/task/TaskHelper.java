@@ -92,7 +92,7 @@ public class TaskHelper {
 					aField.set(task, pathEvaluatorLibrary
 					        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string());
 				} else {
-					throw new IllegalArgumentException();
+					throw new UnsupportedOperationException();
 				}
 			}
 		}
