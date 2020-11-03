@@ -86,5 +86,23 @@ public class TaskTest {
 		assertEquals(user, task.getRequester());
 
 	}
+	
+	@Test
+	public void testGetTaskPriorityShouldReturnCorrectVariable() {
+		assertEquals(TaskPriority.ROUTINE, Task.TaskPriority.get("routine"));
+		assertEquals(TaskPriority.URGENT, Task.TaskPriority.get("urgent"));
+		assertEquals(TaskPriority.ASAP, Task.TaskPriority.get("asap"));
+		assertEquals(TaskPriority.STAT, Task.TaskPriority.get("stat"));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetTaskPriorityShouldReturnErrorWhenNull() {
+		assertEquals(TaskPriority.ROUTINE, Task.TaskPriority.get(null));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetTaskPriorityShouldReturnErrorForInvalidEnums() {
+		assertEquals(TaskPriority.ROUTINE, Task.TaskPriority.get("normal"));
+	}
 
 }

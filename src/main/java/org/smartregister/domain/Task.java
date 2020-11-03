@@ -55,8 +55,10 @@ public class Task  implements Serializable{
 		@SerializedName("stat")
 		STAT;
 		
-		public static TaskPriority get(String algorithm) {
-			switch (algorithm) {
+		public static TaskPriority get(String priority) {
+			if (priority == null)
+				throw new IllegalArgumentException("Value is required");
+			switch (priority) {
 				case "routine":
 					return ROUTINE;
 				case "urgent":
