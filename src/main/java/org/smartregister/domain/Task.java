@@ -42,6 +42,35 @@ public class Task  implements Serializable{
 			return lookup.get(algorithm);
 		}
 	}
+	
+	
+	public enum TaskPriority {
+		
+		@SerializedName("routine")
+		ROUTINE,
+		@SerializedName("urgent")
+		URGENT,
+		@SerializedName("asap")
+		ASAP,
+		@SerializedName("stat")
+		STAT;
+		
+		public static TaskPriority get(String algorithm) {
+			switch (algorithm) {
+				case "routine":
+					return ROUTINE;
+				case "urgent":
+					return URGENT;
+				case "asap":
+					return ASAP;
+				case "stat":
+					return STAT;
+				default:
+					throw new IllegalArgumentException("Not a valid Task priority");
+			}
+			
+		}
+	}
 
 	public static final String[] INACTIVE_TASK_STATUS = new String[]{TaskStatus.CANCELLED.name(), TaskStatus.ARCHIVED.name()};
 
@@ -55,7 +84,7 @@ public class Task  implements Serializable{
 
 	private String businessStatus;
 
-	private int priority;
+	private TaskPriority priority;
 
 	private String code;
 
@@ -133,11 +162,11 @@ public class Task  implements Serializable{
 		this.businessStatus = businessStatus;
 	}
 
-	public int getPriority() {
+	public TaskPriority getPriority() {
 		return priority;
 	}
 
-	public void setPriority(int priority) {
+	public void setPriority(TaskPriority priority) {
 		this.priority = priority;
 	}
 
