@@ -24,10 +24,12 @@ jobs:
         java-version: 1.8
     - name: Run Unit tests with Maven
       run: mvn -B clean test jacoco:report --file pom.xml --no-transfer-progress
-    - env:
+    - name: Set Branch name Environment variable 
+      env:
         BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
       run: echo "BRANCH_NAME=${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
-    - run: |
+    - name: Set PR Number Environment variable 
+      run: |
         echo "PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
     - name: Upload coveralls report
       env:
@@ -38,4 +40,4 @@ jobs:
           -D repoToken="$COVERALLS_REPO_TOKEN" \
           -D serviceName=Github \
           -D branch="$BRANCH_NAME" \
-          -D pullRequest="$PR_NUMBER"
+          -D pullRequest="$PR_NUMBER" \
