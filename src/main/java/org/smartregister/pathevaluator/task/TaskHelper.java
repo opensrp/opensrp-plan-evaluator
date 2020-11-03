@@ -24,9 +24,9 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
  * @author Samuel Githengi created on 06/15/20
  */
 public class TaskHelper {
-
+	
 	private PathEvaluatorLibrary pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
-
+	
 	private static Logger logger = Logger.getLogger(TaskHelper.class.getSimpleName());
 	
 	/**
@@ -40,7 +40,7 @@ public class TaskHelper {
 	public void generateTask(DomainResource resource, Action action, String planIdentifier, String jurisdiction,
 	        String username, QuestionnaireResponse questionnaireResponse) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		if (taskDao.checkIfTaskExists(resource.getId(),jurisdiction, planIdentifier,action.getCode())) {
+		if (taskDao.checkIfTaskExists(resource.getId(), jurisdiction, planIdentifier, action.getCode())) {
 			logger.info("Task already exists");
 		} else {
 			Task task = new Task();
@@ -60,7 +60,7 @@ public class TaskHelper {
 			if (action.getDynamicValue() != null) {
 				for (DynamicValue dynamicValue : action.getDynamicValue()) {
 					if (dynamicValue != null && dynamicValue.getExpression() != null
-							&& dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
+					        && dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
 						task.setBusinessStatus(dynamicValue.getExpression().getExpression());
 					}
 				}
@@ -74,7 +74,7 @@ public class TaskHelper {
 			logger.info("Created task " + task.toString());
 		}
 	}
-
+	
 	public void updateTask(DomainResource resource, Action action) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 		Task task = taskDao.getTaskByIdentifier(resource.getId());
@@ -83,9 +83,14 @@ public class TaskHelper {
 				Field aField = task.getClass().getDeclaredField(dynamicValue.getPath());
 				aField.setAccessible(true);
 				if (aField.getType().isAssignableFrom(Task.TaskStatus.class)) {
-					aField.set(task, Task.TaskStatus.get(pathEvaluatorLibrary.evaluateStringExpression(resource,dynamicValue.getExpression().getExpression()).string()));
+					aField.set(task, Task.TaskStatus.get(pathEvaluatorLibrary
+					        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
+				} else if (aField.getType().isAssignableFrom(Task.TaskPriority.class)) {
+					aField.set(task, Task.TaskPriority.get(pathEvaluatorLibrary
+					        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
 				} else if (aField.getType().isAssignableFrom(String.class)) {
-					aField.set(task, pathEvaluatorLibrary.evaluateStringExpression(resource,dynamicValue.getExpression().getExpression()).string());
+					aField.set(task, pathEvaluatorLibrary
+					        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string());
 				} else {
 					throw new IllegalArgumentException();
 				}
@@ -94,7 +99,7 @@ public class TaskHelper {
 		catch (Exception e) {
 			logger.log(Level.SEVERE, "Exception occurred while updating properties using Reflection" + e);
 		}
-
+		
 		taskDao.updateTask(task);
 	}
 	

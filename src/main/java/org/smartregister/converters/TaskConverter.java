@@ -42,7 +42,7 @@ public class TaskConverter {
 		}
 		
 		if (domainTask.getPriority() != null) {
-			builder.priority(TaskPriority.builder().value(domainTask.getPriority().name()).build());
+			builder.priority(TaskPriority.builder().value(StringUtils.toRootLowerCase(domainTask.getPriority().name())).build());
 		}
 		
 		Reference focus = Reference.builder().reference(String.builder().value(domainTask.getFocus()).build()).build();
