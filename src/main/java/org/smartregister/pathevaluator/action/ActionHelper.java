@@ -16,6 +16,7 @@ import org.smartregister.pathevaluator.dao.LocationDao;
 import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
+import org.smartregister.pathevaluator.dao.StockDao;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -25,6 +26,8 @@ public class ActionHelper {
 	private LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 	
 	private ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
+
+	private StockDao stockDao = PathEvaluatorLibrary.getInstance().getStockProvider().getStockDao();
 	
 	/**
 	 * Gets the resource type for the action
@@ -62,6 +65,9 @@ public class ActionHelper {
 			
 			case PERSON:
 				return clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode());
+
+			case INVENTORY:
+//				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
 			
 			default:
 				return null;
@@ -85,6 +91,8 @@ public class ActionHelper {
 			case FAMILY:
 			case PERSON:
 				return clientDao.findClientById(entity);
+			case INVENTORY:
+//				return stockDao.findInventoryInAServicePoint(entity);
 			default:
 				return null;
 		}
@@ -141,7 +149,9 @@ public class ActionHelper {
 
 			case GLOBAL_TASK:
 				return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(resource.getId());
-			
+
+			case INVENTORY:
+//				return PathEvaluatorLibrary.getInstance().getStockProvider().getStocksAgainstServicePointId(resource.getId()); //TODO
 			default:
 				return null;
 		}

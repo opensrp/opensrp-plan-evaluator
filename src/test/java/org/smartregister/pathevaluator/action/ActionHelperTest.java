@@ -25,14 +25,7 @@ import org.smartregister.domain.Jurisdiction;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.TestData;
-import org.smartregister.pathevaluator.dao.ClientDao;
-import org.smartregister.pathevaluator.dao.ClientProvider;
-import org.smartregister.pathevaluator.dao.EventDao;
-import org.smartregister.pathevaluator.dao.EventProvider;
-import org.smartregister.pathevaluator.dao.LocationDao;
-import org.smartregister.pathevaluator.dao.LocationProvider;
-import org.smartregister.pathevaluator.dao.TaskDao;
-import org.smartregister.pathevaluator.dao.TaskProvider;
+import org.smartregister.pathevaluator.dao.*;
 
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
@@ -63,6 +56,9 @@ public class ActionHelperTest {
 	private EventDao eventDao;
 
 	@Mock
+	private StockDao stockDao;
+
+	@Mock
 	private LocationProvider locationProvider;
 	
 	@Mock
@@ -90,7 +86,7 @@ public class ActionHelperTest {
 	
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao);
+		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao, stockDao);
 		PathEvaluatorLibrary instance = PathEvaluatorLibrary.getInstance();
 		Whitebox.setInternalState(instance, "locationProvider", locationProvider);
 		Whitebox.setInternalState(instance, "clientProvider", clientProvider);

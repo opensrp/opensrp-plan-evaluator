@@ -10,14 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.text.StringEscapeUtils;
-import org.smartregister.pathevaluator.dao.ClientDao;
-import org.smartregister.pathevaluator.dao.ClientProvider;
-import org.smartregister.pathevaluator.dao.EventDao;
-import org.smartregister.pathevaluator.dao.EventProvider;
-import org.smartregister.pathevaluator.dao.LocationDao;
-import org.smartregister.pathevaluator.dao.LocationProvider;
-import org.smartregister.pathevaluator.dao.TaskDao;
-import org.smartregister.pathevaluator.dao.TaskProvider;
+import org.smartregister.pathevaluator.dao.*;
 
 import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Resource;
@@ -49,17 +42,20 @@ public class PathEvaluatorLibrary {
 	private TaskProvider taskProvider;
 	
 	private EventProvider eventProvider;
+
+	private StockProvider stockProvider;
 	
-	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
+	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 		locationProvider = new LocationProvider(locationDao);
 		clientProvider = new ClientProvider(clientDao);
 		taskProvider = new TaskProvider(taskDao);
 		eventProvider = new EventProvider(eventDao);
+		stockProvider = new StockProvider(stockDao);
 	}
 	
-	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
-		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao);
+	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
+		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao, stockDao);
 	}
 	
 	/**

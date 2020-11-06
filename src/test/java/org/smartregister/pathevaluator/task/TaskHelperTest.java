@@ -25,10 +25,7 @@ import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Task;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TestData;
-import org.smartregister.pathevaluator.dao.ClientDao;
-import org.smartregister.pathevaluator.dao.EventDao;
-import org.smartregister.pathevaluator.dao.LocationDao;
-import org.smartregister.pathevaluator.dao.TaskDao;
+import org.smartregister.pathevaluator.dao.*;
 
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
@@ -49,6 +46,9 @@ public class TaskHelperTest {
 	
 	@Mock
 	private EventDao eventDao;
+
+	@Mock
+	private StockDao stockDao;
 	
 	@Mock
 	private QuestionnaireResponse questionnaireResponse;
@@ -65,7 +65,7 @@ public class TaskHelperTest {
 	
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao);
+		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao, stockDao);
 		taskHelper = new TaskHelper();
 		patient = TestData.createPatient();
 		taskResource = TestData.createTask();

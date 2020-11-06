@@ -80,7 +80,7 @@ public class PlanEvaluatorTest {
 
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(null, null, null, null);
+		PathEvaluatorLibrary.init(null, null, null, null, null);
 		planEvaluator = new PlanEvaluator(username);
 		Whitebox.setInternalState(planEvaluator, "actionHelper", actionHelper);
 		Whitebox.setInternalState(planEvaluator, "conditionHelper", conditionHelper);
