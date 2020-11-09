@@ -10,5 +10,4 @@ public interface StockDao {
 
 	List<Stock> findInventoryInAServicePoint(String servicePointId);
 
-	List<Stock> findStockById(String id);
 }

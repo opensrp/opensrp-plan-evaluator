@@ -25,7 +25,11 @@ import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Task;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TestData;
-import org.smartregister.pathevaluator.dao.*;
+import org.smartregister.pathevaluator.dao.ClientDao;
+import org.smartregister.pathevaluator.dao.EventDao;
+import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.TaskDao;
+import org.smartregister.pathevaluator.dao.StockDao;
 
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
