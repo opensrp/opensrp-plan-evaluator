@@ -2,6 +2,7 @@ package org.smartregister.domain;
 
 import com.google.gson.annotations.SerializedName;
 
+import lombok.Data;
 import lombok.ToString;
 
 import org.joda.time.DateTime;
@@ -121,6 +122,8 @@ public class Task  implements Serializable{
 	private String structureId;
 
 	private Long rowid;
+	
+	private Restriction Restriction;
 
 	public String getIdentifier() {
 		return identifier;
@@ -298,5 +301,12 @@ public class Task  implements Serializable{
 	
 	public void setExecutionPeriod(Period executionPeriod) {
 		this.executionPeriod = executionPeriod;
+	}
+	
+	@Data
+	public static class Restriction{
+		private int repetitions;
+		
+		private Period  period;
 	}
 }
