@@ -8,6 +8,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.smartregister.domain.Note;
 
 import com.ibm.fhir.model.resource.Task;
+import com.ibm.fhir.model.resource.Task.Restriction;
 import com.ibm.fhir.model.type.Annotation;
 import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.DateTime;
@@ -17,6 +18,7 @@ import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Markdown;
 import com.ibm.fhir.model.type.Meta;
 import com.ibm.fhir.model.type.Period;
+import com.ibm.fhir.model.type.PositiveInt;
 import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.model.type.String;
 import com.ibm.fhir.model.type.Uri;
@@ -101,6 +103,22 @@ public class TaskConverter {
 			java.lang.String version = java.lang.String.valueOf(domainTask.getServerVersion());
 			Id versionId = Id.builder().value(version).build();
 			builder.meta(Meta.builder().versionId(versionId).build());
+		}
+		
+		if (domainTask.getRestriction() != null) {
+			Restriction.Builder restriction = Restriction.builder()
+			        .repetitions(PositiveInt.of(domainTask.getRestriction().getRepetitions()));
+			Period.Builder periodBuilder = Period.builder();
+			if (domainTask.getRestriction().getPeriod().getStart() != null) {
+				periodBuilder.start(
+				    DateTime.of(ISODateTimeFormat.dateTime().print(domainTask.getRestriction().getPeriod().getStart())));
+			}
+			if (domainTask.getRestriction().getPeriod().getEnd() != null) {
+				periodBuilder.end(
+				    DateTime.of(ISODateTimeFormat.dateTime().print(domainTask.getRestriction().getPeriod().getEnd())));
+			}
+			restriction.period(periodBuilder.build());
+			builder.restriction(restriction.build());
 		}
 		
 		/** @formatter:off **/
