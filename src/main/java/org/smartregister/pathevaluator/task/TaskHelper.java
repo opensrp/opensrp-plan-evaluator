@@ -53,8 +53,7 @@ public class TaskHelper {
 			task.setDescription(action.getDescription());
 			task.setFocus(action.getIdentifier());
 			task.setForEntity(resource.getId());
-			task.setExecutionStartDate(getDateTime(action.getTimingPeriod(), true));
-			task.setExecutionEndDate(getDateTime(action.getTimingPeriod(), false));
+			task.setExecutionPeriod(action.getTimingPeriod());
 			task.setAuthoredOn(DateTime.now());
 			task.setLastModified(DateTime.now());
 			if (action.getDynamicValue() != null) {
@@ -103,14 +102,5 @@ public class TaskHelper {
 		taskDao.updateTask(task);
 	}
 	
-	private DateTime getDateTime(Period executionPeriod, boolean start) {
-		if (executionPeriod != null) {
-			LocalDate localDate = start ? executionPeriod.getStart() : executionPeriod.getEnd();
-			if (localDate != null) {
-				return localDate.toDateTimeAtStartOfDay();
-			}
-		}
-		return null;
-	}
 	
 }
