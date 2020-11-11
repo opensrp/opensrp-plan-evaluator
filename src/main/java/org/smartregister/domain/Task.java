@@ -97,9 +97,7 @@ public class Task  implements Serializable{
 	@SerializedName("for")
 	private String forEntity;
 
-	private DateTime executionStartDate;
-
-	private DateTime executionEndDate;
+	private Period executionPeriod;
 
 	private DateTime authoredOn;
 
@@ -204,22 +202,6 @@ public class Task  implements Serializable{
 		this.forEntity = forEntity;
 	}
 
-	public DateTime getExecutionStartDate() {
-		return executionStartDate;
-	}
-
-	public void setExecutionStartDate(DateTime executionStartDate) {
-		this.executionStartDate = executionStartDate;
-	}
-
-	public DateTime getExecutionEndDate() {
-		return executionEndDate;
-	}
-
-	public void setExecutionEndDate(DateTime executionEndDate) {
-		this.executionEndDate = executionEndDate;
-	}
-
 	public DateTime getAuthoredOn() {
 		return authoredOn;
 	}
@@ -306,5 +288,15 @@ public class Task  implements Serializable{
 
 	public void setRowid(Long rowid) {
 		this.rowid = rowid;
+	}
+
+	
+	public Period getExecutionPeriod() {
+		return executionPeriod;
+	}
+
+	
+	public void setExecutionPeriod(Period executionPeriod) {
+		this.executionPeriod = executionPeriod;
 	}
 }

@@ -12,7 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
-import org.smartregister.domain.ExecutionPeriod;
+import org.smartregister.domain.Period;
 import org.smartregister.domain.Task;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.dao.TaskDao;
@@ -103,7 +103,7 @@ public class TaskHelper {
 		taskDao.updateTask(task);
 	}
 	
-	private DateTime getDateTime(ExecutionPeriod executionPeriod, boolean start) {
+	private DateTime getDateTime(Period executionPeriod, boolean start) {
 		if (executionPeriod != null) {
 			LocalDate localDate = start ? executionPeriod.getStart() : executionPeriod.getEnd();
 			if (localDate != null) {

@@ -2,7 +2,7 @@ package org.smartregister.domain;
 
 import org.joda.time.LocalDate;
 
-public class ExecutionPeriod {
+public class Period {
 	private LocalDate start;
 
 	private LocalDate end;
