@@ -9,10 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
-import org.smartregister.domain.Period;
 import org.smartregister.domain.Task;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.dao.TaskDao;

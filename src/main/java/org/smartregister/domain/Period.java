@@ -1,25 +1,25 @@
 package org.smartregister.domain;
 
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 
 public class Period {
-	private LocalDate start;
+	private DateTime start;
 
-	private LocalDate end;
+	private DateTime end;
 
-	public LocalDate getStart() {
+	public DateTime getStart() {
 		return start;
 	}
 
-	public void setStart(LocalDate start) {
+	public void setStart(DateTime start) {
 		this.start = start;
 	}
 
-	public LocalDate getEnd() {
+	public DateTime getEnd() {
 		return end;
 	}
 
-	public void setEnd(LocalDate end) {
+	public void setEnd(DateTime end) {
 		this.end = end;
 	}
 

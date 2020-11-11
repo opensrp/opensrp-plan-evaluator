@@ -85,12 +85,12 @@ public class TaskConverter {
 		java.lang.String lastModifiedString = ISODateTimeFormat.dateTime().print(domainTask.getLastModified());
 		DateTime lastModified = DateTime.builder().value(lastModifiedString).build();
 		
-		java.lang.String startString = ISODateTimeFormat.dateTime().print(domainTask.getExecutionStartDate());
+		java.lang.String startString = ISODateTimeFormat.dateTime().print(domainTask.getExecutionPeriod().getStart());
 		DateTime start = DateTime.builder().value(startString).build();
 		Period.Builder period = Period.builder().start(start);
 		
-		if (domainTask.getExecutionEndDate() != null) {
-			java.lang.String end = ISODateTimeFormat.dateTime().print(domainTask.getExecutionEndDate());
+		if (domainTask.getExecutionPeriod().getEnd() != null) {
+			java.lang.String end = ISODateTimeFormat.dateTime().print(domainTask.getExecutionPeriod().getEnd());
 			period.end(DateTime.builder().value(end).build());
 		}
 		
