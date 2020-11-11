@@ -91,7 +91,6 @@ public class Stock extends BaseDataObject {
 		this.donor = inventory.getDonor();
 		this.serialNumber = inventory.getSerialNumber();
 		this.locationId = inventory.getServicePointId();
-		// TODO : accountabilityDate to be computed later and also set customProperties
 	}
 
 	public Long getIdentifier() {
