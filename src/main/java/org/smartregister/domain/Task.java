@@ -54,14 +54,14 @@ public class Task implements Serializable {
 	
 	public enum TaskPriority {
 		
-		@SerializedName("routine")
-		ROUTINE,
-		@SerializedName("urgent")
-		URGENT,
+		@SerializedName("stat")
+		STAT,
 		@SerializedName("asap")
 		ASAP,
-		@SerializedName("stat")
-		STAT;
+		@SerializedName("urgent")
+		URGENT,
+		@SerializedName("routine")
+		ROUTINE;
 		
 		public static TaskPriority get(String priority) {
 			if (priority == null)
