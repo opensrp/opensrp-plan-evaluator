@@ -23,7 +23,7 @@ public class TaskConverterTest {
 	        .serializeNulls().create();
 	
 	@Test
-	public void testConvertToFihrTask() {
+	public void testConvertToFhirTask() {
 		org.smartregister.domain.Task task = gson.fromJson(taskJson, org.smartregister.domain.Task.class);
 		Task fihrTask = TaskConverter.convertTasktoFihrResource(task);
 		assertNotNull(fihrTask);
@@ -61,16 +61,15 @@ public class TaskConverterTest {
 	}
 	
 	@Test
-	public void testConvertToFihrTaskWithRestriction() {
+	public void testConvertToFhirTaskWithRestriction() {
 		org.smartregister.domain.Task task = gson.fromJson(taskJson, org.smartregister.domain.Task.class);
-		task.setRestriction(new Restriction(1, new Period(DateTime.now(), DateTime.now().plusYears(1))));
+		task.setRestriction(new Restriction(3, new Period(DateTime.now(), DateTime.now().plusYears(1))));
 		Task fhirTask = TaskConverter.convertTasktoFihrResource(task);
 		assertNotNull(fhirTask.getRestriction());
-		assertEquals(1, fhirTask.getRestriction().getRepetitions());
-		assertEquals(1, fhirTask.getRestriction().getRepetitions());
-		assertEquals(task.getRestriction().getPeriod().getStart().toString(dateFormat),
+		assertEquals(3, fhirTask.getRestriction().getRepetitions().getValue().intValue());
+		assertEquals(task.getRestriction().getPeriod().getStart().toString(),
 		    fhirTask.getRestriction().getPeriod().getStart().getValue().toString());
-		assertEquals(task.getRestriction().getPeriod().getEnd().toString(dateFormat),
+		assertEquals(task.getRestriction().getPeriod().getEnd().toString(),
 		    fhirTask.getRestriction().getPeriod().getEnd().getValue().toString());
 	}
 	

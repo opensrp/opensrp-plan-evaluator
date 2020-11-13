@@ -12,7 +12,6 @@ import static org.smartregister.pathevaluator.TestData.createPlanV1;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
