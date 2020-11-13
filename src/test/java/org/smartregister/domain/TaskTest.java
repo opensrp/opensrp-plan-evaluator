@@ -10,19 +10,20 @@ import org.junit.Test;
 import org.smartregister.domain.Task.Restriction;
 import org.smartregister.domain.Task.TaskPriority;
 import org.smartregister.domain.Task.TaskStatus;
+import org.smartregister.utils.PriorityOrdinalConverter;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class TaskTest {
-
+	
 	private static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
-			.create();
-
+	        .create();
+	
 	protected static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HHmm");
-
-	private String taskJson = "{\"identifier\":\"tsk11231jh22\",\"planIdentifier\":\"IRS_2018_S1\",\"groupIdentifier\":\"2018_IRS-3734{\",\"status\":\"Ready\",\"businessStatus\":\"Not Visited\",\"priority\":\"asap\",\"code\":\"IRS\",\"description\":\"Spray House\",\"focus\":\"IRS Visit\",\"for\":\"location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc\",\"executionPeriod\":{\"start\":\"2018-11-10T2200\"},\"authoredOn\":\"2018-10-31T0700\",\"lastModified\":\"2018-10-31T0700\",\"owner\":\"demouser\",\"note\":[{\"authorString\":\"demouser\",\"time\":\"2018-01-01T0800\",\"text\":\"This should be assigned to patrick.\"}],\"serverVersion\":0,\"reasonReference\":\"reasonrefuuid\",\"location\":\"catchment1\",\"requester\":\"chw1\"}";
+	
+	public static String taskJson = "{\"identifier\":\"tsk11231jh22\",\"planIdentifier\":\"IRS_2018_S1\",\"groupIdentifier\":\"2018_IRS-3734{\",\"status\":\"Ready\",\"businessStatus\":\"Not Visited\",\"priority\":\"asap\",\"code\":\"IRS\",\"description\":\"Spray House\",\"focus\":\"IRS Visit\",\"for\":\"location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc\",\"executionPeriod\":{\"start\":\"2018-11-10T2200\"},\"authoredOn\":\"2018-10-31T0700\",\"lastModified\":\"2018-10-31T0700\",\"owner\":\"demouser\",\"note\":[{\"authorString\":\"demouser\",\"time\":\"2018-01-01T0800\",\"text\":\"This should be assigned to patrick.\"}],\"serverVersion\":0,\"reasonReference\":\"reasonrefuuid\",\"location\":\"catchment1\",\"requester\":\"chw1\"}";
 	
 	private String task2Json = "{\"identifier\":\"tsk11231jh22\",\"planIdentifier\":\"IRS_2018_S1\",\"groupIdentifier\":\"2018_IRS-3734{\",\"status\":\"Ready\",\"businessStatus\":\"Not Visited\",\"priority\":\"routine\",\"code\":\"IRS\",\"description\":\"Spray House\",\"focus\":\"IRS Visit\",\"for\":\"location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc\",\"executionPeriod\":{\"start\":\"2018-11-10T2200\"},\"authoredOn\":\"2018-10-31T0700\",\"lastModified\":\"2018-10-31T07:00:00\",\"owner\":\"demouser\",\"note\":[{\"authorString\":\"demouser\",\"time\":\"2018-01-01T0800\",\"text\":\"This should be assigned to patrick.\"}],\"serverVersion\":0}";
 	
@@ -57,22 +58,22 @@ public class TaskTest {
 		Task task = gson.fromJson(task2Json, Task.class);
 		assertEquals("2018-10-31T0700", task.getLastModified().toString(formatter));
 	}
-
+	
 	@Test
 	public void testSerialize() {
-		Task task =  gson.fromJson(taskJson, Task.class);
+		Task task = gson.fromJson(taskJson, Task.class);
 		assertEquals(taskJson, gson.toJson(task));
 	}
-
+	
 	@Test
 	public void testGettingReasonReference() {
 		String reasonReference = "reasonreferenceuuid";
 		Task task = new Task();
 		assertNull(task.getReasonReference());
-
+		
 		task.setReasonReference(reasonReference);
 		assertEquals(reasonReference, task.getReasonReference());
-
+		
 	}
 	
 	@Test
@@ -84,7 +85,7 @@ public class TaskTest {
 		task.setRequester(user);
 		assertEquals(location, task.getLocation());
 		assertEquals(user, task.getRequester());
-
+		
 	}
 	
 	@Test
@@ -111,11 +112,43 @@ public class TaskTest {
 		assertNull(task.getRestriction());
 		Restriction restriction = new Restriction();
 		restriction.setRepetitions(1);
-		restriction.setPeriod(new Period(new DateTime(),null));
+		restriction.setPeriod(new Period(new DateTime(), null));
 		
 		task.setRestriction(restriction);
 		assertEquals(restriction, task.getRestriction());
-
+		
 	}
-
+	
+	@Test
+	public void testPriorityConversionusingOrdinalSerialization() {
+		Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+		        .registerTypeAdapter(TaskPriority.class, new PriorityOrdinalConverter()).create();
+		
+		Task task = new Task();
+		task.setPriority(TaskPriority.URGENT);
+		assertEquals("{\"priority\":2,\"serverVersion\":0}", gson.toJson(task));
+	}
+	
+	@Test
+	public void testPriorityConversionusingOrdinalLegacyRoutine() {
+		Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+		        .registerTypeAdapter(TaskPriority.class, new PriorityOrdinalConverter()).create();
+		
+		String json="{\"priority\":3}";
+		Task task = gson.fromJson(json, Task.class);
+		assertEquals(TaskPriority.ROUTINE, task.getPriority());
+	}
+	
+	@Test
+	public void testPriorityConversionusingOrdinal() {
+		Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+		        .registerTypeAdapter(TaskPriority.class, new PriorityOrdinalConverter()).create();
+		
+		String json="{\"priority\":1}";
+		Task task = gson.fromJson(json, Task.class);
+		assertEquals(TaskPriority.ASAP, task.getPriority());
+	}
+	
+	
+	
 }
