@@ -11,6 +11,8 @@ import static org.smartregister.pathevaluator.TestData.createPlanV1;
 
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -134,7 +136,6 @@ public class TaskHelperTest {
 		Task task = TestData.createDomainTask();
 		Action action = TestData.createAction();
 		action.getDynamicValue().add(new DynamicValue("priority", Expression.builder().expression("'stat'").build()));
-		action.getDynamicValue().add(new DynamicValue("priority", Expression.builder().expression("'stat'").build()));
 
 		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
 		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
@@ -163,5 +164,25 @@ public class TaskHelperTest {
 		assertEquals("Family Already Registered", updatedTask.getBusinessStatus());
 		assertEquals("CANCELLED", updatedTask.getStatus().name());
 		assertEquals(TaskPriority.STAT, updatedTask.getPriority());
+	}
+	
+	@Test
+	public void testUpdateTaskWithDynamicValuesForRestriction() {
+		Task task = TestData.createDomainTask();
+		Action action = TestData.createAction();
+		action.getDynamicValue().add(new DynamicValue("priority", Expression.builder().expression("'stat'").build()));
+		action.getDynamicValue().add(new DynamicValue("restriction.repetitions", Expression.builder().expression("'1'").build()));
+		action.getDynamicValue().add(new DynamicValue("restriction.period.start", Expression.builder().expression("today() + 7 'days'").build()));
+		action.getDynamicValue().add(new DynamicValue("restriction.period.end", Expression.builder().expression("today() + 2 'months'").build()));
+
+		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
+		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
+		taskHelper.updateTask(taskResource, action);
+		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
+		Task updatedTask = taskCaptor.getValue();
+	
+		assertEquals(1, updatedTask.getRestriction().getRepetitions());
+		assertEquals(new DateTime().withTimeAtStartOfDay().plusDays(7).toString(), updatedTask.getRestriction().getPeriod().getStart().toString());
+		assertEquals(new DateTime().withTimeAtStartOfDay().plusMonths(2).toString(), updatedTask.getRestriction().getPeriod().getEnd().toString());
 	}
 }

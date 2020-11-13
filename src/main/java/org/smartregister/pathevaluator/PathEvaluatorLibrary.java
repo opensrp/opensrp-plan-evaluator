@@ -22,6 +22,7 @@ import org.smartregister.pathevaluator.dao.TaskProvider;
 import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathBooleanValue;
+import com.ibm.fhir.path.FHIRPathDateValue;
 import com.ibm.fhir.path.FHIRPathElementNode;
 import com.ibm.fhir.path.FHIRPathNode;
 import com.ibm.fhir.path.FHIRPathStringValue;
@@ -121,6 +122,18 @@ public class PathEvaluatorLibrary {
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().as(FHIRPathStringValue.class) : null;
+		}
+		catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
+			return null;
+		}
+	}
+	
+	public FHIRPathDateValue evaluateDateExpression(DomainResource resource, String expression) {
+		
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
+			return iterator.hasNext() ? iterator.next().as(FHIRPathDateValue.class) : null;
 		}
 		catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);

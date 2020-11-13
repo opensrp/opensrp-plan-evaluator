@@ -4,11 +4,14 @@
 package org.smartregister.pathevaluator.task;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
+import java.time.temporal.TemporalAccessor;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
 import org.smartregister.domain.Period;
@@ -92,15 +95,17 @@ public class TaskHelper {
 						restriction.setPeriod(new Period());
 						task.setRestriction(restriction);
 					}
-					if (dynamicValue.getPath().equalsIgnoreCase("restriction.repetitions")) {
+					if (dynamicValue.getPath().equals("restriction.repetitions")) {
 						task.getRestriction().setRepetitions(Integer.parseInt(pathEvaluatorLibrary
 						        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
-					} else if (dynamicValue.getPath().equalsIgnoreCase("restriction.period.start")) {
-						task.getRestriction().getPeriod().setStart(new DateTime(pathEvaluatorLibrary
-						        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
-					} else if (dynamicValue.getPath().equalsIgnoreCase("restriction.period.end")) {
-						task.getRestriction().getPeriod().setEnd(new DateTime(pathEvaluatorLibrary
-						        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
+					} else if (dynamicValue.getPath().equals("restriction.period.start")) {
+						DateTime date = new DateTime(pathEvaluatorLibrary
+					        .evaluateDateExpression(resource, dynamicValue.getExpression().getExpression()).toString());
+						task.getRestriction().getPeriod().setStart(date);
+					} else if (dynamicValue.getPath().equals("restriction.period.end")) {
+						DateTime date = new DateTime(pathEvaluatorLibrary
+						        .evaluateDateExpression(resource, dynamicValue.getExpression().getExpression()).toString());
+						task.getRestriction().getPeriod().setEnd(date);
 					}
 					continue;
 				}
@@ -121,7 +126,7 @@ public class TaskHelper {
 			}
 		}
 		catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception occurred while updating properties using Reflection" + e);
+			logger.log(Level.SEVERE, "Exception occurred while updating properties" + e,e);
 		}
 	}
 	
