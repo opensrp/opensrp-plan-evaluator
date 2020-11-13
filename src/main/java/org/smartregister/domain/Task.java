@@ -2,7 +2,9 @@ package org.smartregister.domain;
 
 import com.google.gson.annotations.SerializedName;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import org.joda.time.DateTime;
@@ -142,6 +144,8 @@ public class Task implements Serializable {
 	}
 	
 	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class Restriction {
 		
 		private int repetitions;
