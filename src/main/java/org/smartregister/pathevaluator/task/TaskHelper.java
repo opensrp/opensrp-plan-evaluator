@@ -11,7 +11,9 @@ import java.util.logging.Logger;
 import org.joda.time.DateTime;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
+import org.smartregister.domain.Period;
 import org.smartregister.domain.Task;
+import org.smartregister.domain.Task.Restriction;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
@@ -62,6 +64,7 @@ public class TaskHelper {
 					}
 				}
 			}
+			evaluateDynamicValues(resource, action, task);
 			if (task.getBusinessStatus() == null) {
 				task.setBusinessStatus("Not Visited");
 			}
@@ -75,8 +78,32 @@ public class TaskHelper {
 	public void updateTask(DomainResource resource, Action action) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 		Task task = taskDao.getTaskByIdentifier(resource.getId());
+		evaluateDynamicValues(resource, action, task);
+		
+		taskDao.updateTask(task);
+	}
+	
+	private void evaluateDynamicValues(DomainResource resource, Action action, Task task) {
 		try {
 			for (DynamicValue dynamicValue : action.getDynamicValue()) {
+				if (dynamicValue.getPath().startsWith("restriction")) {
+					if (task.getRestriction() == null) {
+						Restriction restriction = new Restriction();
+						restriction.setPeriod(new Period());
+						task.setRestriction(restriction);
+					}
+					if (dynamicValue.getPath().equalsIgnoreCase("restriction.repetitions")) {
+						task.getRestriction().setRepetitions(Integer.parseInt(pathEvaluatorLibrary
+						        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
+					} else if (dynamicValue.getPath().equalsIgnoreCase("restriction.period.start")) {
+						task.getRestriction().getPeriod().setStart(new DateTime(pathEvaluatorLibrary
+						        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
+					} else if (dynamicValue.getPath().equalsIgnoreCase("restriction.period.end")) {
+						task.getRestriction().getPeriod().setEnd(new DateTime(pathEvaluatorLibrary
+						        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
+					}
+					continue;
+				}
 				Field aField = task.getClass().getDeclaredField(dynamicValue.getPath());
 				aField.setAccessible(true);
 				if (aField.getType().isAssignableFrom(Task.TaskStatus.class)) {
@@ -96,9 +123,6 @@ public class TaskHelper {
 		catch (Exception e) {
 			logger.log(Level.SEVERE, "Exception occurred while updating properties using Reflection" + e);
 		}
-		
-		taskDao.updateTask(task);
 	}
-	
 	
 }
