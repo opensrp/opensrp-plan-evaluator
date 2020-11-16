@@ -16,8 +16,10 @@ import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.path.FHIRPathStringValue;
 import com.ibm.fhir.path.exception.FHIRPathException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 
 import java.io.InputStream;
 import java.util.Calendar;
@@ -42,6 +44,7 @@ public class PathEvaluatorLibraryTest {
 	
 	@Before
 	public void startUp() {
+		Whitebox.setInternalState(PathEvaluatorLibrary.class, "instance", (Object) null);
 		pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
 		patient = Patient.builder().id("12345").birthDate(Date.of("1990-12-19"))
 		        .identifier(Identifier.builder().id("1234").value(of("1212313")).build())
@@ -50,6 +53,11 @@ public class PathEvaluatorLibraryTest {
 		Reference.Builder builder = Reference.builder();
 		builder.id("12345");
 		builder.reference(of(patient.getId()));
+	}
+
+	@After
+	public void tearDown() {
+		Whitebox.setInternalState(PathEvaluatorLibrary.class, "instance", (Object) null);
 	}
 	
 	@Test
