@@ -189,7 +189,6 @@ public class PathEvaluatorLibrary {
 	 * @param expression
 	 * @return
 	 */
-	
 	public List<Element> extractElementsFromBundle(Bundle bundle, String expression) {
 		List<Element> elements = new ArrayList<>();
 		try {
@@ -199,7 +198,7 @@ public class PathEvaluatorLibrary {
 			}
 		} catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
-			return null;
+			return elements;
 		}
 		return elements;
 	}
@@ -212,7 +211,6 @@ public class PathEvaluatorLibrary {
 	 * @param expression
 	 * @return
 	 */
-	
 	public Resource extractResourceFromBundle(Bundle bundle, String expression) {
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();

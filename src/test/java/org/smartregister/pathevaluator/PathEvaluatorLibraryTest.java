@@ -17,6 +17,7 @@ import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.path.FHIRPathStringValue;
 import com.ibm.fhir.path.exception.FHIRPathException;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
@@ -30,6 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Samuel Githengi created on 06/10/20
@@ -148,9 +150,29 @@ public class PathEvaluatorLibraryTest {
 	}
 
 	@Test
-	public void testextractResourceFromBundleShouldExtractCorrectResource() throws Exception {
+	public void testExtractResourceFromBundleShouldExtractCorrectResource() throws Exception {
 		verifyResourceIsExtracted("d3fdac0e-061e-b068-2bed-5a95e803636f");
 		verifyResourceIsExtracted("cf4443a1-f582-74ea-be89-ae53b5fd7bfe");
+	}
+
+	@Test
+	public void testExtractStringFromBundleShouldReturnNullWhenFHIRExceptionOccurs() {
+		Assert.assertNull(pathEvaluatorLibrary.extractStringFromBundle(mock(Bundle.class), "null=null"));
+	}
+
+	@Test
+	public void testExtractStringsFromBundleShouldReturnEmptyListWhenFHIRExceptionOccurs() {
+		Assert.assertEquals(0, pathEvaluatorLibrary.extractStringsFromBundle(mock(Bundle.class), "null=null").size());
+	}
+
+	@Test
+	public void testExtractElementsFromBundleShouldReturnEmptyListWhenFHIRExceptionOccurs() {
+		Assert.assertEquals(0, pathEvaluatorLibrary.extractElementsFromBundle(mock(Bundle.class), "null=null").size());
+	}
+
+	@Test
+	public void testExtractResourceFromBundleShouldReturnNullWhenFHIRExceptionOccurs() {
+		Assert.assertNull(pathEvaluatorLibrary.extractResourceFromBundle(mock(Bundle.class), "null=null"));
 	}
 
 	private void verifyCorrectStringIsExtracted(String resourceId, String expectedString) throws Exception {
