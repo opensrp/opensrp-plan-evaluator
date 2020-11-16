@@ -28,6 +28,11 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
  */
 public class TaskHelper {
 	
+	private static final String RESTRICTION="restriction";
+	private static final String RESTRICTION_REPETITIONS="restriction.repetitions";
+	private static final String RESTRICTION_START="restriction.period.start";
+	private static final String RESTRICTION_END="restriction.period.end";
+	
 	private PathEvaluatorLibrary pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
 	
 	private static Logger logger = Logger.getLogger(TaskHelper.class.getSimpleName());
@@ -89,20 +94,20 @@ public class TaskHelper {
 	private void evaluateDynamicValues(DomainResource resource, Action action, Task task) {
 		try {
 			for (DynamicValue dynamicValue : action.getDynamicValue()) {
-				if (dynamicValue.getPath().startsWith("restriction")) {
+				if (dynamicValue.getPath().startsWith(RESTRICTION)) {
 					if (task.getRestriction() == null) {
 						Restriction restriction = new Restriction();
 						restriction.setPeriod(new Period());
 						task.setRestriction(restriction);
 					}
-					if (dynamicValue.getPath().equals("restriction.repetitions")) {
+					if (dynamicValue.getPath().equals(RESTRICTION_REPETITIONS)) {
 						task.getRestriction().setRepetitions(Integer.parseInt(pathEvaluatorLibrary
 						        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
-					} else if (dynamicValue.getPath().equals("restriction.period.start")) {
+					} else if (dynamicValue.getPath().equals(RESTRICTION_START)) {
 						DateTime date = new DateTime(pathEvaluatorLibrary
 					        .evaluateDateExpression(resource, dynamicValue.getExpression().getExpression()).toString());
 						task.getRestriction().getPeriod().setStart(date);
-					} else if (dynamicValue.getPath().equals("restriction.period.end")) {
+					} else if (dynamicValue.getPath().equals(RESTRICTION_END)) {
 						DateTime date = new DateTime(pathEvaluatorLibrary
 						        .evaluateDateExpression(resource, dynamicValue.getExpression().getExpression()).toString());
 						task.getRestriction().getPeriod().setEnd(date);
