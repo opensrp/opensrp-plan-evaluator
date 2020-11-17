@@ -33,7 +33,7 @@ public class Action {
 
     private String code;
 
-    private ExecutionPeriod timingPeriod;
+    private Period timingPeriod;
 
     private String reason;
 

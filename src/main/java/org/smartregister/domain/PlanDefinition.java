@@ -34,7 +34,7 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 	private LocalDate date;
 	
 	@JsonProperty
-	private ExecutionPeriod effectivePeriod;
+	private Period effectivePeriod;
 	
 	@JsonProperty
 	private List<UseContext> useContext;
@@ -103,11 +103,11 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 		this.date = date;
 	}
 	
-	public ExecutionPeriod getEffectivePeriod() {
+	public Period getEffectivePeriod() {
 		return effectivePeriod;
 	}
 	
-	public void setEffectivePeriod(ExecutionPeriod effectivePeriod) {
+	public void setEffectivePeriod(Period effectivePeriod) {
 		this.effectivePeriod = effectivePeriod;
 	}
 	

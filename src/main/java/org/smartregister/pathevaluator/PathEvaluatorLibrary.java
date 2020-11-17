@@ -25,6 +25,17 @@ import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.dao.TaskDao;
 import org.smartregister.pathevaluator.dao.TaskProvider;
 
+
+import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.path.FHIRPathBooleanValue;
+import com.ibm.fhir.path.FHIRPathDateValue;
+import com.ibm.fhir.path.FHIRPathElementNode;
+import com.ibm.fhir.path.FHIRPathNode;
+import com.ibm.fhir.path.FHIRPathStringValue;
+import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
+import com.ibm.fhir.path.exception.FHIRPathException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -181,6 +192,19 @@ public class PathEvaluatorLibrary {
 		return fhirPathElementNode.getValue().asStringValue().string();
 	}
 	
+	public FHIRPathDateValue evaluateDateExpression(DomainResource resource, String expression) {
+		
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
+			return iterator.hasNext() ? iterator.next().as(FHIRPathDateValue.class) : null;
+		}
+		catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
+			return null;
+		}
+	}
+	
+
 	/**
 	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a List of {@link Element}s
 	 * or null if the query fails or doesn't have results
