@@ -3,24 +3,35 @@
  */
 package org.smartregister.pathevaluator;
 
-import static com.ibm.fhir.model.type.String.of;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Calendar;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import com.ibm.fhir.model.format.Format;
+import com.ibm.fhir.model.parser.FHIRParser;
+import com.ibm.fhir.model.resource.Bundle;
+import com.ibm.fhir.model.resource.DeviceDefinition;
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.type.Date;
+import com.ibm.fhir.model.type.Element;
 import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.path.FHIRPathStringValue;
 import com.ibm.fhir.path.exception.FHIRPathException;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.powermock.reflect.Whitebox;
+
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.List;
+
+import static com.ibm.fhir.model.type.String.of;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Samuel Githengi created on 06/10/20
@@ -30,10 +41,12 @@ public class PathEvaluatorLibraryTest {
 	private PathEvaluatorLibrary pathEvaluatorLibrary;
 	
 	private Patient patient;
+
+	private Bundle deviceDefinitionBundle;
 	
 	@Before
 	public void startUp() {
-		PathEvaluatorLibrary.init(null, null, null, null);
+		Whitebox.setInternalState(PathEvaluatorLibrary.class, "instance", (Object) null);
 		pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
 		patient = Patient.builder().id("12345").birthDate(Date.of("1990-12-19"))
 		        .identifier(Identifier.builder().id("1234").value(of("1212313")).build())
@@ -42,6 +55,11 @@ public class PathEvaluatorLibraryTest {
 		Reference.Builder builder = Reference.builder();
 		builder.id("12345");
 		builder.reference(of(patient.getId()));
+	}
+
+	@After
+	public void tearDown() {
+		Whitebox.setInternalState(PathEvaluatorLibrary.class, "instance", (Object) null);
 	}
 	
 	@Test
@@ -109,5 +127,70 @@ public class PathEvaluatorLibraryTest {
 		node = pathEvaluatorLibrary.evaluateStringExpression(patient, "'Cancelled'");
 		assertEquals("Cancelled", node.string());
 	}
-	
+
+	@Test
+	public void testExtractStringFromBundleShouldReturnCorrectString() throws Exception {
+		verifyCorrectStringIsExtracted("d3fdac0e-061e-b068-2bed-5a95e803636f", "Collect blood sample");
+		verifyCorrectStringIsExtracted("620d3142-0a70-de75-88bb-8ad688195663", "Collect 2 blood samples");
+	}
+
+	@Test
+	public void testExtractStringsFromBundleShouldReturnAllRelevantStrings() throws Exception {
+		List<String> strs = pathEvaluatorLibrary.extractStringsFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.identifier.value");
+		assertTrue(strs.contains("620d3142-0a70-de75-88bb-8ad688195663"));
+		assertTrue(strs.contains("8020a21e-671e-0c31-717a-bf6735800677"));
+		assertTrue(strs.contains("d8d7a874-2760-a382-de82-59c07fee0db6"));
+		assertTrue(strs.contains("47540dbf-ec9a-4c06-c684-eb626795b332"));
+	}
+
+	@Test
+	public void testExtractElementsFromBundleShouldGetAllRelevantElements() throws Exception {
+		List<Element> elements = pathEvaluatorLibrary.extractElementsFromBundle(getDeviceDefinitionBundle(), "$this.entry.resource.where(identifier.where(value='d3fdac0e-061e-b068-2bed-5a95e803636f')).property.where(type.where(text='RDTScan Configuration')).valueCode");
+		assertEquals(9, elements.size());
+	}
+
+	@Test
+	public void testExtractResourceFromBundleShouldExtractCorrectResource() throws Exception {
+		verifyResourceIsExtracted("d3fdac0e-061e-b068-2bed-5a95e803636f");
+		verifyResourceIsExtracted("cf4443a1-f582-74ea-be89-ae53b5fd7bfe");
+	}
+
+	@Test
+	public void testExtractStringFromBundleShouldReturnNullWhenFHIRExceptionOccurs() {
+		Assert.assertNull(pathEvaluatorLibrary.extractStringFromBundle(mock(Bundle.class), "null=null"));
+	}
+
+	@Test
+	public void testExtractStringsFromBundleShouldReturnEmptyListWhenFHIRExceptionOccurs() {
+		Assert.assertEquals(0, pathEvaluatorLibrary.extractStringsFromBundle(mock(Bundle.class), "null=null").size());
+	}
+
+	@Test
+	public void testExtractElementsFromBundleShouldReturnEmptyListWhenFHIRExceptionOccurs() {
+		Assert.assertEquals(0, pathEvaluatorLibrary.extractElementsFromBundle(mock(Bundle.class), "null=null").size());
+	}
+
+	@Test
+	public void testExtractResourceFromBundleShouldReturnNullWhenFHIRExceptionOccurs() {
+		Assert.assertNull(pathEvaluatorLibrary.extractResourceFromBundle(mock(Bundle.class), "null=null"));
+	}
+
+	private void verifyCorrectStringIsExtracted(String resourceId, String expectedString) throws Exception {
+		String str = pathEvaluatorLibrary.extractStringFromBundle(getDeviceDefinitionBundle(), String.format("$this.entry.resource.where(identifier.where(value='%s')).capability.where(type.where(text='instructions')).description.text", resourceId));
+		assertEquals(expectedString, str);
+	}
+
+	private void verifyResourceIsExtracted(String resourceId) throws Exception {
+		DeviceDefinition resource = (DeviceDefinition) pathEvaluatorLibrary.extractResourceFromBundle(getDeviceDefinitionBundle(), String.format("$this.entry.resource.where(identifier.where(value='%s')))", resourceId));
+		assertNotNull(resource);
+		assertEquals(resourceId, resource.getIdentifier().get(0).getValue().getValue());
+	}
+
+	private Bundle getDeviceDefinitionBundle() throws Exception {
+		if (deviceDefinitionBundle == null) {
+			InputStream stream = getClass().getClassLoader().getResourceAsStream("DeviceDefinition.json");
+			deviceDefinitionBundle = FHIRParser.parser(Format.JSON).parse(stream);
+		}
+		return deviceDefinitionBundle;
+	}
 }

@@ -3,11 +3,17 @@
  */
 package org.smartregister.pathevaluator;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.ibm.fhir.model.resource.Bundle;
+import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.model.type.Element;
+import com.ibm.fhir.path.FHIRPathBooleanValue;
+import com.ibm.fhir.path.FHIRPathElementNode;
+import com.ibm.fhir.path.FHIRPathNode;
+import com.ibm.fhir.path.FHIRPathStringValue;
+import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
+import com.ibm.fhir.path.exception.FHIRPathException;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.text.StringEscapeUtils;
 import org.smartregister.pathevaluator.dao.ClientDao;
@@ -19,16 +25,12 @@ import org.smartregister.pathevaluator.dao.LocationProvider;
 import org.smartregister.pathevaluator.dao.TaskDao;
 import org.smartregister.pathevaluator.dao.TaskProvider;
 
-import com.ibm.fhir.model.resource.DomainResource;
-import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.path.FHIRPathBooleanValue;
-import com.ibm.fhir.path.FHIRPathElementNode;
-import com.ibm.fhir.path.FHIRPathNode;
-import com.ibm.fhir.path.FHIRPathStringValue;
-import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
-import com.ibm.fhir.path.exception.FHIRPathException;
-
-import lombok.Getter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -68,6 +70,9 @@ public class PathEvaluatorLibrary {
 	 * @return the instance
 	 */
 	public static PathEvaluatorLibrary getInstance() {
+		if (instance == null) {
+			PathEvaluatorLibrary.init(null, null, null, null);
+		}
 		return instance;
 	}
 	
@@ -111,21 +116,108 @@ public class PathEvaluatorLibrary {
 			return iterator.hasNext() ? iterator.next().asElementNode() : null;
 		}
 		catch (FHIRPathException e) {
-			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
 			return null;
 		}
 	}
 	
 	public FHIRPathStringValue evaluateStringExpression(DomainResource resource, String expression) {
-		
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().as(FHIRPathStringValue.class) : null;
-		}
-		catch (FHIRPathException e) {
-			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
+		} catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
 			return null;
 		}
 	}
+
+	/**
+	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a String result
+	 * or null if the query fails or doesn't have results
+	 *
+	 * @param bundle
+	 * @param expression
+	 * @return
+	 */
 	
+	public String extractStringFromBundle(Bundle bundle, String expression) {
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			return iterator.hasNext() ? convertElementNodeValToStr(iterator.next().asElementNode()) : null;
+		} catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
+			return null;
+		}
+	}
+
+
+	/**
+	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a List of String results
+	 * or null if the query fails or doesn't have results
+	 *
+	 * @param bundle
+	 * @param expression
+	 * @return
+	 */
+	public List<String> extractStringsFromBundle(Bundle bundle, String expression) {
+		List<String> strs = new ArrayList<>();
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			while (iterator.hasNext()) {
+				strs.add(convertElementNodeValToStr(iterator.next().asElementNode()));
+			}
+		} catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
+		}
+		return strs;
+	}
+
+	/**
+	 * Returns a {@link FHIRPathElementNode}'s value as a String
+	 * @param fhirPathElementNode
+	 * @return
+	 */
+	private String convertElementNodeValToStr(FHIRPathElementNode fhirPathElementNode) {
+		return fhirPathElementNode.getValue().asStringValue().string();
+	}
+	
+	/**
+	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a List of {@link Element}s
+	 * or null if the query fails or doesn't have results
+	 *
+	 * @param bundle
+	 * @param expression
+	 * @return
+	 */
+	public List<Element> extractElementsFromBundle(Bundle bundle, String expression) {
+		List<Element> elements = new ArrayList<>();
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			while (iterator.hasNext()) {
+				elements.add(iterator.next().asElementNode().element());
+			}
+		} catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
+			return elements;
+		}
+		return elements;
+	}
+
+	/**
+	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a {@link Resource} result
+	 * or null if the query fails or doesn't have results
+	 *
+	 * @param bundle
+	 * @param expression
+	 * @return
+	 */
+	public Resource extractResourceFromBundle(Bundle bundle, String expression) {
+		try {
+			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			return iterator.hasNext() ? iterator.next().asResourceNode().resource() : null;
+		} catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
+			return null;
+		}
+	}
 }
