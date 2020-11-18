@@ -113,8 +113,7 @@ public class PlanEvaluator {
 			    questionnaireResponse)) {
 				List<? extends DomainResource> resources;
 				if (questionnaireResponse != null) {
-					resources = actionHelper.getSubjectResources(action,
-					    questionnaireResponse.getSubject().getReference().getValue());
+					resources = actionHelper.getSubjectResources(action,questionnaireResponse);
 				} else {
 					resources = actionHelper.getSubjectResources(action, jurisdiction);
 
