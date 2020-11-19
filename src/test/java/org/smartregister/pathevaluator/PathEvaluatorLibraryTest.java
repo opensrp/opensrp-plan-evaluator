@@ -140,6 +140,13 @@ public class PathEvaluatorLibraryTest {
 	}
 	
 	@Test
+	public void testEvaluateBooleanWithDoubleEscapedExpression() throws Exception {
+		QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) getResource("Questionnaire.json");
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(questionnaireResponse,
+		    "($this.is(FHIR.Patient) and $this.birthDate &lt;= today() - 5 'years') or ($this.contained.where(Patient.birthDate &amp;lt;= today() - 5 'years').exists())"));
+	}
+	
+	@Test
 	public void testExtractStringFromBundleShouldReturnCorrectString() throws Exception {
 		verifyCorrectStringIsExtracted("d3fdac0e-061e-b068-2bed-5a95e803636f", "Collect blood sample");
 		verifyCorrectStringIsExtracted("620d3142-0a70-de75-88bb-8ad688195663", "Collect 2 blood samples");
