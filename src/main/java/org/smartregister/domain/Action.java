@@ -58,7 +58,7 @@ public class Action implements Serializable {
     @NoArgsConstructor
     @Getter
     @Setter
-    public static class SubjectConcept {
+    public static class SubjectConcept implements Serializable {
         private String text;
     }
 }

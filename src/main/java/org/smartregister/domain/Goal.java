@@ -2,12 +2,13 @@ package org.smartregister.domain;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by samuelgithengi on 4/29/19.
  */
-public class Goal {
+public class Goal implements Serializable {
 
     private String id;
 
