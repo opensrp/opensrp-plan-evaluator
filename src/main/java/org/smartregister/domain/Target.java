@@ -2,12 +2,13 @@ package org.smartregister.domain;
 
 import org.joda.time.LocalDate;
 
+import java.io.Serializable;
 import java.util.AbstractMap;
 
 /**
  * Created by samuelgithengi on 4/29/19.
  */
-public class Target {
+public class Target implements Serializable {
 
     private String measure;
 
@@ -39,7 +40,7 @@ public class Target {
         this.detail = detail;
     }
 
-    static class Detail {
+    static class Detail implements Serializable {
         private Measure detailQuantity;
 
         private MeasureRange detailRange;
@@ -71,7 +72,7 @@ public class Target {
         }
     }
 
-    static class Measure {
+    static class Measure implements Serializable {
         private float value;
 
         private String comparator;
@@ -103,7 +104,7 @@ public class Target {
         }
     }
 
-    static class MeasureRange {
+    static class MeasureRange implements Serializable {
         private Measure high;
 
         private Measure low;

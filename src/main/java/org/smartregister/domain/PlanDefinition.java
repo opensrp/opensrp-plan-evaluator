@@ -164,7 +164,7 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 		return getName().equals(o.getName()) ? getName().compareTo(o.getIdentifier()) : getName().compareTo(o.getName());
 	}
 
-	public static class UseContext {
+	public static class UseContext implements Serializable {
 		
 		private String code;
 		
