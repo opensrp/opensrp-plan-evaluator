@@ -1,5 +1,6 @@
 package org.smartregister.domain;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import com.google.gson.annotations.SerializedName;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Action {
+public class Action implements Serializable {
 
     public enum ActionType {
         @SerializedName("create") CREATE,
