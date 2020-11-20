@@ -4,14 +4,11 @@
 package org.smartregister.pathevaluator.task;
 
 import java.lang.reflect.Field;
-import java.time.Instant;
-import java.time.temporal.TemporalAccessor;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
 import org.smartregister.domain.Period;
@@ -92,7 +89,7 @@ public class TaskHelper {
 		try {
 			for (DynamicValue dynamicValue : action.getDynamicValue()) {
 				if (dynamicValue != null && dynamicValue.getExpression() != null
-				        && dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
+				        && "defaultBusinessStatus".equals(dynamicValue.getExpression().getName())) {
 					task.setBusinessStatus(dynamicValue.getExpression().getExpression());
 				} else if (dynamicValue.getPath().startsWith(RESTRICTION)) {
 					if (task.getRestriction() == null) {
