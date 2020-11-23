@@ -17,7 +17,9 @@ import lombok.Setter;
 @Getter
 public class Action implements Serializable {
 
-    public enum ActionType {
+	private static final long serialVersionUID = 1L;
+
+	public enum ActionType {
         @SerializedName("create") CREATE,
         @SerializedName("update") UPDATE,
         @SerializedName("remove") REMOVE,

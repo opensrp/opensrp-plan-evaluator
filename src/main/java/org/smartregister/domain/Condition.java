@@ -15,7 +15,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString
 @Builder(toBuilder = true)
-public class Condition implements Serializable  {
+public class Condition implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
     private String kind;
     private Expression expression;

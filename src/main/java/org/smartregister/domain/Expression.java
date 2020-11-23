@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.Builder;
+
+import java.io.Serializable;
+
 import org.smartregister.domain.Action.SubjectConcept;
 
 @Getter
@@ -14,7 +17,9 @@ import org.smartregister.domain.Action.SubjectConcept;
 @AllArgsConstructor
 @ToString
 @Builder(toBuilder = true)
-public class Expression {
+public class Expression implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	private String description;
 	

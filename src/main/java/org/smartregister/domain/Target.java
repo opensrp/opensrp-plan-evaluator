@@ -10,6 +10,8 @@ import java.util.AbstractMap;
  */
 public class Target implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
     private String measure;
 
     private Detail detail;

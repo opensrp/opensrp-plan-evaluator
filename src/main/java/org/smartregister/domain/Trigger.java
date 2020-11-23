@@ -16,6 +16,8 @@ import java.io.Serializable;
 @ToString
 @Builder
 public class Trigger implements Serializable {
+
+	private static final long serialVersionUID = 1L;
     private String type;
     private String name;
     private Expression expression;

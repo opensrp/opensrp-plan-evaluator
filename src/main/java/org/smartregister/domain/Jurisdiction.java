@@ -16,6 +16,8 @@ import java.io.Serializable;
 @Setter
 public class Jurisdiction implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
     private String code;
 
 }
