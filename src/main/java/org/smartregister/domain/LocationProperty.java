@@ -2,11 +2,14 @@ package org.smartregister.domain;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LocationProperty {
+public class LocationProperty implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public enum PropertyStatus {
 		@SerializedName("Active")

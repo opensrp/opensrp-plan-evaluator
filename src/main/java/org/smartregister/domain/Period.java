@@ -12,6 +12,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Period implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	private DateTime start;
 
 	private DateTime end;

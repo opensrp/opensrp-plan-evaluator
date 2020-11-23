@@ -17,6 +17,8 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 public class DynamicValue implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private String path;
 
 	private Expression expression;
