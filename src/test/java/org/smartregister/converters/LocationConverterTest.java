@@ -42,7 +42,9 @@ public class LocationConverterTest {
 		assertEquals(physicalLocation.getServerVersion(), locationServerVersion);
 		assertEquals("instance", location.getMode().getValue());
 		assertEquals("bu", location.getPhysicalType().getCoding().get(0).getCode().getValue());
-		assertEquals(physicalLocation.getProperties().getCustomProperties().size(), location.getIdentifier().size());
+		assertEquals(physicalLocation.getProperties().getCustomProperties().size() + 1, location.getIdentifier().size());
+		assertEquals("hasGeometry", location.getIdentifier().get(0).getSystem().getValue());
+		assertEquals("true", location.getIdentifier().get(0).getValue().getValue());
 		System.out.println(location);
 	}
 
