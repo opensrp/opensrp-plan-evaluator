@@ -118,6 +118,15 @@ public class PathEvaluatorLibraryTest {
 	}
 	
 	@Test
+	public void testLocationExpressions() throws FHIRPathException {
+		Location location = TestData.createLocation();
+		location=location.toBuilder().identifier(Identifier.builder().id("hasGeometry").value(com.ibm.fhir.model.type.String.of("true")).build()).build();
+		//assertEquals("",pathEvaluatorLibrary.evaluateStringExpression(location, "$this.identifier.id"));
+		assertTrue(pathEvaluatorLibrary.evaluateBooleanExpression(location, "$this.identifier.where(id='hasGeometry').value='true'"));
+		
+	}
+	
+	@Test
 	public void testEvaluateBooleanExpressionWithResourceAsNull() {
 		assertFalse(pathEvaluatorLibrary.evaluateBooleanExpression(null, "$this.contained.exists()"));
 	}
