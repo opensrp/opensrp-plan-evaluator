@@ -64,9 +64,7 @@ public class TaskHelper {
 			task.setExecutionPeriod(action.getTimingPeriod());
 			task.setAuthoredOn(DateTime.now());
 			task.setLastModified(DateTime.now());
-			if (action.getDynamicValue() != null) {
-				evaluateDynamicValues(resource, action, task);
-			}
+			evaluateDynamicValues(resource, action, task);
 			if (task.getBusinessStatus() == null) {
 				task.setBusinessStatus("Not Visited");
 			}
@@ -86,6 +84,9 @@ public class TaskHelper {
 	}
 	
 	private void evaluateDynamicValues(DomainResource resource, Action action, Task task) {
+		if (action.getDynamicValue() == null) {
+			return;
+		}
 		try {
 			for (DynamicValue dynamicValue : action.getDynamicValue()) {
 				if (dynamicValue != null && dynamicValue.getExpression() != null
