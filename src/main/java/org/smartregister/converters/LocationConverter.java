@@ -68,13 +68,10 @@ public class LocationConverter {
 			identifiers.add(identifier);
 		}
 
-		if (physicalLocation.getGeometry() != null) {
+
 			identifier = Identifier.builder().system(Uri.builder().value("hasGeometry").build())
-					.value(String.builder().value(java.lang.String.valueOf(true)).build()).build();
-		} else {
-			identifier = Identifier.builder().system(Uri.builder().value("hasGeometry").build())
-					.value(String.builder().value(java.lang.String.valueOf(false)).build()).build();
-		}
+					.value(String.builder().value(java.lang.String.valueOf(physicalLocation.getGeometry() != null)).build()).build();
+		
 
 		identifiers.add(identifier);
 		Coding jdnCoding = Coding.builder().code(Code.code("jdn")).build();
