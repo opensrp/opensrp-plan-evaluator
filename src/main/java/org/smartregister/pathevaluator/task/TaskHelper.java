@@ -4,6 +4,7 @@
 package org.smartregister.pathevaluator.task;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,27 +76,32 @@ public class TaskHelper {
 		}
 	}
 
-	public void updateTask(DomainResource resource, Action action) {
+	public void updateTask(DomainResource resource, Action action, String planIdentifier) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		Task task = taskDao.getTaskByIdentifier(resource.getId());
-		try {
-			for (DynamicValue dynamicValue : action.getDynamicValue()) {
-				Field aField = task.getClass().getDeclaredField(dynamicValue.getPath());
-				aField.setAccessible(true);
-				if (aField.getType().isAssignableFrom(Task.TaskStatus.class)) {
-					aField.set(task, Task.TaskStatus.get(pathEvaluatorLibrary.evaluateStringExpression(resource,dynamicValue.getExpression().getExpression()).string()));
-				} else if (aField.getType().isAssignableFrom(String.class)) {
-					aField.set(task, pathEvaluatorLibrary.evaluateStringExpression(resource,dynamicValue.getExpression().getExpression()).string());
-				} else {
-					throw new IllegalArgumentException();
+		List<com.ibm.fhir.model.resource.Task> tasks = taskDao.findTasksForEntity(resource.getId(), planIdentifier);
+
+		for (com.ibm.fhir.model.resource.Task task: tasks) {
+			Task opensrpTask = taskDao.getTaskByIdentifier(task.getId());
+
+			try {
+				for (DynamicValue dynamicValue : action.getDynamicValue()) {
+					Field aField = task.getClass().getDeclaredField(dynamicValue.getPath());
+					aField.setAccessible(true);
+					if (aField.getType().isAssignableFrom(Task.TaskStatus.class)) {
+						aField.set(task, Task.TaskStatus.get(pathEvaluatorLibrary.evaluateStringExpression(resource,dynamicValue.getExpression().getExpression()).string()));
+					} else if (aField.getType().isAssignableFrom(String.class)) {
+						aField.set(task, pathEvaluatorLibrary.evaluateStringExpression(resource,dynamicValue.getExpression().getExpression()).string());
+					} else {
+						throw new IllegalArgumentException();
+					}
 				}
 			}
-		}
-		catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception occurred while updating properties using Reflection" + e);
-		}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, "Exception occurred while updating properties using Reflection" + e);
+			}
 
-		taskDao.updateTask(task);
+			taskDao.updateTask(opensrpTask);
+		}
 	}
 	
 	private DateTime getDateTime(ExecutionPeriod executionPeriod, boolean start) {
