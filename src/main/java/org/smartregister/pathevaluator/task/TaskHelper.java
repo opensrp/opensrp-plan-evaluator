@@ -81,7 +81,12 @@ public class TaskHelper {
 		List<com.ibm.fhir.model.resource.Task> tasks = taskDao.findTasksForEntity(resource.getId(), planIdentifier);
 
 		for (com.ibm.fhir.model.resource.Task task: tasks) {
-			Task opensrpTask = taskDao.getTaskByIdentifier(task.getId());
+			String identifier = task.getIdentifier().get(0).getValue().getValue();
+			Task opensrpTask = taskDao.getTaskByIdentifier(identifier);
+
+			if (opensrpTask == null) {
+				continue;
+			}
 
 			try {
 				for (DynamicValue dynamicValue : action.getDynamicValue()) {
