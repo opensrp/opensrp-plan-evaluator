@@ -140,7 +140,7 @@ public class PlanEvaluator {
 						: questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
 				action, planIdentifier, triggerEvent)) {
 			if (action.getType().equals(Action.ActionType.UPDATE)) {
-				taskHelper.updateTask(resource, action);
+				taskHelper.updateTask(resource, action, planIdentifier);
 			} else {
 				taskHelper.generateTask(resource, action, planIdentifier, jurisdictionCode,
 						username, questionnaireResponse);

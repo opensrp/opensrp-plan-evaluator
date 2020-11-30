@@ -3,15 +3,9 @@
  */
 package org.smartregister.pathevaluator.task;
 
-import java.lang.reflect.Field;
-import java.time.Instant;
-import java.time.temporal.TemporalAccessor;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
 import org.smartregister.domain.Period;
@@ -20,8 +14,11 @@ import org.smartregister.domain.Task.Restriction;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
-import com.ibm.fhir.model.resource.DomainResource;
-import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -83,12 +80,16 @@ public class TaskHelper {
 		}
 	}
 	
-	public void updateTask(DomainResource resource, Action action) {
+	public void updateTask(DomainResource resource, Action action, String planIdentifier) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		Task task = taskDao.getTaskByIdentifier(resource.getId());
-		evaluateDynamicValues(resource, action, task);
-		
-		taskDao.updateTask(task);
+		List<com.ibm.fhir.model.resource.Task> tasks = taskDao.findTasksForEntity(resource.getId(), planIdentifier);
+
+		for (com.ibm.fhir.model.resource.Task task: tasks) {
+			Task opensrpTask = taskDao.getTaskByIdentifier(task.getId());
+			evaluateDynamicValues(resource, action, opensrpTask);
+
+			taskDao.updateTask(opensrpTask);
+		}
 	}
 	
 	private void evaluateDynamicValues(DomainResource resource, Action action, Task task) {
