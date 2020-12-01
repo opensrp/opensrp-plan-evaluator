@@ -24,7 +24,7 @@ import com.ibm.fhir.path.FHIRPathElementNode;
  */
 public class ActionHelper {
 	
-	public static String RESIDENCE_EXPRESSION="$this.contained.identifier.where(id='residence').value";
+	public static String RESIDENCE_EXPRESSION="$this.contained.identifier.where(id='residence' and type.coding.code ='attribute').value";
 	
 	private LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 	
