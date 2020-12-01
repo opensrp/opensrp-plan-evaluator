@@ -67,7 +67,12 @@ public class LocationConverter {
 			        .value(String.builder().value(entry.getValue()).build()).build();
 			identifiers.add(identifier);
 		}
-		
+
+		identifier = Identifier.builder().system(Uri.builder().value("hasGeometry").build())
+				.value(String.builder().value(java.lang.String.valueOf(physicalLocation.getGeometry() != null)).build())
+				.build();
+
+		identifiers.add(identifier);
 		Coding jdnCoding = Coding.builder().code(Code.code("jdn")).build();
 		Coding buCoding = Coding.builder().code(Code.code("bu")).build();
 		CodeableConcept physicalType = physicalLocation.isJurisdiction() == Boolean.TRUE
