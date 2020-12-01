@@ -37,7 +37,12 @@ import org.smartregister.pathevaluator.dao.TaskProvider;
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.model.resource.Task;
+import com.ibm.fhir.model.type.Code;
+import com.ibm.fhir.model.type.CodeableConcept;
+import com.ibm.fhir.model.type.Coding;
+import com.ibm.fhir.model.type.Identifier;
 
 /**
  * @author Samuel Githengi created on 06/16/20
@@ -61,7 +66,7 @@ public class ActionHelperTest {
 	
 	@Mock
 	private EventDao eventDao;
-
+	
 	@Mock
 	private LocationProvider locationProvider;
 	
@@ -73,7 +78,7 @@ public class ActionHelperTest {
 	
 	@Mock
 	private EventProvider eventProvider;
-
+	
 	private SubjectConcept subjectConcept;
 	
 	private Jurisdiction jurisdiction;
@@ -83,7 +88,7 @@ public class ActionHelperTest {
 	private Condition condition;
 	
 	private Expression expression;
-
+	
 	private QuestionnaireResponse questionnaireResponse;
 	
 	private String plan = UUID.randomUUID().toString();
@@ -105,7 +110,8 @@ public class ActionHelperTest {
 		when(action.getSubjectCodableConcept()).thenReturn(subjectConcept);
 		patient = TestData.createPatient();
 		questionnaireResponse = TestData.createResponse();
-		expression = Expression.builder().expression("Patient.name.family = 'John'").subjectCodableConcept(subjectConcept).build();
+		expression = Expression.builder().expression("Patient.name.family = 'John'").subjectCodableConcept(subjectConcept)
+		        .build();
 		condition = Condition.builder().kind("applicability").expression(expression).build();
 	}
 	
@@ -156,6 +162,26 @@ public class ActionHelperTest {
 		verify(clientDao).findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 	}
 	
+	@Test
+	public void testGetQuestionnaireResourcesForFamilyEvent() {
+		subjectConcept.setText(ResourceType.LOCATION.value());
+		Location location = TestData.createLocation();
+	
+		Coding coding = Coding.builder().code(Code.code("attribute")).build();
+		CodeableConcept codeableConcept = CodeableConcept.builder().coding(coding).build();
+		Patient person = TestData.createPatient().toBuilder()
+		        .identifier(
+		            Identifier.builder().type(codeableConcept).id("residence").value(com.ibm.fhir.model.type.String.of(location.getId())).build())
+		        .build();
+		System.out.print(person);
+		List<Resource> persons = Collections.singletonList(person);
+		List<Location> locations = Collections.singletonList(location);
+		QuestionnaireResponse questionnaireResponse = TestData.createResponse().toBuilder().contained(persons).build();
+		when(locationDao.findLocationsById(location.getId())).thenReturn(locations);
+		assertEquals(locations, actionHelper.getSubjectResources(action, questionnaireResponse));
+		verify(locationDao).findLocationsById(location.getId());
+	}
+	
 	/** Condition resources tests **/
 	
 	@Test
@@ -201,7 +227,7 @@ public class ActionHelperTest {
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
 		verify(taskProvider).getTasks(patient, plan);
 	}
-
+	
 	@Test
 	public void testGetQuestionnaireConditionResources() {
 		subjectConcept.setText(ResourceType.QUESTIONAIRRE_RESPONSE.value());
@@ -210,7 +236,7 @@ public class ActionHelperTest {
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
 		verify(eventProvider).getEvents(patient, plan);
 	}
-
+	
 	@Test
 	public void testGetQuestionnaireConditionResourcesV2() {
 		subjectConcept.setText(ResourceType.QUESTIONAIRRE_RESPONSE.value());
@@ -219,7 +245,7 @@ public class ActionHelperTest {
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, questionnaireResponse, plan));
 		verify(eventProvider).getEvents(questionnaireResponse, plan);
 	}
-
+	
 	@Test
 	public void testGetGlobalTaskConditionResources() {
 		subjectConcept.setText(ResourceType.GLOBAL_TASK.value());

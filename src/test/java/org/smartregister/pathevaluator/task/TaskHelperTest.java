@@ -27,6 +27,7 @@ import org.smartregister.domain.Expression;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Task;
 import org.smartregister.domain.Task.TaskPriority;
+import org.smartregister.domain.Task.TaskStatus;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TestData;
 import org.smartregister.pathevaluator.dao.ClientDao;
@@ -127,6 +128,23 @@ public class TaskHelperTest {
 		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
 		assertEquals("Family Already Registered", updatedTask.getBusinessStatus());
 		assertEquals("CANCELLED", updatedTask.getStatus().name());
+		assertEquals(TaskPriority.ROUTINE, updatedTask.getPriority());
+	}
+	
+
+	@Test
+	public void testUpdateTaskWithNullDynamicValuesShouldNotUpdateTask() {
+		Task task = TestData.createDomainTask();
+		Action action = TestData.createAction();
+		action.setDynamicValue(null);
+		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
+		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
+		taskHelper.updateTask(taskResource, action);
+		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
+		Task updatedTask = taskCaptor.getValue();
+		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
+		assertEquals("Not Visited", updatedTask.getBusinessStatus());
+		assertEquals(TaskStatus.READY, updatedTask.getStatus());
 		assertEquals(TaskPriority.ROUTINE, updatedTask.getPriority());
 	}
 	

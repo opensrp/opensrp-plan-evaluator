@@ -98,7 +98,7 @@ public class PathEvaluatorLibrary {
 		if (resource == null) {
 			return false;
 		}
-		String escapedExpression = StringEscapeUtils.unescapeHtml4(expression);
+		String escapedExpression =unescapeHtml(expression);
 		try {
 			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, escapedExpression);
 			return nodes != null && nodes.iterator().hasNext()
@@ -111,6 +111,15 @@ public class PathEvaluatorLibrary {
 			    e);
 			return false;
 		}
+	}
+	
+	private String unescapeHtml(String expression) {
+		 String escapedExpression = StringEscapeUtils.unescapeHtml4(expression);
+		 if(escapedExpression.equals(StringEscapeUtils.unescapeHtml4(escapedExpression))) {
+			 return escapedExpression;
+		 }else {
+			 return unescapeHtml(escapedExpression);
+		 }
 	}
 	
 	/**

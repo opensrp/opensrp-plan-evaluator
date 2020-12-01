@@ -4,14 +4,11 @@
 package org.smartregister.pathevaluator.task;
 
 import java.lang.reflect.Field;
-import java.time.Instant;
-import java.time.temporal.TemporalAccessor;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
 import org.smartregister.domain.Period;
@@ -28,10 +25,13 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
  */
 public class TaskHelper {
 	
-	private static final String RESTRICTION="restriction";
-	private static final String RESTRICTION_REPETITIONS="restriction.repetitions";
-	private static final String RESTRICTION_START="restriction.period.start";
-	private static final String RESTRICTION_END="restriction.period.end";
+	private static final String RESTRICTION = "restriction";
+	
+	private static final String RESTRICTION_REPETITIONS = "restriction.repetitions";
+	
+	private static final String RESTRICTION_START = "restriction.period.start";
+	
+	private static final String RESTRICTION_END = "restriction.period.end";
 	
 	private PathEvaluatorLibrary pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
 	
@@ -64,14 +64,6 @@ public class TaskHelper {
 			task.setExecutionPeriod(action.getTimingPeriod());
 			task.setAuthoredOn(DateTime.now());
 			task.setLastModified(DateTime.now());
-			if (action.getDynamicValue() != null) {
-				for (DynamicValue dynamicValue : action.getDynamicValue()) {
-					if (dynamicValue != null && dynamicValue.getExpression() != null
-					        && dynamicValue.getExpression().getName().equals("defaultBusinessStatus")) {
-						task.setBusinessStatus(dynamicValue.getExpression().getExpression());
-					}
-				}
-			}
 			evaluateDynamicValues(resource, action, task);
 			if (task.getBusinessStatus() == null) {
 				task.setBusinessStatus("Not Visited");
@@ -92,9 +84,15 @@ public class TaskHelper {
 	}
 	
 	private void evaluateDynamicValues(DomainResource resource, Action action, Task task) {
+		if (action.getDynamicValue() == null) {
+			return;
+		}
 		try {
 			for (DynamicValue dynamicValue : action.getDynamicValue()) {
-				if (dynamicValue.getPath().startsWith(RESTRICTION)) {
+				if (dynamicValue != null && dynamicValue.getExpression() != null
+				        && "defaultBusinessStatus".equals(dynamicValue.getExpression().getName())) {
+					task.setBusinessStatus(dynamicValue.getExpression().getExpression());
+				} else if (dynamicValue.getPath().startsWith(RESTRICTION)) {
 					if (task.getRestriction() == null) {
 						Restriction restriction = new Restriction();
 						restriction.setPeriod(new Period());
@@ -105,7 +103,7 @@ public class TaskHelper {
 						        .evaluateStringExpression(resource, dynamicValue.getExpression().getExpression()).string()));
 					} else if (dynamicValue.getPath().equals(RESTRICTION_START)) {
 						DateTime date = new DateTime(pathEvaluatorLibrary
-					        .evaluateDateExpression(resource, dynamicValue.getExpression().getExpression()).toString());
+						        .evaluateDateExpression(resource, dynamicValue.getExpression().getExpression()).toString());
 						task.getRestriction().getPeriod().setStart(date);
 					} else if (dynamicValue.getPath().equals(RESTRICTION_END)) {
 						DateTime date = new DateTime(pathEvaluatorLibrary
@@ -131,7 +129,7 @@ public class TaskHelper {
 			}
 		}
 		catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception occurred while updating properties" + e,e);
+			logger.log(Level.SEVERE, "Exception occurred while updating properties" + e, e);
 		}
 	}
 	

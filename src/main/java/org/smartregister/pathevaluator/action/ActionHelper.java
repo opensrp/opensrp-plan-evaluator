@@ -14,13 +14,17 @@ import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 
 import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.path.FHIRPathElementNode;
 
 /**
  * @author Samuel Githengi created on 06/15/20
  */
 public class ActionHelper {
+	
+	public static String RESIDENCE_EXPRESSION="$this.contained.identifier.where(id='residence' and type.coding.code ='attribute').value";
 	
 	private LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 	
@@ -69,19 +73,21 @@ public class ActionHelper {
 	}
 	
 	/**
-	 * Gets the subject resources for the target entity that tasks should be generated against
+	 * Gets the subject resources for the questionnaireResponse that tasks should be generated
+	 * against
 	 * 
 	 * @param action the action to evaluate
-	 * @param entity id for entity
+	 * @param questionnaireResponse the questionnaire being evaluated
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends DomainResource> getSubjectResources(Action action, String entity) {
+	public List<? extends DomainResource> getSubjectResources(Action action, QuestionnaireResponse questionnaireResponse) {
 		ResourceType resourceType = getResourceType(action);
+		String entity = questionnaireResponse.getSubject().getReference().getValue();
 		switch (resourceType) {
 			case JURISDICTION:
 				return locationDao.findJurisdictionsById(entity);
 			case LOCATION:
-				return locationDao.findLocationsById(entity);
+				return locationDao.findLocationsById(getLocationForQuestionnaire(questionnaireResponse, entity));
 			case FAMILY:
 			case PERSON:
 				return clientDao.findClientById(entity);
@@ -90,11 +96,24 @@ public class ActionHelper {
 		}
 	}
 	
+	private String getLocationForQuestionnaire(QuestionnaireResponse questionnaireResponse, String subject) {
+		if (questionnaireResponse.getContained() != null && !questionnaireResponse.getContained().isEmpty()) {
+			if (questionnaireResponse.getContained().get(0) instanceof Patient) {
+				FHIRPathElementNode node = PathEvaluatorLibrary.getInstance()
+				        .evaluateElementExpression(questionnaireResponse, ActionHelper.RESIDENCE_EXPRESSION);
+				if (node != null) {
+					return node.getValue().asStringValue().string();
+				}
+			}
+		}
+		return subject;
+	}
+	
 	/**
 	 * Gets the subject resources of the resource id that tasks should be generated against
 	 *
 	 * @param condition
-	 * @param action
+	 * @param action	
 	 * @param id the resource id
 	 * @return resources that tasks should be generated against
 	 */
@@ -138,7 +157,7 @@ public class ActionHelper {
 			
 			case QUESTIONAIRRE_RESPONSE:
 				return PathEvaluatorLibrary.getInstance().getEventProvider().getEvents(resource, planIdentifier);
-
+			
 			case GLOBAL_TASK:
 				return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(resource.getId());
 			
