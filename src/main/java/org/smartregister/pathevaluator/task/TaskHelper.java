@@ -80,11 +80,11 @@ public class TaskHelper {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 		List<com.ibm.fhir.model.resource.Task> tasks = taskDao.findTasksForEntity(resource.getId(), planIdentifier);
 
-		for (com.ibm.fhir.model.resource.Task task: tasks) {
-			String identifier = task.getIdentifier().get(0).getValue().getValue();
-			Task opensrpTask = taskDao.getTaskByIdentifier(identifier);
+		for (com.ibm.fhir.model.resource.Task fhirTask: tasks) {
+			String identifier = fhirTask.getIdentifier().get(0).getValue().getValue();
+			Task task = taskDao.getTaskByIdentifier(identifier);
 
-			if (opensrpTask == null) {
+			if (task == null) {
 				continue;
 			}
 
@@ -105,7 +105,7 @@ public class TaskHelper {
 				logger.log(Level.SEVERE, "Exception occurred while updating properties using Reflection" + e);
 			}
 
-			taskDao.updateTask(opensrpTask);
+			taskDao.updateTask(task);
 		}
 	}
 	
