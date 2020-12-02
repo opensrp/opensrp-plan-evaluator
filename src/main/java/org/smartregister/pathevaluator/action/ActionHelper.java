@@ -3,8 +3,13 @@
  */
 package org.smartregister.pathevaluator.action;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import com.ibm.fhir.model.resource.Task;
+import org.smartregister.converters.TaskConverter;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Condition;
 import org.smartregister.domain.Jurisdiction;
@@ -18,6 +23,7 @@ import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.path.FHIRPathElementNode;
+import org.smartregister.pathevaluator.dao.TaskDao;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -29,6 +35,8 @@ public class ActionHelper {
 	private LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 	
 	private ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
+
+	private TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 	
 	/**
 	 * Gets the resource type for the action
@@ -66,6 +74,9 @@ public class ActionHelper {
 			
 			case PERSON:
 				return clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode());
+
+			case TASK:
+				return taskDao.findTasksByJurisdiction(jurisdiction.getCode());
 			
 			default:
 				return null;
@@ -80,7 +91,7 @@ public class ActionHelper {
 	 * @param questionnaireResponse the questionnaire being evaluated
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends DomainResource> getSubjectResources(Action action, QuestionnaireResponse questionnaireResponse) {
+	public List<? extends DomainResource> getSubjectResources(Action action, QuestionnaireResponse questionnaireResponse, String planIdentifier) {
 		ResourceType resourceType = getResourceType(action);
 		String entity = questionnaireResponse.getSubject().getReference().getValue();
 		switch (resourceType) {
@@ -91,6 +102,29 @@ public class ActionHelper {
 			case FAMILY:
 			case PERSON:
 				return clientDao.findClientById(entity);
+			case TASK:
+				List<QuestionnaireResponse.Item> items = questionnaireResponse.getItem();
+				for (QuestionnaireResponse.Item item: items) {
+					if (item.getDefinition() != null && item.getDefinition().getValue() != null) {
+						String definitionUri = item.getDefinition().getValue();
+						String answerValue = item.getLinkId()
+								.getValue();
+						if ("details".equals(definitionUri) && "taskIdentifier".equals(answerValue)) {
+							String taskIdentifier = ((com.ibm.fhir.model.type.String) item.getAnswer().get(0).getValue())
+									.getValue();
+
+							org.smartregister.domain.Task task = taskDao.getTaskByIdentifier(taskIdentifier);
+							if (task != null) {
+								ArrayList<Task> tasks = new ArrayList<>();
+								tasks.add(TaskConverter.convertTasktoFihrResource(task));
+
+								return tasks;
+							}
+						}
+					}
+				}
+
+				return taskDao.findTasksForEntity(entity, planIdentifier);
 			default:
 				return null;
 		}
