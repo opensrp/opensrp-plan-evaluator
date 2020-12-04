@@ -31,7 +31,6 @@ import java.util.UUID;
 public class PlanEvaluatorIntegrationTest {
 
 	private PlanEvaluator planEvaluator;
-	private String plan = UUID.randomUUID().toString();
 
 	private String username = UUID.randomUUID().toString();
 
