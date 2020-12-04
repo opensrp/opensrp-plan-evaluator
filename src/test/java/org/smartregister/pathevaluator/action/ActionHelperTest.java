@@ -7,21 +7,31 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.powermock.reflect.Whitebox;
+import org.smartregister.converters.EventConverter;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Action.SubjectConcept;
 import org.smartregister.domain.Condition;
+import org.smartregister.domain.Event;
 import org.smartregister.domain.Expression;
 import org.smartregister.domain.Jurisdiction;
+import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.TestData;
@@ -43,6 +53,8 @@ import com.ibm.fhir.model.type.Code;
 import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Coding;
 import com.ibm.fhir.model.type.Identifier;
+import org.smartregister.utils.DateTypeConverter;
+import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 /**
  * @author Samuel Githengi created on 06/16/20
@@ -92,6 +104,9 @@ public class ActionHelperTest {
 	private QuestionnaireResponse questionnaireResponse;
 	
 	private String plan = UUID.randomUUID().toString();
+
+	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
 	
 	@Before
 	public void setUp() {
@@ -103,6 +118,7 @@ public class ActionHelperTest {
 		Whitebox.setInternalState(instance, "eventProvider", eventProvider);
 		when(locationProvider.getLocationDao()).thenReturn(locationDao);
 		when(clientProvider.getClientDao()).thenReturn(clientDao);
+		when(taskProvider.getTaskDao()).thenReturn(taskDao);
 		
 		actionHelper = new ActionHelper();
 		subjectConcept = new SubjectConcept(ResourceType.JURISDICTION.value());
@@ -178,7 +194,7 @@ public class ActionHelperTest {
 		List<Location> locations = Collections.singletonList(location);
 		QuestionnaireResponse questionnaireResponse = TestData.createResponse().toBuilder().contained(persons).build();
 		when(locationDao.findLocationsById(location.getId())).thenReturn(locations);
-		assertEquals(locations, actionHelper.getSubjectResources(action, questionnaireResponse));
+		assertEquals(locations, actionHelper.getSubjectResources(action, questionnaireResponse, null));
 		verify(locationDao).findLocationsById(location.getId());
 	}
 	
@@ -253,6 +269,23 @@ public class ActionHelperTest {
 		when(taskProvider.getAllTasks(patient.getId())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
 		verify(taskProvider).getAllTasks(patient.getId());
+	}
+
+	@Test
+	public void testGetSubjectResourcesWhenGivenTaskActionAndMosquittoCollectionQuestionnaire() {
+		PlanDefinition planDefinition = gson.fromJson(TestData.MOSQUITTO_COLLECTION_CLOSE_PLAN, PlanDefinition.class);
+		Event event = gson.fromJson(TestData.MOSQUITTO_COLLECTION_EVENT, Event.class);
+		QuestionnaireResponse eventQuestionnaire = EventConverter.convertEventToEncounterResource(event);
+		org.smartregister.domain.Task task = gson.fromJson(TestData.MOSQUITTO_COLLECTION_TASK, org.smartregister.domain.Task.class);
+
+		when(taskDao.getTaskByIdentifier(task.getIdentifier())).thenReturn(task);
+
+		// Call the actual method under test
+		List<Task> tasks = (List<Task>) actionHelper.getSubjectResources(planDefinition.getActions().get(0), eventQuestionnaire, planDefinition.getIdentifier());
+
+		// Perform verifications and assertions
+		Assert.assertEquals(task.getIdentifier(), tasks.get(0).getId());
+		verify(taskDao).getTaskByIdentifier(task.getIdentifier());
 	}
 	
 }
