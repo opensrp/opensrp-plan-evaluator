@@ -122,7 +122,7 @@ public class TaskHelperTest {
 
 		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
 		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
-		taskHelper.updateTask(taskResource, action);
+		taskHelper.updateTask(taskResource, action, null);
 		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
 		Task updatedTask = taskCaptor.getValue();
 		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
@@ -139,7 +139,7 @@ public class TaskHelperTest {
 		action.setDynamicValue(null);
 		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
 		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
-		taskHelper.updateTask(taskResource, action);
+		taskHelper.updateTask(taskResource, action, null);
 		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
 		Task updatedTask = taskCaptor.getValue();
 		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
@@ -156,7 +156,7 @@ public class TaskHelperTest {
 
 		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
 		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
-		taskHelper.updateTask(taskResource, action);
+		taskHelper.updateTask(taskResource, action, null);
 		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
 		Task updatedTask = taskCaptor.getValue();
 		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
@@ -176,7 +176,7 @@ public class TaskHelperTest {
 
 		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
 		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
-		taskHelper.updateTask(taskResource, action);
+		taskHelper.updateTask(taskResource, action, null);
 		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
 		Task updatedTask = taskCaptor.getValue();
 	
