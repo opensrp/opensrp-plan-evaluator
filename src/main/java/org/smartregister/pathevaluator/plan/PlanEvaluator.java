@@ -113,7 +113,7 @@ public class PlanEvaluator {
 			    questionnaireResponse)) {
 				List<? extends DomainResource> resources;
 				if (questionnaireResponse != null) {
-					resources = actionHelper.getSubjectResources(action,questionnaireResponse);
+					resources = actionHelper.getSubjectResources(action, questionnaireResponse, planDefinition.getIdentifier());
 				} else {
 					resources = actionHelper.getSubjectResources(action, jurisdiction);
 
@@ -139,7 +139,7 @@ public class PlanEvaluator {
 						: questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
 				action, planIdentifier, triggerEvent)) {
 			if (action.getType().equals(Action.ActionType.UPDATE)) {
-				taskHelper.updateTask(resource, action);
+				taskHelper.updateTask(resource, action, questionnaireResponse);
 			} else {
 				taskHelper.generateTask(resource, action, planIdentifier, jurisdictionCode,
 						username, questionnaireResponse);
