@@ -1,5 +1,6 @@
 package org.smartregister.domain;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,7 +18,9 @@ import org.smartregister.common.AddressField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Address {
+public class Address implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	@JsonProperty
 	private Boolean preferred;

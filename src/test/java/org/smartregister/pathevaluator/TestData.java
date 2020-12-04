@@ -5,15 +5,12 @@ package org.smartregister.pathevaluator;
 
 import static com.ibm.fhir.model.type.String.of;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
 import org.smartregister.domain.Expression;
@@ -26,7 +23,7 @@ import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
-import com.ibm.fhir.model.resource.QuestionnaireResponse.*;
+import com.ibm.fhir.model.resource.QuestionnaireResponse.Item;
 import com.ibm.fhir.model.resource.QuestionnaireResponse.Item.Answer;
 import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.CodeableConcept;
@@ -107,7 +104,7 @@ public class TestData {
 			+ "}]\n"
 			+ "}";
 
-	public static String TASK_JSON  = "{\"identifier\":\"tsk11231jh22\",\"planIdentifier\":\"IRS_2018_S1\",\"groupIdentifier\":\"2018_IRS-3734{\",\"status\":\"Ready\",\"businessStatus\":\"Not Visited\",\"priority\":3,\"code\":\"IRS\",\"description\":\"Spray House\",\"focus\":\"IRS Visit\",\"for\":\"location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc\",\"executionStartDate\":\"2018-11-10T2200\",\"executionEndDate\":null,\"authoredOn\":\"2018-10-31T0700\",\"lastModified\":\"2018-10-31T0700\",\"owner\":\"demouser\",\"note\":[{\"authorString\":\"demouser\",\"time\":\"2018-01-01T0800\",\"text\":\"This should be assigned to patrick.\"}],\"serverVersion\":0,\"reasonReference\":\"reasonrefuuid\",\"location\":\"catchment1\",\"requester\":\"chw1\",\"syncStatus\":null,\"structureId\":null,\"rowid\":null}";
+	public static String TASK_JSON  = "{\"identifier\":\"tsk11231jh22\",\"planIdentifier\":\"IRS_2018_S1\",\"groupIdentifier\":\"2018_IRS-3734{\",\"status\":\"Ready\",\"businessStatus\":\"Not Visited\",\"priority\":\"routine\",\"code\":\"IRS\",\"description\":\"Spray House\",\"focus\":\"IRS Visit\",\"for\":\"location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc\",\"executionStartDate\":\"2018-11-10T2200\",\"executionEndDate\":null,\"authoredOn\":\"2018-10-31T0700\",\"lastModified\":\"2018-10-31T0700\",\"owner\":\"demouser\",\"note\":[{\"authorString\":\"demouser\",\"time\":\"2018-01-01T0800\",\"text\":\"This should be assigned to patrick.\"}],\"serverVersion\":0,\"reasonReference\":\"reasonrefuuid\",\"location\":\"catchment1\",\"requester\":\"chw1\",\"syncStatus\":null,\"structureId\":null,\"rowid\":null}";
 
 	public static PlanDefinition createPlan() {
 		return gson.fromJson(plan, PlanDefinition.class);

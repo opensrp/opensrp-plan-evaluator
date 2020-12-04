@@ -11,6 +11,7 @@ import static org.smartregister.pathevaluator.TestData.createPlanV1;
 
 import java.util.UUID;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +22,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.smartregister.domain.Action;
+import org.smartregister.domain.DynamicValue;
+import org.smartregister.domain.Expression;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Task;
+import org.smartregister.domain.Task.TaskPriority;
+import org.smartregister.domain.Task.TaskStatus;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TestData;
 import org.smartregister.pathevaluator.dao.ClientDao;
@@ -127,5 +132,60 @@ public class TaskHelperTest {
 		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
 		assertEquals("Family Already Registered", updatedTask.getBusinessStatus());
 		assertEquals("CANCELLED", updatedTask.getStatus().name());
+		assertEquals(TaskPriority.ROUTINE, updatedTask.getPriority());
+	}
+	
+
+	@Test
+	public void testUpdateTaskWithNullDynamicValuesShouldNotUpdateTask() {
+		Task task = TestData.createDomainTask();
+		Action action = TestData.createAction();
+		action.setDynamicValue(null);
+		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
+		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
+		taskHelper.updateTask(taskResource, action);
+		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
+		Task updatedTask = taskCaptor.getValue();
+		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
+		assertEquals("Not Visited", updatedTask.getBusinessStatus());
+		assertEquals(TaskStatus.READY, updatedTask.getStatus());
+		assertEquals(TaskPriority.ROUTINE, updatedTask.getPriority());
+	}
+	
+	@Test
+	public void testUpdateTaskWithDynamicValuesForPriority() {
+		Task task = TestData.createDomainTask();
+		Action action = TestData.createAction();
+		action.getDynamicValue().add(new DynamicValue("priority", Expression.builder().expression("'stat'").build()));
+
+		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
+		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
+		taskHelper.updateTask(taskResource, action);
+		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
+		Task updatedTask = taskCaptor.getValue();
+		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", updatedTask.getForEntity());
+		assertEquals("Family Already Registered", updatedTask.getBusinessStatus());
+		assertEquals("CANCELLED", updatedTask.getStatus().name());
+		assertEquals(TaskPriority.STAT, updatedTask.getPriority());
+	}
+	
+	@Test
+	public void testUpdateTaskWithDynamicValuesForRestriction() {
+		Task task = TestData.createDomainTask();
+		Action action = TestData.createAction();
+		action.getDynamicValue().add(new DynamicValue("priority", Expression.builder().expression("'stat'").build()));
+		action.getDynamicValue().add(new DynamicValue("restriction.repetitions", Expression.builder().expression("'1'").build()));
+		action.getDynamicValue().add(new DynamicValue("restriction.period.start", Expression.builder().expression("today() + 7 'days'").build()));
+		action.getDynamicValue().add(new DynamicValue("restriction.period.end", Expression.builder().expression("today() + 2 'months'").build()));
+
+		when(taskDao.getTaskByIdentifier(anyString())).thenReturn(task);
+		Mockito.doReturn(task).when(taskDao).updateTask(any(Task.class));
+		taskHelper.updateTask(taskResource, action);
+		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
+		Task updatedTask = taskCaptor.getValue();
+	
+		assertEquals(1, updatedTask.getRestriction().getRepetitions());
+		assertEquals(new DateTime().withTimeAtStartOfDay().plusDays(7).toString(), updatedTask.getRestriction().getPeriod().getStart().toString());
+		assertEquals(new DateTime().withTimeAtStartOfDay().plusMonths(2).toString(), updatedTask.getRestriction().getPeriod().getEnd().toString());
 	}
 }

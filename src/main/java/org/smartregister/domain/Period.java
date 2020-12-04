@@ -1,23 +1,22 @@
 package org.smartregister.domain;
 
+import org.joda.time.DateTime;
+
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.io.Serializable;
 
-/**
- * @author Vincent Karuri
- */
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
-@Getter
-@Setter
-public class Jurisdiction implements Serializable {
+@AllArgsConstructor
+public class Period implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    private String code;
+	private DateTime start;
+
+	private DateTime end;
 
 }

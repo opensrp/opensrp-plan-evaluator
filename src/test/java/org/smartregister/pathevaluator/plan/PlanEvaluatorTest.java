@@ -139,7 +139,7 @@ public class PlanEvaluatorTest {
 		List<Patient> patients = Collections.singletonList(TestData.createPatient());
 		Action action = planDefinition.getActions().get(0);
 		String entity = questionnaire.getSubject().getReference().getValue();
-		when(actionHelper.getSubjectResources(action, entity)).thenAnswer(new Answer<List<Patient>>() {
+		when(actionHelper.getSubjectResources(action, questionnaire)).thenAnswer(new Answer<List<Patient>>() {
 			
 			@Override
 			public List<Patient> answer(InvocationOnMock invocation) throws Throwable {
@@ -154,7 +154,7 @@ public class PlanEvaluatorTest {
 		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size();
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.EVENT_SUBMISSION, plan,
 		    questionnaire);
-		verify(actionHelper).getSubjectResources(action, "098787kml-jsks09");
+		verify(actionHelper).getSubjectResources(action, questionnaire);
 		
 		verify(conditionHelper).evaluateActionConditions(questionnaireCaptor.capture(), eq(action), eq(plan),
 		    eq(TriggerType.EVENT_SUBMISSION));
