@@ -1,17 +1,11 @@
 package org.smartregister.pathevaluator.task;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.smartregister.pathevaluator.TestData.createPlanV1;
-
-import java.util.UUID;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +15,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.smartregister.converters.EventConverter;
+import org.smartregister.converters.TaskConverter;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
+import org.smartregister.domain.Event;
 import org.smartregister.domain.Expression;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Task;
@@ -34,9 +31,21 @@ import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.EventDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.dao.TaskDao;
+import org.smartregister.utils.DateTypeConverter;
+import org.smartregister.utils.TaskDateTimeTypeConverter;
 
-import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.smartregister.pathevaluator.TestData.createPlanV1;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskHelperTest {
@@ -183,5 +192,33 @@ public class TaskHelperTest {
 		assertEquals(1, updatedTask.getRestriction().getRepetitions());
 		assertEquals(new DateTime().withTimeAtStartOfDay().plusDays(7).toString(), updatedTask.getRestriction().getPeriod().getStart().toString());
 		assertEquals(new DateTime().withTimeAtStartOfDay().plusMonths(2).toString(), updatedTask.getRestriction().getPeriod().getEnd().toString());
+	}
+
+	@Test
+	public void testUpdateTaskWhenQuestionResponseIsNotNullShouldUpdateTaskUsingParentQuestionnaire() {
+		Action action = new Action();
+		Set<DynamicValue> dynamicValues = new HashSet<>();
+		action.setDynamicValue(dynamicValues);
+		action.getDynamicValue().add(new DynamicValue("businessStatus", Expression.builder().expression("$this.item.where(linkId='task_business_status').answer[0].value.value").build()));
+
+		Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+				.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
+
+		Event event = gson.fromJson(TestData.MOSQUITTO_COLLECTION_EVENT, Event.class);
+		QuestionnaireResponse eventQuestionnaire = EventConverter.convertEventToEncounterResource(event);
+
+		Task task = gson.fromJson(TestData.MOSQUITTO_COLLECTION_TASK, Task.class);
+		Mockito.doReturn(task).when(taskDao).getTaskByIdentifier(task.getIdentifier());
+
+		assertEquals("Not Visited", task.getBusinessStatus());
+
+		// Call the method under test
+		taskHelper.updateTask(TaskConverter.convertTasktoFihrResource(task), action, eventQuestionnaire);
+
+		// Perform verifications and assertions
+		verify(taskDao, times(1)).updateTask(taskCaptor.capture());
+		Task updatedTask = taskCaptor.getValue();
+		assertEquals("Complete", updatedTask.getBusinessStatus());
+
 	}
 }
