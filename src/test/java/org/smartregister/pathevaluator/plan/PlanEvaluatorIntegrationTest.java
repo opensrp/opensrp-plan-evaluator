@@ -63,7 +63,7 @@ public class PlanEvaluatorIntegrationTest {
 		QuestionnaireResponse eventQuestionnaire = EventConverter.convertEventToEncounterResource(event);
 
 		Task task = gson.fromJson(TestData.MOSQUITTO_COLLECTION_TASK, Task.class);
-		Mockito.doReturn(task).when(taskDao).getTaskByIdentifier(Mockito.anyString());
+		Mockito.doReturn(task).when(taskDao).getTaskByIdentifier(task.getIdentifier());
 
 		Assert.assertEquals("READY", task.getStatus().name());
 		Assert.assertEquals("Not Visited", task.getBusinessStatus());

@@ -3,12 +3,12 @@
  */
 package org.smartregister.pathevaluator.action;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import com.ibm.fhir.model.resource.Task;
+import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.path.FHIRPathElementNode;
+import com.ibm.fhir.path.FHIRPathStringValue;
 import org.smartregister.converters.TaskConverter;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Condition;
@@ -17,13 +17,10 @@ import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
-
-import com.ibm.fhir.model.resource.DomainResource;
-import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.QuestionnaireResponse;
-import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.path.FHIRPathElementNode;
 import org.smartregister.pathevaluator.dao.TaskDao;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -103,24 +100,13 @@ public class ActionHelper {
 			case PERSON:
 				return clientDao.findClientById(entity);
 			case TASK:
-				List<QuestionnaireResponse.Item> items = questionnaireResponse.getItem();
-				for (QuestionnaireResponse.Item item: items) {
-					if (item.getDefinition() != null && item.getDefinition().getValue() != null) {
-						String definitionUri = item.getDefinition().getValue();
-						String answerValue = item.getLinkId()
-								.getValue();
-						if ("details".equals(definitionUri) && "taskIdentifier".equals(answerValue)) {
-							String taskIdentifier = ((com.ibm.fhir.model.type.String) item.getAnswer().get(0).getValue())
-									.getValue();
+				FHIRPathStringValue taskIdentifierStringValue = PathEvaluatorLibrary.getInstance()
+						.evaluateStringExpression(questionnaireResponse, "$this.item.where(linkId='taskIdentifier' and definition='details').answer[0].value.value");
 
-							org.smartregister.domain.Task task = taskDao.getTaskByIdentifier(taskIdentifier);
-							if (task != null) {
-								ArrayList<Task> tasks = new ArrayList<>();
-								tasks.add(TaskConverter.convertTasktoFihrResource(task));
-
-								return tasks;
-							}
-						}
+				if (taskIdentifierStringValue != null) {
+					org.smartregister.domain.Task task = taskDao.getTaskByIdentifier(taskIdentifierStringValue.string());
+					if (task != null) {
+						return Collections.singletonList(TaskConverter.convertTasktoFihrResource(task));
 					}
 				}
 
