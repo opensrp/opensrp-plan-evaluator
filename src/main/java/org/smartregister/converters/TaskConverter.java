@@ -136,6 +136,7 @@ public class TaskConverter {
 				.basedOn(planIdentifier)
 				.groupIdentifier(groupIdentifier)
 				.intent(TaskIntent.PLAN)  //required property
+				.id(domainTask.getIdentifier())
 				.build();
 		/** @formatter:on **/
 		return fihrTask;
