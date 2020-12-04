@@ -101,7 +101,7 @@ public class ActionHelper {
 				return clientDao.findClientById(entity);
 			case TASK:
 				FHIRPathStringValue taskIdentifierStringValue = PathEvaluatorLibrary.getInstance()
-						.evaluateStringExpression(questionnaireResponse, "$this.item.where(linkId='taskIdentifier' and definition='details').answer[0].value.value");
+						.evaluateStringExpression(questionnaireResponse, "$this.item.where(linkId='taskIdentifier' and definition='details').answer.value.value");
 
 				if (taskIdentifierStringValue != null) {
 					org.smartregister.domain.Task task = taskDao.getTaskByIdentifier(taskIdentifierStringValue.string());
