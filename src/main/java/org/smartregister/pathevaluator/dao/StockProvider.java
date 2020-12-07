@@ -1,5 +1,6 @@
 package org.smartregister.pathevaluator.dao;
 
+import com.ibm.fhir.model.resource.Basic;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.smartregister.domain.Stock;
@@ -12,7 +13,7 @@ public class StockProvider extends BaseProvider {
 
 	private StockDao stockDao;
 
-	public List<Stock> getStocksAgainstServicePointId(String servicePointId) {
+	public List<Basic> getStocksAgainstServicePointId(String servicePointId) {
 		return stockDao.findInventoryInAServicePoint(servicePointId);
 	}
 }

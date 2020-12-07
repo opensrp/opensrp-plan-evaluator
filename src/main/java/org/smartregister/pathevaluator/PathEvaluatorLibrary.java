@@ -78,7 +78,7 @@ public class PathEvaluatorLibrary {
 	 */
 	public static PathEvaluatorLibrary getInstance() {
 		if (instance == null) {
-			PathEvaluatorLibrary.init(null, null, null, null);
+			PathEvaluatorLibrary.init(null, null, null, null, null);
 		}
 		return instance;
 	}
