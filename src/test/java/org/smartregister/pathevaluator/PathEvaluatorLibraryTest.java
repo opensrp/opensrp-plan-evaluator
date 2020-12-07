@@ -49,7 +49,7 @@ public class PathEvaluatorLibraryTest {
 	
 	@Before
 	public void startUp() {
-		Whitebox.setInternalState(PathEvaluatorLibrary.class, "instance", (Object) null, null);
+		Whitebox.setInternalState(PathEvaluatorLibrary.class, "instance", (Object) null);
 		pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
 		patient = Patient.builder().id("12345").birthDate(Date.of("1990-12-19"))
 		        .identifier(Identifier.builder().id("1234").value(of("1212313")).build())
