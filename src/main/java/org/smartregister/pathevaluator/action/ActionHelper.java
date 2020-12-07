@@ -3,8 +3,13 @@
  */
 package org.smartregister.pathevaluator.action;
 
-import java.util.List;
-
+import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.path.FHIRPathElementNode;
+import com.ibm.fhir.path.FHIRPathStringValue;
+import org.smartregister.converters.TaskConverter;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Condition;
 import org.smartregister.domain.Jurisdiction;
@@ -12,6 +17,7 @@ import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.TaskDao;
 
 import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Patient;
@@ -19,6 +25,8 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
 import org.smartregister.pathevaluator.dao.StockDao;
 import com.ibm.fhir.path.FHIRPathElementNode;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -30,6 +38,9 @@ public class ActionHelper {
 	private LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 	
 	private ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
+
+	private TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
+
 
 	private StockDao stockDao = PathEvaluatorLibrary.getInstance().getStockProvider().getStockDao();
 
@@ -70,6 +81,10 @@ public class ActionHelper {
 			case PERSON:
 				return clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 
+			case TASK:
+				return taskDao.findTasksByJurisdiction(jurisdiction.getCode());
+
+
 			case INVENTORY:
 //				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
 
@@ -86,7 +101,7 @@ public class ActionHelper {
 	 * @param questionnaireResponse the questionnaire being evaluated
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends DomainResource> getSubjectResources(Action action, QuestionnaireResponse questionnaireResponse) {
+	public List<? extends DomainResource> getSubjectResources(Action action, QuestionnaireResponse questionnaireResponse, String planIdentifier) {
 		ResourceType resourceType = getResourceType(action);
 		String entity = questionnaireResponse.getSubject().getReference().getValue();
 		switch (resourceType) {
@@ -97,6 +112,18 @@ public class ActionHelper {
 			case FAMILY:
 			case PERSON:
 				return clientDao.findClientById(entity);
+			case TASK:
+				FHIRPathStringValue taskIdentifierStringValue = PathEvaluatorLibrary.getInstance()
+						.evaluateStringExpression(questionnaireResponse, "$this.item.where(linkId='taskIdentifier' and definition='details').answer.value.value");
+
+				if (taskIdentifierStringValue != null) {
+					org.smartregister.domain.Task task = taskDao.getTaskByIdentifier(taskIdentifierStringValue.string());
+					if (task != null) {
+						return Collections.singletonList(TaskConverter.convertTasktoFihrResource(task));
+					}
+				}
+
+				return taskDao.findTasksForEntity(entity, planIdentifier);
 			case INVENTORY:
 //				return stockDao.findInventoryInAServicePoint(entity);
 			default:

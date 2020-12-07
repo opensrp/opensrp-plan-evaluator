@@ -172,7 +172,7 @@ public class PathEvaluatorLibraryTest {
 	}
 
 	@Test
-	public void testExtractElementsFromBundleShouldGetAllRelevantElements() throws Exception {
+	public void sudi () throws Exception {
 		List<Element> elements = pathEvaluatorLibrary.extractElementsFromBundle(getDeviceDefinitionBundle(),
 		    "$this.entry.resource.where(identifier.where(value='d3fdac0e-061e-b068-2bed-5a95e803636f')).property.where(type.where(text='RDTScan Configuration')).valueCode");
 		assertEquals(9, elements.size());
