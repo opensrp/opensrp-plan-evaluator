@@ -39,7 +39,7 @@ public class ConditionHelper {
 	 * @param triggerEvent
 	 * @return result of condition evaluation
 	 */
-	public boolean evaluateActionConditions(DomainResource target, Action action, String planIdentifier,
+	public boolean evaluateActionConditions(Resource target, Action action, String planIdentifier,
 	        TriggerType triggerEvent) {
 		boolean isValid = true;
 		for (Condition condition : action.getCondition()) {
@@ -54,7 +54,7 @@ public class ConditionHelper {
 				List<Resource> resources = (List<Resource>) actionHelper.getConditionSubjectResources(condition, action,
 				    target, planIdentifier);
 				if (resources != null && !resources.isEmpty()) {
-					target=target.toBuilder().contained(resources).build();	
+//					target=target.toBuilder().contained(resources).build();	// TODO : FIX
 				}
 				isValid = pathEvaluatorLibrary.evaluateBooleanExpression(target,
 				    condition.getExpression().getExpression());

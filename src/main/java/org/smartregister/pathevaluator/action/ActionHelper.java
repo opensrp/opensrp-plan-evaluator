@@ -65,7 +65,7 @@ public class ActionHelper {
 	 * @param jurisdiction
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends DomainResource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
+	public List<? extends Resource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
 		ResourceType resourceType = getResourceType(action);
 		switch (resourceType) {
 			case JURISDICTION:
@@ -86,7 +86,7 @@ public class ActionHelper {
 
 
 			case INVENTORY:
-//				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
+				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
 
 			default:
 				return null;
@@ -101,7 +101,7 @@ public class ActionHelper {
 	 * @param questionnaireResponse the questionnaire being evaluated
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends DomainResource> getSubjectResources(Action action, QuestionnaireResponse questionnaireResponse, String planIdentifier) {
+	public List<? extends Resource> getSubjectResources(Action action, QuestionnaireResponse questionnaireResponse, String planIdentifier) {
 		ResourceType resourceType = getResourceType(action);
 		String entity = questionnaireResponse.getSubject().getReference().getValue();
 		switch (resourceType) {
@@ -125,7 +125,7 @@ public class ActionHelper {
 
 				return taskDao.findTasksForEntity(entity, planIdentifier);
 			case INVENTORY:
-//				return stockDao.findInventoryInAServicePoint(entity);
+				return stockDao.findInventoryInAServicePoint(entity);
 			default:
 				return null;
 		}
@@ -197,7 +197,7 @@ public class ActionHelper {
 				return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(resource.getId());
 
 			case INVENTORY:
-//				return PathEvaluatorLibrary.getInstance().getStockProvider().getStocksAgainstServicePointId(resource.getId()); //TODO
+				return PathEvaluatorLibrary.getInstance().getStockProvider().getStocksAgainstServicePointId(resource.getId()); //TODO
 			default:
 				return null;
 		}

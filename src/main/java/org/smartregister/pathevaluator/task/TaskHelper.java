@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.ibm.fhir.model.resource.Resource;
 import org.joda.time.DateTime;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
@@ -45,7 +46,7 @@ public class TaskHelper {
 	 * @param username
 	 * @param questionnaireResponse
 	 */
-	public void generateTask(DomainResource resource, Action action, String planIdentifier, String jurisdiction,
+	public void generateTask(Resource resource, Action action, String planIdentifier, String jurisdiction,
 	        String username, QuestionnaireResponse questionnaireResponse) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 		if (taskDao.checkIfTaskExists(resource.getId(), jurisdiction, planIdentifier, action.getCode())) {
@@ -75,11 +76,11 @@ public class TaskHelper {
 		}
 	}
 	
-	public void updateTask(DomainResource resource, Action action, QuestionnaireResponse questionnaireResponse) {
+	public void updateTask(Resource resource, Action action, QuestionnaireResponse questionnaireResponse) {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 		Task task = taskDao.getTaskByIdentifier(resource.getId());
 
-		DomainResource taskResource = resource;
+		Resource taskResource = resource;
 
 		if (questionnaireResponse != null) {
 			taskResource = questionnaireResponse.toBuilder()
@@ -92,7 +93,7 @@ public class TaskHelper {
 		taskDao.updateTask(task);
 	}
 	
-	private void evaluateDynamicValues(DomainResource resource, Action action, Task task) {
+	private void evaluateDynamicValues(Resource resource, Action action, Task task) {
 		if (action.getDynamicValue() == null) {
 			return;
 		}

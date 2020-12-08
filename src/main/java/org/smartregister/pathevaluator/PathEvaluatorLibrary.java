@@ -137,7 +137,7 @@ public class PathEvaluatorLibrary {
 		}
 	}
 	
-	public FHIRPathStringValue evaluateStringExpression(DomainResource resource, String expression) {
+	public FHIRPathStringValue evaluateStringExpression(Resource resource, String expression) {
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().as(FHIRPathStringValue.class) : null;
@@ -197,7 +197,7 @@ public class PathEvaluatorLibrary {
 		return fhirPathElementNode.getValue().asStringValue().string();
 	}
 	
-	public FHIRPathDateValue evaluateDateExpression(DomainResource resource, String expression) {
+	public FHIRPathDateValue evaluateDateExpression(Resource resource, String expression) {
 		
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
