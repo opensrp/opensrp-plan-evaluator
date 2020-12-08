@@ -1,14 +1,13 @@
 package org.smartregister.pathevaluator.dao;
 
-import com.ibm.fhir.model.resource.Basic;
-import org.smartregister.domain.Stock;
+import com.ibm.fhir.model.resource.Bundle;
 
 import java.util.List;
 
 public interface StockDao {
 
-	List<Basic> findInventoryItemsInAJurisdiction(String jurisdictionId);
+	List<Bundle> findInventoryItemsInAJurisdiction(String jurisdictionId);
 
-	List<Basic> findInventoryInAServicePoint(String servicePointId);
+	List<Bundle> findInventoryInAServicePoint(String servicePointId);
 
 }

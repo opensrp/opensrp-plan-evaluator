@@ -1,184 +1,122 @@
 package org.smartregister.converters;
 
-import com.ibm.fhir.model.resource.Basic;
+import com.ibm.fhir.model.resource.Bundle;
+import com.ibm.fhir.model.resource.Device;
+import com.ibm.fhir.model.resource.SupplyDelivery;
 import com.ibm.fhir.model.type.*;
 import com.ibm.fhir.model.type.String;
-import org.smartregister.domain.ProductCatalogue;
-import org.smartregister.domain.Stock;
-import org.smartregister.pathevaluator.dao.ProductCatalogueDao;
+import com.ibm.fhir.model.type.code.BundleType;
+import com.ibm.fhir.model.type.code.FHIRDeviceStatus;
+import com.ibm.fhir.model.type.code.SupplyDeliveryStatus;
+import org.joda.time.format.ISODateTimeFormat;
+import org.smartregister.domain.StockAndProductDetails;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public class StockConverter {
 
-	private static ProductCatalogueDao productCatalogueDao;
+	public static Bundle convertStockToBundleResource(StockAndProductDetails stockAndProductDetails) {
 
-	public static Basic convertStockToBasicResource(Stock stock) {
-		Basic.Builder builder = Basic.builder().id(stock.getId());
-		Code code = Code.builder().value("Inventory").build();
-		Coding coding = Coding.builder().code(code).build();
-		CodeableConcept codeableConcept = CodeableConcept.builder().coding(coding).build();
+		Bundle.Builder bundleBuilder = Bundle.builder();
 
-		Reference subject = Reference.builder().reference(String.of(java.lang.String.valueOf(stock.getIdentifier())))
+		Code deviceItemCode;
+		Coding deviceItemCoding;
+		Element deviceItemElement = null;
+		Identifier poNumberIdentifier = null;
+		Reference supplier = null;
+		java.lang.String deliveryDateInString;
+		Element occurrenceDateTime;
+
+		Device.Builder deviceBuilder = Device.builder();
+		if (stockAndProductDetails != null && stockAndProductDetails.getStock() != null)
+			deviceBuilder.id(stockAndProductDetails.getStock().getId());
+
+		java.lang.String unicefSection = stockAndProductDetails.getStock() != null
+				&& stockAndProductDetails.getStock().getCustomProperties() != null ?
+				stockAndProductDetails.getStock().getCustomProperties().get("UNICEF section") : "";
+
+		java.lang.String locationId = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
+				stockAndProductDetails.getStock().getLocationId() != null ?
+				stockAndProductDetails.getStock().getLocationId() :
+				"";
+
+		Reference owner = Reference.builder().reference(String.of("Organization/" + unicefSection)).build();
+		Reference location = Reference.builder().reference(String.of("Location/" + locationId)).build();
+
+		String serialNumber = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
+				stockAndProductDetails.getStock().getSerialNumber() != null ?
+				String.of(stockAndProductDetails.getStock().getSerialNumber()) : null;
+		FHIRDeviceStatus fhirDeviceStatus = FHIRDeviceStatus.ACTIVE;
+		deviceBuilder.owner(owner).location(location).serialNumber(serialNumber)
+				.status(fhirDeviceStatus);
+
+		SupplyDelivery.Builder supplyDeliveryBuilder = SupplyDelivery.builder();
+		Decimal decimal = Decimal.builder().value(java.lang.String.valueOf(stockAndProductDetails.getStock().getValue()))
 				.build();
-		Date dateCreated = null;
-		
-		if(stock != null && stock.getDate_created() != null) {
-			java.util.Date utilDate = new java.util.Date(stock.getDate_created());
-			java.lang.String dateInString = convertUtilDateToString(utilDate);
-			dateCreated = Date.builder().value(dateInString).build();
-		}
+		SimpleQuantity simpleQuantity = SimpleQuantity.builder().value(decimal).build();
 
-		Reference author = Reference.builder().reference(String.of(java.lang.String.valueOf(stock.getIdentifier()))).build(); //TODO
-
-		ProductCatalogue productCatalogue = productCatalogueDao.getProductCatalogueById(stock.getIdentifier());
-		Collection<Identifier> identifierList = new ArrayList<>();
-		Identifier productNameIdentifier = null;
-		Identifier isAttractiveItemIdentifier = null;
-		Identifier materialNumberIdentifier = null;
-		Identifier availabilityIdentifier = null;
-		Identifier conditionIdentifier = null;
-		Identifier isAppropriateUsageIdentifier = null;
-		Identifier accountabilityPeriodIdentifier = null;
-		if (productCatalogue != null && productCatalogue.getProductName() != null) {
-			productNameIdentifier = Identifier.builder().system(Uri.builder().value("productName").build())
-					.value(String.builder().value(productCatalogue.getProductName()).build()).build();
-		}
-		if (productCatalogue != null && productCatalogue.getIsAttractiveItem() != null) {
-			isAttractiveItemIdentifier = Identifier.builder().system(Uri.builder().value("isAttractiveItem").build())
-					.value(String.builder().value(java.lang.String.valueOf(productCatalogue.getIsAttractiveItem())).build())
+		if (stockAndProductDetails != null && stockAndProductDetails.getProductCatalogue() != null &&
+				stockAndProductDetails.getProductCatalogue().getProductName() != null) {
+			deviceItemCode = Code.builder().value(stockAndProductDetails.getProductCatalogue().getProductName())
 					.build();
+			deviceItemCoding = Coding.builder().code(deviceItemCode)
+					.display(String.of(stockAndProductDetails.getProductCatalogue().getProductName())).build();
+			deviceItemElement = CodeableConcept.builder().coding(deviceItemCoding).build();
 		}
-		if (productCatalogue != null && productCatalogue.getMaterialNumber() != null) {
-			materialNumberIdentifier = Identifier.builder().system(Uri.builder().value("materialNumber").build())
-					.value(String.builder().value(productCatalogue.getMaterialNumber()).build()).build();
-		}
-		if (productCatalogue != null && productCatalogue.getAvailability() != null) {
-			availabilityIdentifier = Identifier.builder().system(Uri.builder().value("availability").build())
-					.value(String.builder().value(productCatalogue.getAvailability()).build()).build();
+		SupplyDelivery.SuppliedItem suppliedItem = SupplyDelivery.SuppliedItem.builder().quantity(simpleQuantity)
+				.item(deviceItemElement).build();
+
+		java.lang.String poNumber = stockAndProductDetails.getStock() != null
+				&& stockAndProductDetails.getStock().getCustomProperties() != null ?
+				stockAndProductDetails.getStock().getCustomProperties().get("PO Number") : "";
+
+		String poNumberString = poNumber != null ? String.of(poNumber) : null;
+		if (poNumberString != null) {
+			poNumberIdentifier = Identifier.builder().value(poNumberString).build();
 		}
 
-		if (productCatalogue != null && productCatalogue.getCondition() != null) {
-			conditionIdentifier = Identifier.builder().system(Uri.builder().value("condition").build())
-					.value(String.builder().value(productCatalogue.getCondition()).build()).build();
+		java.lang.String donor = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
+				stockAndProductDetails.getStock().getDonor() != null ?
+				"Organization/" + stockAndProductDetails.getStock().getDonor() :
+				null;
+		String donorString = donor != null ? String.of(donor) : null;
+		if (donorString != null) {
+			supplier = Reference.builder().reference(donorString)
+					.display(donorString).build();
 		}
 
-		if (productCatalogue != null && productCatalogue.getAppropriateUsage() != null) {
-			isAppropriateUsageIdentifier = Identifier.builder()
-					.system(Uri.builder().value("isAppropriateUsage").build())
-					.value(String.builder().value(productCatalogue.getAppropriateUsage()).build()).build();
-		}
+		Code deviceCode = Code.builder().value("device").build();
+		Uri system = Uri.builder().value("http://terminology.hl7.org/CodeSystem/supply-item-type").build();
+		Coding coding = Coding.builder().code(deviceCode).system(system).build();
+		CodeableConcept typeCodeableConcept = CodeableConcept.builder().coding(coding).build();
 
-		if (productCatalogue != null && productCatalogue.getAccountabilityPeriod() != null) {
-			accountabilityPeriodIdentifier = Identifier.builder()
-					.system(Uri.builder().value("accountabilityPeriod").build())
-					.value(String.builder().value(java.lang.String.valueOf(productCatalogue.getAccountabilityPeriod()))
-							.build()).build();
-		}
+		Date deliveryDate = stockAndProductDetails != null && stockAndProductDetails.getStock() != null
+				&& stockAndProductDetails.getStock().getDeliveryDate() != null ?
+				stockAndProductDetails.getStock().getDeliveryDate() :
+				null;
 
-		if (productNameIdentifier != null) {
-			identifierList.add(productNameIdentifier);
-		}
-		if (isAttractiveItemIdentifier != null) {
-			identifierList.add(isAttractiveItemIdentifier);
-		}
+		deliveryDateInString = deliveryDate != null ? ISODateTimeFormat.date().print(deliveryDate.getTime()) : null;
+		occurrenceDateTime = deliveryDateInString != null ? DateTime.builder().value(deliveryDateInString).build() : null;
 
-		if (materialNumberIdentifier != null) {
-			identifierList.add(materialNumberIdentifier);
+		if (poNumberIdentifier != null) {
+			supplyDeliveryBuilder.identifier(poNumberIdentifier);
 		}
-		if (availabilityIdentifier != null) {
-			identifierList.add(availabilityIdentifier);
-		}
-		if (conditionIdentifier != null) {
-			identifierList.add(conditionIdentifier);
-		}
-		if (isAppropriateUsageIdentifier != null) {
-			identifierList.add(isAppropriateUsageIdentifier);
-		}
-		if (accountabilityPeriodIdentifier != null) {
-			identifierList.add(accountabilityPeriodIdentifier);
-		}
+		supplyDeliveryBuilder.suppliedItem(suppliedItem).status(SupplyDeliveryStatus.COMPLETED)
+				.supplier(supplier).type(typeCodeableConcept).occurrence(occurrenceDateTime).build();
 
-		Collection<Extension> extensions = new ArrayList<>();
-		java.lang.String unicefSection = stock != null && stock.getCustomProperties() != null ?
-				stock.getCustomProperties().get("UNICEF section") : "";
-
-		java.lang.String poNumber = stock != null && stock.getCustomProperties() != null ?
-				stock.getCustomProperties().get("PO Number") : "";
-
-		Extension unicefSectionExtension = null;
-		Extension quantityExtension = null;
-		Extension deliveryDateExtension = null;
-		Extension donorExtension = null;
-		Extension servicePointIdExtension = null;
-		Extension poNumberExtension = null;
-		Extension serialNumberExtension = null;
-
-		if (unicefSection != null) {
-			unicefSectionExtension = Extension.builder().value(String.builder().value(unicefSection).build())
-					.url("inventory-details").id("Unicef Section").build();
-		}
-		if (stock != null && stock.getValue() > 0) {
-			quantityExtension = Extension.builder()
-					.value(String.builder().value(java.lang.String.valueOf(stock.getValue())).build())
-					.url("inventory-details").id("Quantity").build();
-		}
-		if (stock != null && stock.getDeliveryDate() != null) {
-			deliveryDateExtension = Extension.builder()
-					.value(String.builder().value(java.lang.String.valueOf(stock.getDeliveryDate())).build())
-					.url("inventory-details").id("Delivery Date").build();
-		}
-		if (stock != null && stock.getDonor() != null) {
-			donorExtension = Extension.builder()
-					.value(String.builder().value(java.lang.String.valueOf(stock.getDonor())).build())
-					.url("inventory-details").id("Donor").build();
-		}
-		if (stock != null && stock.getLocationId() != null) {
-			servicePointIdExtension = Extension.builder()
-					.value(String.builder().value(java.lang.String.valueOf(stock.getLocationId())).build())
-					.url("inventory-details").id("Service Point Id").build();
-		}
-		if (poNumber != null) {
-			poNumberExtension = Extension.builder().value(String.builder().value(poNumber).build())
-					.url("inventory-details").id("PO Number").build();
-		}
-		if (stock != null && stock.getSerialNumber() != null) {
-			serialNumberExtension = Extension.builder()
-					.value(String.builder().value(java.lang.String.valueOf(stock.getSerialNumber())).build())
-					.url("inventory-details").id("Serial Number").build();
-		}
-
-		if (unicefSectionExtension != null) {
-			extensions.add(unicefSectionExtension);
-		}
-		if (quantityExtension != null) {
-			extensions.add(quantityExtension);
-		}
-		if (deliveryDateExtension != null) {
-			extensions.add(deliveryDateExtension);
-		}
-		if (donorExtension != null) {
-			extensions.add(donorExtension);
-		}
-		if (serialNumberExtension != null) {
-			extensions.add(servicePointIdExtension);
-		}
-		if (poNumberExtension != null) {
-			extensions.add(poNumberExtension);
-		}
-		if (serialNumberExtension != null) {
-			extensions.add(serialNumberExtension);
-		}
-
-		builder.code(codeableConcept).subject(subject).created(dateCreated).author(author).identifier(identifierList)
-				.extension(extensions);
-
-		return builder.build();
+		List<Bundle.Entry> entryList = new ArrayList<>();
+		Uri deviceUri = Uri.builder()
+				.value("https://fhir.smartregister.org/device/00868475000235-d9c070d1-9e8b-46e8-b24a-a98ccb69aadd").build();
+		Bundle.Entry deviceEntry = Bundle.Entry.builder().fullUrl(deviceUri).resource(deviceBuilder.build()).build();
+		Uri supplyDeliveryUri = Uri.builder()
+				.value("https://fhir.smartregister.org/supplyDelivery/b93c856f-1bac-4cf8-ad98-a2e8096e9dbc").build();
+		Bundle.Entry supplyDeliveryEntry = Bundle.Entry.builder().fullUrl(supplyDeliveryUri)
+				.resource(supplyDeliveryBuilder.build()).build();
+		entryList.add(deviceEntry);
+		entryList.add(supplyDeliveryEntry);
+		return bundleBuilder.type(BundleType.COLLECTION).entry(entryList).build();
 	}
 
-	public static java.lang.String convertUtilDateToString(java.util.Date date) {
-		return (date != null) ? new SimpleDateFormat("yyyy-MM-dd").format(date) : null;
-	}
 }

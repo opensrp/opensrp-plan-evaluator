@@ -3,6 +3,13 @@ package org.smartregister.converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.Basic;
+import com.ibm.fhir.model.resource.Bundle;
+import com.ibm.fhir.model.resource.Device;
+import com.ibm.fhir.model.resource.SupplyDelivery;
+import com.ibm.fhir.model.type.CodeableConcept;
+import com.ibm.fhir.model.type.code.BundleType;
+import com.ibm.fhir.model.type.code.FHIRDeviceStatus;
+import com.ibm.fhir.model.type.code.SupplyDeliveryStatus;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,23 +20,15 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.smartregister.domain.ProductCatalogue;
 import org.smartregister.domain.Stock;
-import org.smartregister.pathevaluator.dao.ProductCatalogueDao;
+import org.smartregister.domain.StockAndProductDetails;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
-import java.lang.reflect.Field;
+import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.powermock.api.mockito.PowerMockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({StockConverter.class})
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 public class StockConverterTest {
-
-	@Mock
-	private ProductCatalogueDao productCatalogueDao;
 
 	private String STOCK_JSON = " {\n"
 			+ " \t\"type\": \"Stock\",\n"
@@ -57,7 +56,9 @@ public class StockConverterTest {
 			.serializeNulls().create();
 
 	@Test
-	public void testConvertToPatientResource() throws IllegalAccessException {
+	public void testConvertToBundleResource() {
+
+		StockAndProductDetails stockAndProductDetails = new StockAndProductDetails();
 		Stock stock = gson.fromJson(STOCK_JSON, Stock.class);
 		stock.setId("7e278a0d-a4eb-4d23-aea0-836d813836a5");
 		ProductCatalogue productCatalogue = new ProductCatalogue();
@@ -69,49 +70,54 @@ public class StockConverterTest {
 		productCatalogue.setAppropriateUsage("Yes");
 		productCatalogue.setAccountabilityPeriod(12);
 		productCatalogue.setUniqueId(1l);
+		stockAndProductDetails.setProductCatalogue(productCatalogue);
+		stockAndProductDetails.setStock(stock);
 
-		StockConverter stockConverter = new StockConverter();
-		Field field = PowerMockito.field(StockConverter.class, "productCatalogueDao");
-		field.set(StockConverter.class, productCatalogueDao);
-		when(productCatalogueDao.getProductCatalogueById(anyLong())).thenReturn(productCatalogue);
-		Basic basic = stockConverter.convertStockToBasicResource(stock);
-		assertNotNull(basic);
-		assertEquals(basic.getCode().getCoding().get(0).getCode().getValue(), "Inventory");
-		assertEquals(basic.getSubject().getReference().getValue(), "1");
-		assertEquals(basic.getCreated().getValue().toString(),"2018-03-13");
-//		assertEquals(basic.getAuthor().getValue().toString(),"2018-03-13"); //TODO
-		assertEquals(basic.getIdentifier().size(), 7);
-		assertEquals(basic.getIdentifier().get(0).getSystem().getValue(), "productName");
-		assertEquals(basic.getIdentifier().get(0).getValue().getValue(), "School supplies");
+		Bundle bundle = StockConverter.convertStockToBundleResource(stockAndProductDetails);
+		assertNotNull(bundle);
+		assertEquals(BundleType.COLLECTION, bundle.getType());
+		assertEquals(2, bundle.getEntry().size());
+		assertEquals("https://fhir.smartregister.org/device/00868475000235-d9c070d1-9e8b-46e8-b24a-a98ccb69aadd",
+				bundle.getEntry().get(0).getFullUrl().getValue());
+		assertEquals("7e278a0d-a4eb-4d23-aea0-836d813836a5", bundle.getEntry().get(0).getResource().getId());
+		assertEquals(FHIRDeviceStatus.ACTIVE.getValue(),
+				((Device) bundle.getEntry().get(0).getResource()).getStatus().getValue());
+		assertEquals("1234serial", ((Device) bundle.getEntry().get(0).getResource()).getSerialNumber().getValue());
+		assertEquals("Organization/Health",
+				((Device) bundle.getEntry().get(0).getResource()).getOwner().getReference().getValue());
+		assertEquals("Location/90397",
+				((Device) bundle.getEntry().get(0).getResource()).getLocation().getReference().getValue());
 
-		assertEquals(basic.getIdentifier().get(1).getSystem().getValue(), "isAttractiveItem");
-		assertEquals(basic.getIdentifier().get(1).getValue().getValue(), "true");
+		assertEquals("https://fhir.smartregister.org/supplyDelivery/b93c856f-1bac-4cf8-ad98-a2e8096e9dbc",
+				bundle.getEntry().get(1).getFullUrl().getValue());
+		assertEquals("111",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getIdentifier().get(0).getValue().getValue());
+		assertEquals(SupplyDeliveryStatus.COMPLETED.getValue(),
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getStatus().getValue());
+		assertEquals("http://terminology.hl7.org/CodeSystem/supply-item-type",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getType().getCoding().get(0).getSystem()
+						.getValue());
+		assertEquals("device",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getType().getCoding().get(0).getCode().getValue());
+		assertEquals(BigDecimal.TEN,
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSuppliedItem().getQuantity().getValue()
+						.getValue());
+		assertEquals(1, ((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSuppliedItem().getItem().as(
+				CodeableConcept.class).getCoding().size());
+		assertEquals("School supplies",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSuppliedItem().getItem().as(
+						CodeableConcept.class).getCoding().get(0).getCode().getValue());
+		assertEquals("School supplies",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSuppliedItem().getItem().as(
+						CodeableConcept.class).getCoding().get(0).getDisplay().getValue());
+		assertEquals("2020-06-06", ((SupplyDelivery) bundle.getEntry().get(1).getResource()).getOccurrence().as(
+				com.ibm.fhir.model.type.DateTime.class).getValue().toString());
+		assertEquals("Organization/ADB",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSupplier().getReference().getValue());
+		assertEquals("Organization/ADB",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSupplier().getDisplay().getValue());
+		System.out.println(bundle);
 
-		assertEquals(basic.getIdentifier().get(2).getSystem().getValue(), "materialNumber");
-		assertEquals(basic.getIdentifier().get(2).getValue().getValue(), "MX-1234");
-
-		assertEquals(basic.getIdentifier().get(3).getSystem().getValue(), "availability");
-		assertEquals(basic.getIdentifier().get(3).getValue().getValue(), "Yes available");
-
-		assertEquals(basic.getIdentifier().get(4).getSystem().getValue(), "condition");
-		assertEquals(basic.getIdentifier().get(4).getValue().getValue(), "Not in a good condition");
-
-		assertEquals(basic.getIdentifier().get(5).getSystem().getValue(), "isAppropriateUsage");
-		assertEquals(basic.getIdentifier().get(5).getValue().getValue(), "Yes");
-
-		assertEquals(basic.getIdentifier().get(6).getSystem().getValue(), "accountabilityPeriod");
-		assertEquals(basic.getIdentifier().get(6).getValue().getValue(), "12");
-
-		assertEquals(basic.getExtension().size(), 7);
-		assertEquals(basic.getExtension().get(0).getValue().as(com.ibm.fhir.model.type.String.class).getValue(), "Health");
-		assertEquals(basic.getExtension().get(1).getValue().as(com.ibm.fhir.model.type.String.class).getValue(), "10");
-//		assertEquals(basic.getExtension().get(2).getValue().as(com.ibm.fhir.model.type.String.class).getValue(), "Sat Jun 06 05:00:00 PKT 2020");
-		assertEquals(basic.getExtension().get(3).getValue().as(com.ibm.fhir.model.type.String.class).getValue(), "ADB");
-		assertEquals(basic.getExtension().get(4).getValue().as(com.ibm.fhir.model.type.String.class).getValue(), "90397");
-		assertEquals(basic.getExtension().get(5).getValue().as(com.ibm.fhir.model.type.String.class).getValue(), "111");
-		assertEquals(basic.getExtension().get(6).getValue().as(com.ibm.fhir.model.type.String.class).getValue(), "1234serial");
-
-		System.out.println(basic);
 	}
 
 }
