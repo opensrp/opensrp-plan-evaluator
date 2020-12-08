@@ -2,7 +2,6 @@ package org.smartregister.converters;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ibm.fhir.model.resource.Basic;
 import com.ibm.fhir.model.resource.Bundle;
 import com.ibm.fhir.model.resource.Device;
 import com.ibm.fhir.model.resource.SupplyDelivery;
@@ -12,12 +11,6 @@ import com.ibm.fhir.model.type.code.FHIRDeviceStatus;
 import com.ibm.fhir.model.type.code.SupplyDeliveryStatus;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.smartregister.domain.ProductCatalogue;
 import org.smartregister.domain.Stock;
 import org.smartregister.domain.StockAndProductDetails;
@@ -38,7 +31,7 @@ public class StockConverterTest {
 			+ " \t\"providerid\": \"3c11c3ad-c366-443f-8ca8-c8c21f5bdd22\",\n"
 			+ " \t\"value\": 10,\n"
 			+ " \t\"version\": 1606748740346,\n"
-			+ " \t\"deliveryDate\": \"Jun 6, 2020, 5:00:00 AM\",\n"
+			+ " \t\"deliveryDate\": \"2020-06-06\",\n"
 			+ " \t\"accountabilityEndDate\": \"Apr 6, 2021, 5:00:00 AM\",\n"
 			+ " \t\"donor\": \"ADB\",\n"
 			+ " \t\"serialNumber\": \"1234serial\",\n"
