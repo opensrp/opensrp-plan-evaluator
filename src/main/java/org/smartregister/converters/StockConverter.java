@@ -30,8 +30,9 @@ public class StockConverter {
 		Element occurrenceDateTime;
 
 		Device.Builder deviceBuilder = Device.builder();
-		if (stockAndProductDetails != null && stockAndProductDetails.getStock() != null)
+		if (stockAndProductDetails != null && stockAndProductDetails.getStock() != null) {
 			deviceBuilder.id(stockAndProductDetails.getStock().getId());
+		}
 
 		java.lang.String unicefSection = stockAndProductDetails.getStock() != null
 				&& stockAndProductDetails.getStock().getCustomProperties() != null ?
@@ -116,6 +117,10 @@ public class StockConverter {
 				.resource(supplyDeliveryBuilder.build()).build();
 		entryList.add(deviceEntry);
 		entryList.add(supplyDeliveryEntry);
+		if (stockAndProductDetails != null && stockAndProductDetails.getStock() != null) {
+			bundleBuilder.id(stockAndProductDetails.getStock().getId());
+		}
+
 		return bundleBuilder.type(BundleType.COLLECTION).entry(entryList).build();
 	}
 

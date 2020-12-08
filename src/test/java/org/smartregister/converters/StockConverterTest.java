@@ -32,7 +32,7 @@ public class StockConverterTest {
 			+ " \t\"value\": 10,\n"
 			+ " \t\"version\": 1606748740346,\n"
 			+ " \t\"deliveryDate\": \"2020-06-06\",\n"
-			+ " \t\"accountabilityEndDate\": \"Apr 6, 2021, 5:00:00 AM\",\n"
+			+ " \t\"accountabilityEndDate\": \"2021-06-21\",\n"
 			+ " \t\"donor\": \"ADB\",\n"
 			+ " \t\"serialNumber\": \"1234serial\",\n"
 			+ " \t\"locationId\": \"90397\",\n"
@@ -68,6 +68,7 @@ public class StockConverterTest {
 
 		Bundle bundle = StockConverter.convertStockToBundleResource(stockAndProductDetails);
 		assertNotNull(bundle);
+		assertEquals("7e278a0d-a4eb-4d23-aea0-836d813836a5", bundle.getId());
 		assertEquals(BundleType.COLLECTION, bundle.getType());
 		assertEquals(2, bundle.getEntry().size());
 		assertEquals("https://fhir.smartregister.org/device/00868475000235-d9c070d1-9e8b-46e8-b24a-a98ccb69aadd",
