@@ -4,6 +4,7 @@
 package org.smartregister.pathevaluator.action;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ibm.fhir.model.resource.*;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Assert;
@@ -35,21 +37,8 @@ import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.TestData;
-import org.smartregister.pathevaluator.dao.ClientDao;
-import org.smartregister.pathevaluator.dao.ClientProvider;
-import org.smartregister.pathevaluator.dao.EventDao;
-import org.smartregister.pathevaluator.dao.EventProvider;
-import org.smartregister.pathevaluator.dao.LocationDao;
-import org.smartregister.pathevaluator.dao.LocationProvider;
-import org.smartregister.pathevaluator.dao.TaskDao;
-import org.smartregister.pathevaluator.dao.TaskProvider;
-import org.smartregister.pathevaluator.dao.StockDao;
+import org.smartregister.pathevaluator.dao.*;
 
-import com.ibm.fhir.model.resource.Location;
-import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.QuestionnaireResponse;
-import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.Code;
 import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Coding;
@@ -94,12 +83,17 @@ public class ActionHelperTest {
 	
 	@Mock
 	private EventProvider eventProvider;
+
+	@Mock
+	private StockProvider stockProvider;
 	
 	private SubjectConcept subjectConcept;
 	
 	private Jurisdiction jurisdiction;
 	
 	private Patient patient;
+
+	private Bundle bundle;
 	
 	private Condition condition;
 	
@@ -120,15 +114,18 @@ public class ActionHelperTest {
 		Whitebox.setInternalState(instance, "clientProvider", clientProvider);
 		Whitebox.setInternalState(instance, "taskProvider", taskProvider);
 		Whitebox.setInternalState(instance, "eventProvider", eventProvider);
+		Whitebox.setInternalState(instance, "stockProvider", stockProvider);
 		when(locationProvider.getLocationDao()).thenReturn(locationDao);
 		when(clientProvider.getClientDao()).thenReturn(clientDao);
 		when(taskProvider.getTaskDao()).thenReturn(taskDao);
-		
+		when(stockProvider.getStockDao()).thenReturn(stockDao);
+
 		actionHelper = new ActionHelper();
 		subjectConcept = new SubjectConcept(ResourceType.JURISDICTION.value());
 		jurisdiction = new Jurisdiction("12123");
 		when(action.getSubjectCodableConcept()).thenReturn(subjectConcept);
 		patient = TestData.createPatient();
+		bundle = TestData.createBundle();
 		questionnaireResponse = TestData.createResponse();
 		expression = Expression.builder().expression("Patient.name.family = 'John'").subjectCodableConcept(subjectConcept)
 		        .build();
@@ -200,6 +197,15 @@ public class ActionHelperTest {
 		when(locationDao.findLocationsById(location.getId())).thenReturn(locations);
 		assertEquals(locations, actionHelper.getSubjectResources(action, questionnaireResponse, null));
 		verify(locationDao).findLocationsById(location.getId());
+	}
+
+	@Test
+	public void testGetBundleResources() {
+		subjectConcept.setText(ResourceType.BUNDLE.value());
+		List<Bundle> expected = Collections.singletonList(TestData.createBundle());
+		when(stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode())).thenReturn(expected);
+		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
+		verify(stockDao).findInventoryItemsInAJurisdiction(jurisdiction.getCode());
 	}
 	
 	/** Condition resources tests **/
@@ -273,6 +279,15 @@ public class ActionHelperTest {
 		when(taskProvider.getAllTasks(patient.getId())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
 		verify(taskProvider).getAllTasks(patient.getId());
+	}
+
+	@Test
+	public void testGetBundleConditionResources() {
+		subjectConcept.setText(ResourceType.BUNDLE.value());
+		List<Bundle> expected = Collections.singletonList(TestData.createBundle());
+		when(stockProvider.getStocksAgainstServicePointId(anyString())).thenReturn(expected);
+		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, bundle, plan));
+		verify(stockProvider).getStocksAgainstServicePointId(anyString());
 	}
 
 	@Test

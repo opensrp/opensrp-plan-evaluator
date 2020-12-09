@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.ibm.fhir.model.resource.*;
+import com.ibm.fhir.model.type.code.*;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.smartregister.domain.Action;
@@ -20,21 +22,13 @@ import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ibm.fhir.model.resource.Location;
-import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.QuestionnaireResponse.Item;
 import com.ibm.fhir.model.resource.QuestionnaireResponse.Item.Answer;
-import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Date;
 import com.ibm.fhir.model.type.HumanName;
 import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Reference;
-import com.ibm.fhir.model.type.code.LocationStatus;
-import com.ibm.fhir.model.type.code.QuestionnaireResponseStatus;
-import com.ibm.fhir.model.type.code.TaskIntent;
-import com.ibm.fhir.model.type.code.TaskStatus;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -131,6 +125,10 @@ public class TestData {
 	
 	public static Location createLocation() {
 		return Location.builder().id(UUID.randomUUID().toString()).name(of("Nairobi")).status(LocationStatus.ACTIVE).build();
+	}
+
+	public static Bundle createBundle() {
+		return Bundle.builder().id(UUID.randomUUID().toString()).type(BundleType.COLLECTION).build();
 	}
 	
 	public static QuestionnaireResponse createResponse() {
