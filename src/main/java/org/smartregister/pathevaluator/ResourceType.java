@@ -17,7 +17,7 @@ public enum ResourceType {
 	TASK("Task"),
 	QUESTIONAIRRE_RESPONSE("QuestionnaireResponse"),
 	GLOBAL_TASK("Global.Task"),
-	INVENTORY("Inventory");
+	BUNDLE("Bundle");
 
 	private String value;
 	

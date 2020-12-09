@@ -92,7 +92,6 @@ public class ConditionHelperTest {
 		assertFalse(conditionHelper.evaluateActionConditions(patient, action, null, TriggerType.PLAN_ACTIVATION));
 	}
 
-	@Ignore // TODO : Remove this
 	@Test
 	public void testEvaluateActionConditionWithSubject() {
 		condition = condition.toBuilder()

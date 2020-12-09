@@ -19,12 +19,7 @@ import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
-import com.ibm.fhir.model.resource.DomainResource;
-import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.QuestionnaireResponse;
-import com.ibm.fhir.model.resource.Resource;
 import org.smartregister.pathevaluator.dao.StockDao;
-import com.ibm.fhir.path.FHIRPathElementNode;
 import java.util.Collections;
 import java.util.List;
 
@@ -85,7 +80,7 @@ public class ActionHelper {
 				return taskDao.findTasksByJurisdiction(jurisdiction.getCode());
 
 
-			case INVENTORY:
+			case BUNDLE:
 				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
 
 			default:
@@ -124,7 +119,7 @@ public class ActionHelper {
 				}
 
 				return taskDao.findTasksForEntity(entity, planIdentifier);
-			case INVENTORY:
+			case BUNDLE:
 				return stockDao.findInventoryInAServicePoint(entity);
 			default:
 				return null;
@@ -196,7 +191,7 @@ public class ActionHelper {
 			case GLOBAL_TASK:
 				return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(resource.getId());
 
-			case INVENTORY:
+			case BUNDLE:
 				return PathEvaluatorLibrary.getInstance().getStockProvider().getStocksAgainstServicePointId(resource.getId()); //TODO
 			default:
 				return null;

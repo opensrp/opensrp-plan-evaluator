@@ -53,8 +53,8 @@ public class ConditionHelper {
 				@SuppressWarnings("unchecked")
 				List<Resource> resources = (List<Resource>) actionHelper.getConditionSubjectResources(condition, action,
 				    target, planIdentifier);
-				if (resources != null && !resources.isEmpty()) {
-//					target=target.toBuilder().contained(resources).build();	// TODO : FIX
+				if (resources != null && !resources.isEmpty() && target instanceof DomainResource) {
+					target= ((DomainResource)target).toBuilder().contained(resources).build();
 				}
 				isValid = pathEvaluatorLibrary.evaluateBooleanExpression(target,
 				    condition.getExpression().getExpression());
