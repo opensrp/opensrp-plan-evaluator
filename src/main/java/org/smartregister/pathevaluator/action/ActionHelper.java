@@ -79,7 +79,6 @@ public class ActionHelper {
 			case TASK:
 				return taskDao.findTasksByJurisdiction(jurisdiction.getCode());
 
-
 			case BUNDLE:
 				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
 
@@ -120,6 +119,13 @@ public class ActionHelper {
 
 				return taskDao.findTasksForEntity(entity, planIdentifier);
 			case BUNDLE:
+				FHIRPathStringValue locationIdStringValue = PathEvaluatorLibrary.getInstance()
+						.evaluateStringExpression(questionnaireResponse,
+								"$this.item.where(linkId='locationId' and definition='details').answer.value.value");
+
+				if (locationIdStringValue != null) {
+					return stockDao.findInventoryInAServicePoint(locationIdStringValue.string());
+				}
 				return stockDao.findInventoryInAServicePoint(entity);
 			default:
 				return null;
