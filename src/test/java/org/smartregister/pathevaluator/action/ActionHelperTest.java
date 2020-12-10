@@ -4,6 +4,7 @@
 package org.smartregister.pathevaluator.action;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -305,6 +306,19 @@ public class ActionHelperTest {
 		// Perform verifications and assertions
 		Assert.assertEquals(task.getIdentifier(), tasks.get(0).getId());
 		verify(taskDao).getTaskByIdentifier(task.getIdentifier());
+	}
+
+	@Test
+	public void testGetSubjectResourcesWithBundleResourceType() {
+		List<Bundle> expected = Collections.singletonList(TestData.createBundle());
+		PlanDefinition planDefinition = gson.fromJson(TestData.EUSM_PLAN, PlanDefinition.class);
+		Event event = gson.fromJson(TestData.FLAG_PROBLEM_EVENT, Event.class);
+		QuestionnaireResponse eventQuestionnaire = EventConverter.convertEventToEncounterResource(event);
+		when(stockDao.findInventoryInAServicePoint(anyString())).thenReturn(expected);
+		List<Bundle> bundles = (List<Bundle>) actionHelper.getSubjectResources(planDefinition.getActions().get(1), eventQuestionnaire, planDefinition.getIdentifier());
+
+		assertNotNull(bundles);
+		verify(stockDao).findInventoryInAServicePoint(anyString());
 	}
 	
 }

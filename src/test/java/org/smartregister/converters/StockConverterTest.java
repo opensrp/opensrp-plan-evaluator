@@ -71,7 +71,7 @@ public class StockConverterTest {
 		assertEquals("7e278a0d-a4eb-4d23-aea0-836d813836a5", bundle.getId());
 		assertEquals(BundleType.COLLECTION, bundle.getType());
 		assertEquals(2, bundle.getEntry().size());
-		assertEquals("https://fhir.smartregister.org/device/00868475000235-d9c070d1-9e8b-46e8-b24a-a98ccb69aadd",
+		assertEquals("https://fhir.smartregister.org/device/" + productCatalogue.getUniqueId(),
 				bundle.getEntry().get(0).getFullUrl().getValue());
 		assertEquals("7e278a0d-a4eb-4d23-aea0-836d813836a5", bundle.getEntry().get(0).getResource().getId());
 		assertEquals(FHIRDeviceStatus.ACTIVE.getValue(),
@@ -82,7 +82,7 @@ public class StockConverterTest {
 		assertEquals("Location/90397",
 				((Device) bundle.getEntry().get(0).getResource()).getLocation().getReference().getValue());
 
-		assertEquals("https://fhir.smartregister.org/supplyDelivery/b93c856f-1bac-4cf8-ad98-a2e8096e9dbc",
+		assertEquals("https://fhir.smartregister.org/supplyDelivery/" + stock.getId(),
 				bundle.getEntry().get(1).getFullUrl().getValue());
 		assertEquals("111",
 				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getIdentifier().get(0).getValue().getValue());

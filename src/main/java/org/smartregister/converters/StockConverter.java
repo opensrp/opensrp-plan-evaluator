@@ -108,11 +108,20 @@ public class StockConverter {
 				.supplier(supplier).type(typeCodeableConcept).occurrence(occurrenceDateTime).build();
 
 		List<Bundle.Entry> entryList = new ArrayList<>();
-		Uri deviceUri = Uri.builder()
-				.value("https://fhir.smartregister.org/device/00868475000235-d9c070d1-9e8b-46e8-b24a-a98ccb69aadd").build();
+		java.lang.String productId =
+				stockAndProductDetails != null && stockAndProductDetails.getProductCatalogue() != null &&
+						stockAndProductDetails.getProductCatalogue().getUniqueId() != null ?
+						java.lang.String.valueOf(stockAndProductDetails.getProductCatalogue().getUniqueId()) : "";
+
+		java.lang.String deviceUriString = "https://fhir.smartregister.org/device/" + productId;
+		Uri deviceUri = Uri.builder().value(deviceUriString).build();
 		Bundle.Entry deviceEntry = Bundle.Entry.builder().fullUrl(deviceUri).resource(deviceBuilder.build()).build();
-		Uri supplyDeliveryUri = Uri.builder()
-				.value("https://fhir.smartregister.org/supplyDelivery/b93c856f-1bac-4cf8-ad98-a2e8096e9dbc").build();
+		java.lang.String stockId = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
+				stockAndProductDetails.getStock().getId() != null ?
+				java.lang.String.valueOf(stockAndProductDetails.getStock().getId()) :
+				"";
+		java.lang.String supplyDeliveryUriString = "https://fhir.smartregister.org/supplyDelivery/" + stockId;
+		Uri supplyDeliveryUri = Uri.builder().value(supplyDeliveryUriString).build();
 		Bundle.Entry supplyDeliveryEntry = Bundle.Entry.builder().fullUrl(supplyDeliveryUri)
 				.resource(supplyDeliveryBuilder.build()).build();
 		entryList.add(deviceEntry);
