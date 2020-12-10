@@ -17,6 +17,9 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 
 	@JsonProperty
 	private String identifier;
+
+	@JsonProperty
+	private String description;
 	
 	@JsonProperty
 	private String version;
@@ -157,6 +160,14 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 
 	public void setExperimental(boolean experimental) {
 		this.experimental = experimental;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Override
