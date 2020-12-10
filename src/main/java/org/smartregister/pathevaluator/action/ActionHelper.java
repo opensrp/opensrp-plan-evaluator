@@ -36,7 +36,6 @@ public class ActionHelper {
 
 	private TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 
-
 	private StockDao stockDao = PathEvaluatorLibrary.getInstance().getStockProvider().getStockDao();
 
 	/**
