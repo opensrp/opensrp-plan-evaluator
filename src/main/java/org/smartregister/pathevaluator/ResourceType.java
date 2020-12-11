@@ -17,7 +17,7 @@ public enum ResourceType {
 	TASK("Task"),
 	QUESTIONAIRRE_RESPONSE("QuestionnaireResponse"),
 	GLOBAL_TASK("Global.Task"),
-	BUNDLE("Bundle");
+	DEVICE("Device");
 
 	private String value;
 	

@@ -202,7 +202,7 @@ public class ActionHelperTest {
 
 	@Test
 	public void testGetBundleResources() {
-		subjectConcept.setText(ResourceType.BUNDLE.value());
+		subjectConcept.setText(ResourceType.DEVICE.value());
 		List<Bundle> expected = Collections.singletonList(TestData.createBundle());
 		when(stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
@@ -284,7 +284,7 @@ public class ActionHelperTest {
 
 	@Test
 	public void testGetBundleConditionResources() {
-		subjectConcept.setText(ResourceType.BUNDLE.value());
+		subjectConcept.setText(ResourceType.DEVICE.value());
 		List<Bundle> expected = Collections.singletonList(TestData.createBundle());
 		when(stockProvider.getStocksAgainstServicePointId(anyString())).thenReturn(expected);
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, bundle, plan));

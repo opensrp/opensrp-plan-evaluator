@@ -3,7 +3,6 @@
  */
 package org.smartregister.pathevaluator.action;
 
-import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
@@ -78,7 +77,7 @@ public class ActionHelper {
 			case TASK:
 				return taskDao.findTasksByJurisdiction(jurisdiction.getCode());
 
-			case BUNDLE:
+			case DEVICE:
 				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
 
 			default:
@@ -117,7 +116,7 @@ public class ActionHelper {
 				}
 
 				return taskDao.findTasksForEntity(entity, planIdentifier);
-			case BUNDLE:
+			case DEVICE:
 				FHIRPathStringValue locationIdStringValue = PathEvaluatorLibrary.getInstance()
 						.evaluateStringExpression(questionnaireResponse,
 								"$this.item.where(linkId='locationId' and definition='details').answer.value.value");
@@ -196,7 +195,7 @@ public class ActionHelper {
 			case GLOBAL_TASK:
 				return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(resource.getId());
 
-			case BUNDLE:
+			case DEVICE:
 				return PathEvaluatorLibrary.getInstance().getStockProvider().getStocksAgainstServicePointId(resource.getId()); //TODO
 			default:
 				return null;
