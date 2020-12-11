@@ -3,6 +3,7 @@ package org.smartregister.pathevaluator.plan;
 import java.util.Collections;
 import java.util.List;
 
+import com.ibm.fhir.model.resource.Resource;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
@@ -111,7 +112,7 @@ public class PlanEvaluator {
 		planDefinition.getActions().forEach(action -> {
 			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
 			    questionnaireResponse)) {
-				List<? extends DomainResource> resources;
+				List<? extends Resource> resources;
 				if (questionnaireResponse != null) {
 					resources = actionHelper.getSubjectResources(action, questionnaireResponse, planDefinition.getIdentifier());
 				} else {
@@ -132,7 +133,7 @@ public class PlanEvaluator {
 		});
 	}
 
-	public void evaluateResource(DomainResource resource, QuestionnaireResponse questionnaireResponse,
+	public void evaluateResource(Resource resource, QuestionnaireResponse questionnaireResponse,
 			Action action, String planIdentifier, String jurisdictionCode, TriggerType triggerEvent) {
 		if (conditionHelper.evaluateActionConditions(
 				questionnaireResponse == null ? resource

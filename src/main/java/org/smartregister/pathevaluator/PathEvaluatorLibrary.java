@@ -16,14 +16,7 @@ import com.ibm.fhir.path.exception.FHIRPathException;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.text.StringEscapeUtils;
-import org.smartregister.pathevaluator.dao.ClientDao;
-import org.smartregister.pathevaluator.dao.ClientProvider;
-import org.smartregister.pathevaluator.dao.EventDao;
-import org.smartregister.pathevaluator.dao.EventProvider;
-import org.smartregister.pathevaluator.dao.LocationDao;
-import org.smartregister.pathevaluator.dao.LocationProvider;
-import org.smartregister.pathevaluator.dao.TaskDao;
-import org.smartregister.pathevaluator.dao.TaskProvider;
+import org.smartregister.pathevaluator.dao.*;
 
 
 import com.ibm.fhir.model.resource.DomainResource;
@@ -62,17 +55,20 @@ public class PathEvaluatorLibrary {
 	private TaskProvider taskProvider;
 	
 	private EventProvider eventProvider;
+
+	private StockProvider stockProvider;
 	
-	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
+	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 		locationProvider = new LocationProvider(locationDao);
 		clientProvider = new ClientProvider(clientDao);
 		taskProvider = new TaskProvider(taskDao);
 		eventProvider = new EventProvider(eventDao);
+		stockProvider = new StockProvider(stockDao);
 	}
 	
-	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
-		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao);
+	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
+		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao, stockDao);
 	}
 	
 	/**
@@ -82,7 +78,7 @@ public class PathEvaluatorLibrary {
 	 */
 	public static PathEvaluatorLibrary getInstance() {
 		if (instance == null) {
-			PathEvaluatorLibrary.init(null, null, null, null);
+			PathEvaluatorLibrary.init(null, null, null, null, null);
 		}
 		return instance;
 	}
@@ -141,7 +137,7 @@ public class PathEvaluatorLibrary {
 		}
 	}
 	
-	public FHIRPathStringValue evaluateStringExpression(DomainResource resource, String expression) {
+	public FHIRPathStringValue evaluateStringExpression(Resource resource, String expression) {
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().as(FHIRPathStringValue.class) : null;
@@ -201,7 +197,7 @@ public class PathEvaluatorLibrary {
 		return fhirPathElementNode.getValue().asStringValue().string();
 	}
 	
-	public FHIRPathDateValue evaluateDateExpression(DomainResource resource, String expression) {
+	public FHIRPathDateValue evaluateDateExpression(Resource resource, String expression) {
 		
 		try {
 			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();

@@ -33,6 +33,7 @@ import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.dao.TaskDao;
 import org.smartregister.utils.DateTypeConverter;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
+import org.smartregister.pathevaluator.dao.StockDao;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -63,7 +64,10 @@ public class TaskHelperTest {
 	
 	@Mock
 	private EventDao eventDao;
-	
+
+	@Mock
+	private StockDao stockDao;
+
 	@Mock
 	private QuestionnaireResponse questionnaireResponse;
 
@@ -79,7 +83,7 @@ public class TaskHelperTest {
 	
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao);
+		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao, stockDao);
 		taskHelper = new TaskHelper();
 		patient = TestData.createPatient();
 		taskResource = TestData.createTask();

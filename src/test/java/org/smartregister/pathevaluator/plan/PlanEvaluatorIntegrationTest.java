@@ -19,10 +19,7 @@ import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Task;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TestData;
-import org.smartregister.pathevaluator.dao.ClientDao;
-import org.smartregister.pathevaluator.dao.EventDao;
-import org.smartregister.pathevaluator.dao.LocationDao;
-import org.smartregister.pathevaluator.dao.TaskDao;
+import org.smartregister.pathevaluator.dao.*;
 import org.smartregister.utils.DateTypeConverter;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
@@ -47,12 +44,15 @@ public class PlanEvaluatorIntegrationTest {
 	@Mock
 	private EventDao eventDao;
 
+	@Mock
+	private StockDao stockDao;
+
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
 
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao);
+		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao, stockDao);
 		planEvaluator = new PlanEvaluator(username);
 	}
 

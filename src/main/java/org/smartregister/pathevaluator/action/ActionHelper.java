@@ -3,7 +3,6 @@
  */
 package org.smartregister.pathevaluator.action;
 
-import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Patient;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
@@ -19,6 +18,7 @@ import org.smartregister.pathevaluator.dao.ClientDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
+import org.smartregister.pathevaluator.dao.StockDao;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,13 +28,15 @@ import java.util.List;
 public class ActionHelper {
 	
 	public static String RESIDENCE_EXPRESSION="$this.contained.identifier.where(id='residence' and type.coding.code ='attribute').value";
-	
+
 	private LocationDao locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 	
 	private ClientDao clientDao = PathEvaluatorLibrary.getInstance().getClientProvider().getClientDao();
 
 	private TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-	
+
+	private StockDao stockDao = PathEvaluatorLibrary.getInstance().getStockProvider().getStockDao();
+
 	/**
 	 * Gets the resource type for the action
 	 * 
@@ -56,7 +58,7 @@ public class ActionHelper {
 	 * @param jurisdiction
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends DomainResource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
+	public List<? extends Resource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
 		ResourceType resourceType = getResourceType(action);
 		switch (resourceType) {
 			case JURISDICTION:
@@ -74,7 +76,10 @@ public class ActionHelper {
 
 			case TASK:
 				return taskDao.findTasksByJurisdiction(jurisdiction.getCode());
-			
+
+			case DEVICE:
+				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
+
 			default:
 				return null;
 		}
@@ -88,7 +93,7 @@ public class ActionHelper {
 	 * @param questionnaireResponse the questionnaire being evaluated
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends DomainResource> getSubjectResources(Action action, QuestionnaireResponse questionnaireResponse, String planIdentifier) {
+	public List<? extends Resource> getSubjectResources(Action action, QuestionnaireResponse questionnaireResponse, String planIdentifier) {
 		ResourceType resourceType = getResourceType(action);
 		String entity = questionnaireResponse.getSubject().getReference().getValue();
 		switch (resourceType) {
@@ -111,6 +116,15 @@ public class ActionHelper {
 				}
 
 				return taskDao.findTasksForEntity(entity, planIdentifier);
+			case DEVICE:
+				FHIRPathStringValue locationIdStringValue = PathEvaluatorLibrary.getInstance()
+						.evaluateStringExpression(questionnaireResponse,
+								"$this.item.where(linkId='locationId' and definition='details').answer.value.value");
+
+				if (locationIdStringValue != null) {
+					return stockDao.findInventoryInAServicePoint(locationIdStringValue.string());
+				}
+				return stockDao.findInventoryInAServicePoint(entity);
 			default:
 				return null;
 		}
@@ -128,12 +142,12 @@ public class ActionHelper {
 		}
 		return subject;
 	}
-	
+
 	/**
 	 * Gets the subject resources of the resource id that tasks should be generated against
 	 *
 	 * @param condition
-	 * @param action	
+	 * @param action
 	 * @param id the resource id
 	 * @return resources that tasks should be generated against
 	 */
@@ -177,10 +191,12 @@ public class ActionHelper {
 			
 			case QUESTIONAIRRE_RESPONSE:
 				return PathEvaluatorLibrary.getInstance().getEventProvider().getEvents(resource, planIdentifier);
-			
+
 			case GLOBAL_TASK:
 				return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(resource.getId());
-			
+
+			case DEVICE:
+				return PathEvaluatorLibrary.getInstance().getStockProvider().getStocksAgainstServicePointId(resource.getId()); //TODO
 			default:
 				return null;
 		}
