@@ -122,9 +122,9 @@ public class ActionHelper {
 								"$this.item.where(linkId='locationId' and definition='details').answer.value.value");
 
 				if (locationIdStringValue != null) {
-					return stockDao.findInventoryInAServicePoint(locationIdStringValue.string());
+					return stockDao.findInventoryItemsInAJurisdiction(locationIdStringValue.string());
 				}
-				return stockDao.findInventoryInAServicePoint(entity);
+				return stockDao.findInventoryItemsInAJurisdiction(entity);
 			default:
 				return null;
 		}
