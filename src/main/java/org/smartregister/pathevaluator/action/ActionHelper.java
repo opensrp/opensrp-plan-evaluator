@@ -117,14 +117,14 @@ public class ActionHelper {
 
 				return taskDao.findTasksForEntity(entity, planIdentifier);
 			case DEVICE:
-				FHIRPathStringValue locationIdStringValue = PathEvaluatorLibrary.getInstance()
-						.evaluateStringExpression(questionnaireResponse,
-								"$this.item.where(linkId='locationId' and definition='details').answer.value.value");
+				String stockIdValue = questionnaireResponse != null && questionnaireResponse.getSubject() != null &&
+						questionnaireResponse.getSubject().getReference() != null ?
+						questionnaireResponse.getSubject().getReference().getValue() : "";
 
-				if (locationIdStringValue != null) {
-					return stockDao.findInventoryInAServicePoint(locationIdStringValue.string());
+				if (stockIdValue != null) {
+					return stockDao.getStockById(stockIdValue);
 				}
-				return stockDao.findInventoryInAServicePoint(entity);
+				return stockDao.getStockById(entity);
 			default:
 				return null;
 		}

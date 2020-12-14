@@ -283,7 +283,7 @@ public class ActionHelperTest {
 	}
 
 	@Test
-	public void testGetBundleConditionResources() {
+	public void testGetDeviceConditionResources() {
 		subjectConcept.setText(ResourceType.DEVICE.value());
 		List<Bundle> expected = Collections.singletonList(TestData.createBundle());
 		when(stockProvider.getStocksAgainstServicePointId(anyString())).thenReturn(expected);
@@ -309,16 +309,16 @@ public class ActionHelperTest {
 	}
 
 	@Test
-	public void testGetSubjectResourcesWithBundleResourceType() {
+	public void testGetSubjectResourcesWithDeviceResourceType() {
 		List<Bundle> expected = Collections.singletonList(TestData.createBundle());
 		PlanDefinition planDefinition = gson.fromJson(TestData.EUSM_PLAN, PlanDefinition.class);
 		Event event = gson.fromJson(TestData.FLAG_PROBLEM_EVENT, Event.class);
 		QuestionnaireResponse eventQuestionnaire = EventConverter.convertEventToEncounterResource(event);
-		when(stockDao.findInventoryInAServicePoint(anyString())).thenReturn(expected);
+		when(stockDao.getStockById(anyString())).thenReturn(expected);
 		List<Bundle> bundles = (List<Bundle>) actionHelper.getSubjectResources(planDefinition.getActions().get(1), eventQuestionnaire, planDefinition.getIdentifier());
 
 		assertNotNull(bundles);
-		verify(stockDao).findInventoryInAServicePoint(anyString());
+		verify(stockDao).getStockById(anyString());
 	}
 	
 }
