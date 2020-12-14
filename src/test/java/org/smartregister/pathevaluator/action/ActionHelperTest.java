@@ -314,11 +314,11 @@ public class ActionHelperTest {
 		PlanDefinition planDefinition = gson.fromJson(TestData.EUSM_PLAN, PlanDefinition.class);
 		Event event = gson.fromJson(TestData.FLAG_PROBLEM_EVENT, Event.class);
 		QuestionnaireResponse eventQuestionnaire = EventConverter.convertEventToEncounterResource(event);
-		when(stockDao.findInventoryItemsInAJurisdiction(anyString())).thenReturn(expected);
+		when(stockDao.getStockById(anyString())).thenReturn(expected);
 		List<Bundle> bundles = (List<Bundle>) actionHelper.getSubjectResources(planDefinition.getActions().get(1), eventQuestionnaire, planDefinition.getIdentifier());
 
 		assertNotNull(bundles);
-		verify(stockDao).findInventoryItemsInAJurisdiction(anyString());
+		verify(stockDao).getStockById(anyString());
 	}
 	
 }

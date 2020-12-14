@@ -10,4 +10,6 @@ public interface StockDao {
 
 	List<Bundle> findInventoryInAServicePoint(String servicePointId);
 
+	List<Bundle> getStockById(String stockId);
+
 }
