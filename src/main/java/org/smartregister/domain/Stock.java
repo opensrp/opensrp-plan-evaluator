@@ -15,13 +15,13 @@ import java.util.Map;
 public class Stock extends BaseDataObject {
 	
 	@JsonProperty
-	private Long identifier;
+	private String identifier;
 	
-	@JsonProperty
-	private String vaccine_type_id;
+	@JsonProperty("vaccine_type_id")
+	private String vaccineTypeId;
 	
-	@JsonProperty
-	private String transaction_type;
+	@JsonProperty("transaction_type")
+	private String transactionType;
 	
 	@JsonProperty
 	private String providerid;
@@ -32,11 +32,11 @@ public class Stock extends BaseDataObject {
 	@JsonProperty
 	private Long date_created;
 	
-	@JsonProperty
-	private String to_from;
+	@JsonProperty("to_from")
+	private String toFrom;
 	
-	@JsonProperty
-	private Long date_updated;
+	@JsonProperty("date_updated")
+	private Long dateUpdated;
 	
 	@JsonProperty
 	private long version;
@@ -63,29 +63,29 @@ public class Stock extends BaseDataObject {
 		this.version = System.currentTimeMillis();
 	}
 	
-	public Stock(Long identifier, String vaccine_type_id, String transaction_type, String providerid, int value,
-	    Long date_created, String to_from, Long date_updated, long version) {
+	public Stock(String identifier, String vaccineTypeId, String transactionType, String providerid, int value,
+	    Long date_created, String toFrom, Long dateUpdated, long version) {
 		this.identifier = identifier;
-		this.vaccine_type_id = vaccine_type_id;
-		this.transaction_type = transaction_type;
+		this.vaccineTypeId = vaccineTypeId;
+		this.transactionType = transactionType;
 		this.providerid = providerid;
 		this.value = value;
 		this.date_created = date_created;
-		this.to_from = to_from;
-		this.date_updated = date_updated;
+		this.toFrom = toFrom;
+		this.dateUpdated = dateUpdated;
 		this.version = version;
 	}
 
-	public Stock(Long identifier, String vaccine_type_id, String transaction_type, String providerid, int value,
+	public Stock(String identifier, String vaccineTypeId, String transactionType, String providerid, int value,
 			StockObjectMetadata stockObjectMetadata, Inventory inventory) {
 		this.identifier = identifier;
-		this.vaccine_type_id = vaccine_type_id;
-		this.transaction_type = transaction_type;
+		this.vaccineTypeId = vaccineTypeId;
+		this.transactionType = transactionType;
 		this.providerid = providerid;
 		this.value = value;
 		this.date_created = stockObjectMetadata.getDate_created();
-		this.to_from = stockObjectMetadata.getTo_from();
-		this.date_updated = stockObjectMetadata.getDate_updated();
+		this.toFrom = stockObjectMetadata.getTo_from();
+		this.dateUpdated = stockObjectMetadata.getDate_updated();
 		this.version = stockObjectMetadata.getVersion();
 		this.deliveryDate = inventory.getDeliveryDate();
 		this.donor = inventory.getDonor();
@@ -93,28 +93,28 @@ public class Stock extends BaseDataObject {
 		this.locationId = inventory.getServicePointId();
 	}
 
-	public Long getIdentifier() {
+	public String getIdentifier() {
 		return identifier;
 	}
 	
-	public void setIdentifier(Long identifier) {
+	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
 	
-	public String getVaccine_type_id() {
-		return vaccine_type_id;
+	public String getVaccineTypeId() {
+		return vaccineTypeId;
 	}
 	
-	public void setVaccine_type_id(String vaccine_type_id) {
-		this.vaccine_type_id = vaccine_type_id;
+	public void setVaccineTypeId(String vaccineTypeId) {
+		this.vaccineTypeId = vaccineTypeId;
 	}
 	
-	public String getTransaction_type() {
-		return transaction_type;
+	public String getTransactionType() {
+		return transactionType;
 	}
 	
-	public void setTransaction_type(String transaction_type) {
-		this.transaction_type = transaction_type;
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
 	}
 	
 	public String getProviderid() {
@@ -132,29 +132,29 @@ public class Stock extends BaseDataObject {
 	public void setValue(int value) {
 		this.value = value;
 	}
-	
+
 	public Long getDate_created() {
 		return date_created;
 	}
-	
+
 	public void setDate_created(Long date_created) {
 		this.date_created = date_created;
 	}
 	
-	public String getTo_from() {
-		return to_from;
+	public String getToFrom() {
+		return toFrom;
 	}
 	
-	public void setTo_from(String to_from) {
-		this.to_from = to_from;
+	public void setToFrom(String toFrom) {
+		this.toFrom = toFrom;
 	}
 	
-	public Long getDate_updated() {
-		return date_updated;
+	public Long getDateUpdated() {
+		return dateUpdated;
 	}
 	
-	public void setDate_updated(Long date_updated) {
-		this.date_updated = date_updated;
+	public void setDateUpdated(Long dateUpdated) {
+		this.dateUpdated = dateUpdated;
 	}
 	
 	public long getVersion() {
