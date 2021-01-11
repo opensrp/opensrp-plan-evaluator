@@ -38,7 +38,6 @@ import com.ibm.fhir.path.FHIRPathElementNode;
 import com.ibm.fhir.path.FHIRPathStringValue;
 import com.ibm.fhir.path.exception.FHIRPathException;
 import org.smartregister.pathevaluator.dao.StockDao;
-import org.smartregister.pathevaluator.plan.PlanEvaluator;
 
 /**
  * @author Samuel Githengi created on 06/10/20
@@ -208,8 +207,6 @@ public class PathEvaluatorLibraryTest {
 
 	@Test
 	public void testStockDaoAssignmentShouldReturnNullInitiallyThenNotNullAfterAssignment(){
-		PathEvaluatorLibrary.init(null,null,null,null);
-		PathEvaluatorLibrary pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
 		Assert.assertNull(pathEvaluatorLibrary.getStockProvider().getStockDao());
 
 		pathEvaluatorLibrary.setStockDao(mock(StockDao.class));

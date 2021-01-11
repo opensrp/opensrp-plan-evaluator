@@ -72,7 +72,7 @@ public class PathEvaluatorLibrary {
 	}
 
 	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
-		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao, null);
+		init(locationDao, clientDao, taskDao, eventDao, null);
 	}
 	
 	/**
@@ -82,7 +82,7 @@ public class PathEvaluatorLibrary {
 	 */
 	public static PathEvaluatorLibrary getInstance() {
 		if (instance == null) {
-			PathEvaluatorLibrary.init(null, null, null, null, null);
+			PathEvaluatorLibrary.init(null, null, null, null);
 		}
 		return instance;
 	}
