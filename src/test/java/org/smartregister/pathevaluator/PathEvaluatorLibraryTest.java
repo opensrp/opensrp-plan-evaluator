@@ -37,6 +37,7 @@ import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.path.FHIRPathElementNode;
 import com.ibm.fhir.path.FHIRPathStringValue;
 import com.ibm.fhir.path.exception.FHIRPathException;
+import org.smartregister.pathevaluator.dao.StockDao;
 
 /**
  * @author Samuel Githengi created on 06/10/20
@@ -202,6 +203,15 @@ public class PathEvaluatorLibraryTest {
 	@Test
 	public void testExtractResourceFromBundleShouldReturnNullWhenFHIRExceptionOccurs() {
 		Assert.assertNull(pathEvaluatorLibrary.extractResourceFromBundle(mock(Bundle.class), "null=null"));
+	}
+
+	@Test
+	public void testStockDaoAssignmentShouldReturnNullInitiallyThenNotNullAfterAssignment(){
+		Assert.assertNull(pathEvaluatorLibrary.getStockProvider().getStockDao());
+
+		pathEvaluatorLibrary.setStockDao(mock(StockDao.class));
+
+		Assert.assertNotNull(pathEvaluatorLibrary.getStockProvider().getStockDao());
 	}
 
 	private void verifyCorrectStringIsExtracted(String resourceId, String expectedString) throws Exception {
