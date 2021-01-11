@@ -70,6 +70,10 @@ public class PathEvaluatorLibrary {
 	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
 		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao, stockDao);
 	}
+
+	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
+		init(locationDao, clientDao, taskDao, eventDao, null);
+	}
 	
 	/**
 	 * Get the library instance
@@ -78,7 +82,7 @@ public class PathEvaluatorLibrary {
 	 */
 	public static PathEvaluatorLibrary getInstance() {
 		if (instance == null) {
-			PathEvaluatorLibrary.init(null, null, null, null, null);
+			PathEvaluatorLibrary.init(null, null, null, null);
 		}
 		return instance;
 	}
@@ -248,5 +252,13 @@ public class PathEvaluatorLibrary {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
 			return null;
 		}
+	}
+
+	/**
+	 * Resets stockDao by stockProvider
+	 * @param stockDao
+	 */
+	public void setStockDao(StockDao stockDao) {
+		this.stockProvider = new StockProvider(stockDao);
 	}
 }
