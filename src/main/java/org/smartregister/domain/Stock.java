@@ -1,5 +1,6 @@
 package org.smartregister.domain;
 
+import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,9 +19,11 @@ public class Stock extends BaseDataObject {
 	private String identifier;
 	
 	@JsonProperty("vaccine_type_id")
+	@SerializedName("vaccine_type_id")
 	private String vaccineTypeId;
 	
 	@JsonProperty("transaction_type")
+	@SerializedName("transaction_type")
 	private String transactionType;
 	
 	@JsonProperty
@@ -33,9 +36,11 @@ public class Stock extends BaseDataObject {
 	private Long date_created;
 	
 	@JsonProperty("to_from")
+	@SerializedName("to_from")
 	private String toFrom;
 	
 	@JsonProperty("date_updated")
+	@SerializedName("date_updated")
 	private Long dateUpdated;
 	
 	@JsonProperty
