@@ -96,6 +96,7 @@ public class Stock extends BaseDataObject {
 		this.donor = inventory.getDonor();
 		this.serialNumber = inventory.getSerialNumber();
 		this.locationId = inventory.getServicePointId();
+		this.providerid = inventory.getProviderId();
 	}
 
 	public String getIdentifier() {
