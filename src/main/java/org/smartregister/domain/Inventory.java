@@ -43,4 +43,7 @@ public class Inventory {
 	@JsonProperty
 	private String serialNumber;
 
+	@JsonProperty
+	private String providerId;
+
 }
