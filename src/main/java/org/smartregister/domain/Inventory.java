@@ -32,6 +32,9 @@ public class Inventory {
 	private Date deliveryDate;
 
 	@JsonProperty
+	private Date accountabilityEndDate;
+
+	@JsonProperty
 	private String donor;
 
 	@JsonProperty
