@@ -125,6 +125,10 @@ public class ActionHelper {
 					return stockDao.getStockById(stockIdValue);
 				}
 				return stockDao.getStockById(entity);
+			case GLOBAL_TASK:
+				if (questionnaireResponse != null) {
+					return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(questionnaireResponse.getId());
+				}
 			default:
 				return null;
 		}
