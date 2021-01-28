@@ -9,21 +9,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.ibm.fhir.model.resource.*;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.powermock.reflect.Whitebox;
@@ -38,14 +33,31 @@ import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.TestData;
-import org.smartregister.pathevaluator.dao.*;
+import org.smartregister.pathevaluator.dao.ClientDao;
+import org.smartregister.pathevaluator.dao.ClientProvider;
+import org.smartregister.pathevaluator.dao.EventDao;
+import org.smartregister.pathevaluator.dao.EventProvider;
+import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.LocationProvider;
+import org.smartregister.pathevaluator.dao.StockDao;
+import org.smartregister.pathevaluator.dao.StockProvider;
+import org.smartregister.pathevaluator.dao.TaskDao;
+import org.smartregister.pathevaluator.dao.TaskProvider;
+import org.smartregister.utils.DateTypeConverter;
+import org.smartregister.utils.TaskDateTimeTypeConverter;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.ibm.fhir.model.resource.Bundle;
+import com.ibm.fhir.model.resource.Location;
+import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.model.resource.Task;
 import com.ibm.fhir.model.type.Code;
 import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Coding;
 import com.ibm.fhir.model.type.Identifier;
-import org.smartregister.utils.DateTypeConverter;
-import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 /**
  * @author Samuel Githengi created on 06/16/20
@@ -198,6 +210,20 @@ public class ActionHelperTest {
 		when(locationDao.findLocationsById(location.getId())).thenReturn(locations);
 		assertEquals(locations, actionHelper.getSubjectResources(action, questionnaireResponse, null));
 		verify(locationDao).findLocationsById(location.getId());
+	}
+	
+	
+	@Test
+	public void testGetGlobalTasksForFamilyEvent() {
+		subjectConcept.setText(ResourceType.GLOBAL_TASK.value());
+		Task task=TestData.createTask();
+		List<Task> expected = Collections.singletonList(task);
+		
+		QuestionnaireResponse questionnaireResponse = TestData.createResponse().toBuilder().subject(task.getFor()).build();
+	
+		when(taskProvider.getAllTasks(questionnaireResponse.getSubject().getReference().getValue())).thenReturn(expected);
+		assertEquals(expected, actionHelper.getSubjectResources( action, questionnaireResponse, null));
+		verify(taskProvider).getAllTasks(questionnaireResponse.getSubject().getReference().getValue());
 	}
 
 	@Test

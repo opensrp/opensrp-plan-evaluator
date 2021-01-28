@@ -127,7 +127,7 @@ public class ActionHelper {
 				return stockDao.getStockById(entity);
 			case GLOBAL_TASK:
 				if (questionnaireResponse != null) {
-					return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(questionnaireResponse.getId());
+					return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(questionnaireResponse.getSubject().getReference().getValue());
 				}
 			default:
 				return null;
