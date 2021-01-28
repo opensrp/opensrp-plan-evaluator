@@ -127,7 +127,12 @@ public class ActionHelper {
 				return stockDao.getStockById(entity);
 			case GLOBAL_TASK:
 				if (questionnaireResponse != null) {
-					return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(questionnaireResponse.getSubject().getReference().getValue());
+					FHIRPathStringValue entityStringValue = PathEvaluatorLibrary.getInstance().evaluateStringExpression(
+					    questionnaireResponse,
+					    "$this.item.where(linkId='plan_evaluation_entity_id' and definition='details').answer.value.value");
+					String entityId = entityStringValue != null ? entityStringValue.string()
+					        : questionnaireResponse.getSubject().getReference().getValue();
+					return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(entityId);
 				}
 			default:
 				return null;
