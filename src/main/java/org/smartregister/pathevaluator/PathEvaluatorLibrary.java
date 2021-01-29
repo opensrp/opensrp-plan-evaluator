@@ -58,6 +58,8 @@ public class PathEvaluatorLibrary {
 
 	private StockProvider stockProvider;
 	
+	private PlanDao planDao;
+	
 	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
 		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 		locationProvider = new LocationProvider(locationDao);
@@ -260,5 +262,13 @@ public class PathEvaluatorLibrary {
 	 */
 	public void setStockDao(StockDao stockDao) {
 		this.stockProvider = new StockProvider(stockDao);
+	}
+	
+	
+	/**
+	 * @param planDao the planDao to set
+	 */
+	public void setPlanDao(PlanDao planDao) {
+		this.planDao = planDao;
 	}
 }

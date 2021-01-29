@@ -1,9 +1,9 @@
 package org.smartregister.pathevaluator.plan;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.ibm.fhir.model.resource.Resource;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
@@ -13,36 +13,40 @@ import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.action.ActionHelper;
 import org.smartregister.pathevaluator.condition.ConditionHelper;
 import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.PlanDao;
 import org.smartregister.pathevaluator.dao.QueuingHelper;
 import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
-import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.model.resource.Resource;
+import com.ibm.fhir.model.resource.Task;
 
 /**
  * @author Samuel Githengi created on 06/09/20
  */
 public class PlanEvaluator {
-
+	
 	private ActionHelper actionHelper;
-
+	
 	private ConditionHelper conditionHelper;
-
+	
 	private TaskHelper taskHelper;
-
+	
 	private TriggerHelper triggerHelper;
-
+	
 	private LocationDao locationDao;
-
+	
 	private String username;
-
+	
 	private QueuingHelper queuingHelper;
-
+	
+	private PlanDao planDao;
+	
 	public PlanEvaluator(String username) {
-		this(username,null);
+		this(username, null);
 	}
-
+	
 	public PlanEvaluator(String username, QueuingHelper queuingHelper) {
 		actionHelper = new ActionHelper();
 		conditionHelper = new ConditionHelper(actionHelper);
@@ -51,8 +55,9 @@ public class PlanEvaluator {
 		this.username = username;
 		this.locationDao = PathEvaluatorLibrary.getInstance().getLocationProvider().getLocationDao();
 		this.queuingHelper = queuingHelper;
+		planDao = PathEvaluatorLibrary.getInstance().getPlanDao();
 	}
-
+	
 	/**
 	 * Evaluates plan after plan is saved on updated
 	 *
@@ -65,9 +70,9 @@ public class PlanEvaluator {
 		        || triggerEvent.getTriggerEvent().equals(TriggerType.PLAN_JURISDICTION_MODIFICATION))) {
 			evaluatePlan(planDefinition, triggerEvent.getTriggerEvent(), triggerEvent.getJurisdictions());
 		}
-
+		
 	}
-
+	
 	/**
 	 * Evaluates a plan if an encounter is submitted
 	 *
@@ -79,12 +84,12 @@ public class PlanEvaluator {
 		        .evaluateElementExpression(questionnaireResponse,
 		            "QuestionnaireResponse.item.where(linkId='locationId').answer")
 		        .element().as(QuestionnaireResponse.Item.Answer.class);
-
+		
 		evaluatePlan(planDefinition, TriggerType.EVENT_SUBMISSION,
 		    new Jurisdiction(location.getValue().as(com.ibm.fhir.model.type.String.class).getValue()),
 		    questionnaireResponse);
 	}
-
+	
 	/**
 	 * Evaluates a plan for task generation
 	 *
@@ -108,45 +113,56 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
-
+		
 		planDefinition.getActions().forEach(action -> {
 			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
 			    questionnaireResponse)) {
 				List<? extends Resource> resources;
 				if (questionnaireResponse != null) {
-					resources = actionHelper.getSubjectResources(action, questionnaireResponse, planDefinition.getIdentifier());
+					resources = actionHelper.getSubjectResources(action, questionnaireResponse,
+					    planDefinition.getIdentifier());
 				} else {
-					resources = actionHelper.getSubjectResources(action, jurisdiction,planDefinition.getIdentifier());
+					resources = actionHelper.getSubjectResources(action, jurisdiction, planDefinition.getIdentifier());
 
 				}
+				List<String> otherPlans = new ArrayList<>();
 				resources.forEach(resource -> {
 					if (triggerEvent.equals(TriggerType.EVENT_SUBMISSION)) {
 						evaluateResource(resource, questionnaireResponse, action, planDefinition.getIdentifier(),
-								jurisdiction.getCode(), triggerEvent);
+						    jurisdiction.getCode(), triggerEvent);
+						if (resource instanceof Task) {
+							String planId = ((Task) resource).getBasedOn().get(0).getReference().getValue();
+							if (!planId.equals(planDefinition.getIdentifier())) {
+								otherPlans.add(planId);
+							}
+						}
 					} else {
 						queuingHelper.addToQueue(resource.toString(), questionnaireResponse, action,
-								planDefinition.getIdentifier(), jurisdiction.getCode(), triggerEvent);
-
+						    planDefinition.getIdentifier(), jurisdiction.getCode(), triggerEvent);
+						
 					}
+				});
+				otherPlans.forEach(planId -> {
+					PlanDefinition otherPlanDefinition = planDao.findPlanByIdentifier(planId);
+					evaluatePlan(otherPlanDefinition, triggerEvent, jurisdiction, questionnaireResponse);
 				});
 			}
 		});
 	}
-
-	public void evaluateResource(Resource resource, QuestionnaireResponse questionnaireResponse,
-			Action action, String planIdentifier, String jurisdictionCode, TriggerType triggerEvent) {
+	
+	public void evaluateResource(Resource resource, QuestionnaireResponse questionnaireResponse, Action action,
+	        String planIdentifier, String jurisdictionCode, TriggerType triggerEvent) {
 		if (conditionHelper.evaluateActionConditions(
-				questionnaireResponse == null ? resource
-						: questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
-				action, planIdentifier, triggerEvent)) {
+		    questionnaireResponse == null ? resource
+		            : questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
+		    action, planIdentifier, triggerEvent)) {
 			if (action.getType().equals(Action.ActionType.UPDATE)) {
 				taskHelper.updateTask(resource, action, questionnaireResponse);
 			} else {
-				taskHelper.generateTask(resource, action, planIdentifier, jurisdictionCode,
-						username, questionnaireResponse);
+				taskHelper.generateTask(resource, action, planIdentifier, jurisdictionCode, username, questionnaireResponse);
 			}
-
+			
 		}
 	}
-
+	
 }
