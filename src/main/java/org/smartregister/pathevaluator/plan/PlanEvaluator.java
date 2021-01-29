@@ -113,6 +113,11 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
+		evaluatePlan(planDefinition, triggerEvent, jurisdiction, questionnaireResponse, true);
+	}
+	
+	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
+	        QuestionnaireResponse questionnaireResponse, boolean evaluateOtherPlans) {
 		
 		planDefinition.getActions().forEach(action -> {
 			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
@@ -132,7 +137,7 @@ public class PlanEvaluator {
 						    jurisdiction.getCode(), triggerEvent);
 						if (resource instanceof Task) {
 							String planId = ((Task) resource).getBasedOn().get(0).getReference().getValue();
-							if (!planId.equals(planDefinition.getIdentifier())) {
+							if (evaluateOtherPlans && !planId.equals(planDefinition.getIdentifier())) {
 								otherPlans.add(planId);
 							}
 						}
@@ -142,11 +147,16 @@ public class PlanEvaluator {
 						
 					}
 				});
-				otherPlans.forEach(planId -> {
-					PlanDefinition otherPlanDefinition = planDao.findPlanByIdentifier(planId);
-					evaluatePlan(otherPlanDefinition, triggerEvent, jurisdiction, questionnaireResponse);
-				});
+				evaluateOtherPlans(otherPlans, triggerEvent, jurisdiction, questionnaireResponse);
 			}
+		});
+	}
+	
+	private void evaluateOtherPlans(List<String> otherPlans, TriggerType triggerEvent, Jurisdiction jurisdiction,
+	        QuestionnaireResponse questionnaireResponse) {
+		otherPlans.forEach(planId -> {
+			PlanDefinition otherPlanDefinition = planDao.findPlanByIdentifier(planId);
+			evaluatePlan(otherPlanDefinition, triggerEvent, jurisdiction, questionnaireResponse, false);
 		});
 	}
 	
