@@ -135,7 +135,8 @@ public class PlanEvaluator {
 					if (triggerEvent.equals(TriggerType.EVENT_SUBMISSION)) {
 						evaluateResource(resource, questionnaireResponse, action, planDefinition.getIdentifier(),
 						    jurisdiction.getCode(), triggerEvent);
-						if (resource instanceof Task) {
+						//check on server side only and for only tasks
+						if (queuingHelper!=null && resource instanceof Task) {
 							String planId = ((Task) resource).getBasedOn().get(0).getReference().getValue();
 							if (evaluateOtherPlans && !planId.equals(planDefinition.getIdentifier())) {
 								otherPlans.add(planId);
