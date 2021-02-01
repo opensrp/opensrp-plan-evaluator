@@ -46,6 +46,9 @@ public class PlanEvaluatorIntegrationTest {
 
 	@Mock
 	private StockDao stockDao;
+	
+	@Mock
+	private PlanDao planDao;
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
@@ -53,6 +56,7 @@ public class PlanEvaluatorIntegrationTest {
 	@Before
 	public void setUp() {
 		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao, stockDao);
+		PathEvaluatorLibrary.getInstance().setPlanDao(planDao);
 		planEvaluator = new PlanEvaluator(username);
 	}
 

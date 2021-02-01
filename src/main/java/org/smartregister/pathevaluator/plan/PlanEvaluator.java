@@ -156,7 +156,9 @@ public class PlanEvaluator {
 	        QuestionnaireResponse questionnaireResponse) {
 		otherPlans.forEach(planId -> {
 			PlanDefinition otherPlanDefinition = planDao.findPlanByIdentifier(planId);
-			evaluatePlan(otherPlanDefinition, triggerEvent, jurisdiction, questionnaireResponse, false);
+			if (otherPlanDefinition != null) {
+				evaluatePlan(otherPlanDefinition, triggerEvent, jurisdiction, questionnaireResponse, false);
+			}
 		});
 	}
 	
