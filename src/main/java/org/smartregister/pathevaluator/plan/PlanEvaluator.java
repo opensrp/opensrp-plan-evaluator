@@ -116,7 +116,7 @@ public class PlanEvaluator {
 				if (questionnaireResponse != null) {
 					resources = actionHelper.getSubjectResources(action, questionnaireResponse, planDefinition.getIdentifier());
 				} else {
-					resources = actionHelper.getSubjectResources(action, jurisdiction);
+					resources = actionHelper.getSubjectResources(action, jurisdiction,planDefinition.getIdentifier());
 
 				}
 				resources.forEach(resource -> {
