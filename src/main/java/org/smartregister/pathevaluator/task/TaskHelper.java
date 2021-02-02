@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.ibm.fhir.model.resource.Resource;
 import org.joda.time.DateTime;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
@@ -18,8 +17,8 @@ import org.smartregister.domain.Task.Restriction;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
-import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.model.resource.Resource;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -48,8 +47,9 @@ public class TaskHelper {
 	 */
 	public void generateTask(Resource resource, Action action, String planIdentifier, String jurisdiction,
 	        String username, QuestionnaireResponse questionnaireResponse) {
+		String entityId = getEntityId(resource);
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
-		if (taskDao.checkIfTaskExists(resource.getId(), jurisdiction, planIdentifier, action.getCode())) {
+		if (taskDao.checkIfTaskExists(entityId, jurisdiction, planIdentifier, action.getCode())) {
 			logger.info("Task already exists");
 		} else {
 			Task task = new Task();
@@ -61,11 +61,7 @@ public class TaskHelper {
 			task.setCode(action.getCode());
 			task.setDescription(action.getDescription());
 			task.setFocus(action.getIdentifier());
-			if (resource instanceof QuestionnaireResponse) {
-				task.setForEntity(((QuestionnaireResponse)resource).getSubject().getReference().getValue());
-			} else {
-				task.setForEntity(resource.getId());
-			}
+			task.setForEntity(entityId);
 			task.setExecutionPeriod(action.getTimingPeriod());
 			task.setAuthoredOn(DateTime.now());
 			task.setLastModified(DateTime.now());
@@ -78,6 +74,14 @@ public class TaskHelper {
 			taskDao.saveTask(task, questionnaireResponse);
 			logger.info("Created task " + task.toString());
 		}
+	}
+	
+	private String getEntityId(Resource resource) {
+		String entityId = resource.getId();
+		if (resource instanceof QuestionnaireResponse) {
+			entityId = ((QuestionnaireResponse) resource).getSubject().getReference().getValue();
+		}
+		return entityId;
 	}
 	
 	public void updateTask(Resource resource, Action action, QuestionnaireResponse questionnaireResponse) {
