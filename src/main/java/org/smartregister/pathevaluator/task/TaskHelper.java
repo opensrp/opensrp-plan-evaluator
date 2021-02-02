@@ -61,7 +61,11 @@ public class TaskHelper {
 			task.setCode(action.getCode());
 			task.setDescription(action.getDescription());
 			task.setFocus(action.getIdentifier());
-			task.setForEntity(resource.getId());
+			if (resource instanceof QuestionnaireResponse) {
+				task.setForEntity(((QuestionnaireResponse)resource).getSubject().getReference().getValue());
+			} else {
+				task.setForEntity(resource.getId());
+			}
 			task.setExecutionPeriod(action.getTimingPeriod());
 			task.setAuthoredOn(DateTime.now());
 			task.setLastModified(DateTime.now());
