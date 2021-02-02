@@ -132,7 +132,7 @@ public class PlanEvaluator {
 				}
 				List<String> otherPlans = new ArrayList<>();
 				resources.forEach(resource -> {
-					if (triggerEvent.equals(TriggerType.EVENT_SUBMISSION)) {
+					if (TriggerType.EVENT_SUBMISSION.equals(triggerEvent)) {
 						evaluateResource(resource, questionnaireResponse, action, planDefinition.getIdentifier(),
 						    jurisdiction.getCode(), triggerEvent);
 						//check on server side only and for only tasks
@@ -166,7 +166,7 @@ public class PlanEvaluator {
 	public void evaluateResource(Resource resource, QuestionnaireResponse questionnaireResponse, Action action,
 	        String planIdentifier, String jurisdictionCode, TriggerType triggerEvent) {
 		if (conditionHelper.evaluateActionConditions(
-		    questionnaireResponse == null ? resource
+		    questionnaireResponse == null  ? resource
 		            : questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
 		    action, planIdentifier, triggerEvent)) {
 			if (action.getType().equals(Action.ActionType.UPDATE)) {
