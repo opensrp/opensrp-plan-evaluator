@@ -161,7 +161,7 @@ public class ActionHelperTest {
 	public void testGetJurisdictionResources() {
 		List<Location> expected = Collections.singletonList(TestData.createLocation());
 		when(locationDao.findJurisdictionsById(jurisdiction.getCode())).thenReturn(expected);
-		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
+		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction,plan));
 		verify(locationDao).findJurisdictionsById(jurisdiction.getCode());
 	}
 	
@@ -170,7 +170,7 @@ public class ActionHelperTest {
 		subjectConcept.setText(ResourceType.LOCATION.value());
 		List<Location> expected = Collections.singletonList(TestData.createLocation());
 		when(locationDao.findLocationByJurisdiction(jurisdiction.getCode())).thenReturn(expected);
-		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
+		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction,plan));
 		verify(locationDao).findLocationByJurisdiction(jurisdiction.getCode());
 	}
 	
@@ -179,7 +179,7 @@ public class ActionHelperTest {
 		subjectConcept.setText(ResourceType.FAMILY.value());
 		List<Patient> expected = Collections.singletonList(TestData.createPatient());
 		when(clientDao.findFamilyByJurisdiction(jurisdiction.getCode())).thenReturn(expected);
-		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
+		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction,plan));
 		verify(clientDao).findFamilyByJurisdiction(jurisdiction.getCode());
 	}
 	
@@ -188,8 +188,17 @@ public class ActionHelperTest {
 		subjectConcept.setText(ResourceType.PERSON.value());
 		List<Patient> expected = Collections.singletonList(TestData.createPatient());
 		when(clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode())).thenReturn(expected);
-		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
+		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction,plan));
 		verify(clientDao).findFamilyMemberyByJurisdiction(jurisdiction.getCode());
+	}
+	
+	@Test
+	public void testGetQuestionnaireResources() {
+		subjectConcept.setText(ResourceType.QUESTIONAIRRE_RESPONSE.value());
+		List<QuestionnaireResponse> expected = Collections.singletonList(TestData.createResponse());
+		when(eventDao.findEventsByJurisdictionIdAndPlan(jurisdiction.getCode(),plan)).thenReturn(expected);
+		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction,plan));
+		verify(eventDao).findEventsByJurisdictionIdAndPlan(jurisdiction.getCode(),plan);
 	}
 	
 	@Test
@@ -231,7 +240,7 @@ public class ActionHelperTest {
 		subjectConcept.setText(ResourceType.DEVICE.value());
 		List<Bundle> expected = Collections.singletonList(TestData.createBundle());
 		when(stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode())).thenReturn(expected);
-		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction));
+		assertEquals(expected, actionHelper.getSubjectResources(action, jurisdiction,plan));
 		verify(stockDao).findInventoryItemsInAJurisdiction(jurisdiction.getCode());
 	}
 	
@@ -307,7 +316,7 @@ public class ActionHelperTest {
 		assertEquals(expected, actionHelper.getConditionSubjectResources(condition, action, patient, plan));
 		verify(taskProvider).getAllTasks(patient.getId());
 	}
-
+	
 	@Test
 	public void testGetDeviceConditionResources() {
 		subjectConcept.setText(ResourceType.DEVICE.value());

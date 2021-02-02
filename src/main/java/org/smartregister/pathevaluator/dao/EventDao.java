@@ -25,6 +25,6 @@ public interface EventDao {
 	 * @param planIdentifier the plan Identifier
 	 * @return events in a jurisdiction for a particular plan
 	 */
-	List<? extends Resource> findEventsByJurisdictionIdAndPlan(String jurisdictionId, String planIdentifier);
+	List<QuestionnaireResponse> findEventsByJurisdictionIdAndPlan(String jurisdictionId, String planIdentifier);
 	
 }
