@@ -132,6 +132,7 @@ public class ActionHelperTest {
 		when(clientProvider.getClientDao()).thenReturn(clientDao);
 		when(taskProvider.getTaskDao()).thenReturn(taskDao);
 		when(stockProvider.getStockDao()).thenReturn(stockDao);
+		when(eventProvider.getEventDao()).thenReturn(eventDao);
 
 		actionHelper = new ActionHelper();
 		subjectConcept = new SubjectConcept(ResourceType.JURISDICTION.value());
