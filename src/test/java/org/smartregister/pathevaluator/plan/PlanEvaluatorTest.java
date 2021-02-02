@@ -95,7 +95,7 @@ public class PlanEvaluatorTest {
 		PlanDefinition planDefinition = TestData.createPlan();
 		PlanDefinition planDefinition2 = null;
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
-		verify(actionHelper, never()).getSubjectResources(any(), any(Jurisdiction.class));
+		verify(actionHelper, never()).getSubjectResources(any(), any(Jurisdiction.class),eq(planDefinition.getIdentifier()));
 	}
 	
 	@Test
@@ -109,7 +109,7 @@ public class PlanEvaluatorTest {
 		List<Patient> patients = Collections.singletonList(TestData.createPatient());
 		Action action = planDefinition.getActions().get(0);
 		Jurisdiction jurisdiction = planDefinition.getJurisdiction().get(0);
-		when(actionHelper.getSubjectResources(action, jurisdiction)).thenAnswer(new Answer<List<Patient>>() {
+		when(actionHelper.getSubjectResources(action, jurisdiction,planDefinition.getIdentifier())).thenAnswer(new Answer<List<Patient>>() {
 			
 			@Override
 			public List<Patient> answer(InvocationOnMock invocation) throws Throwable {
@@ -123,7 +123,7 @@ public class PlanEvaluatorTest {
 		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size();
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan,
 		    null);
-		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class));
+		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class),eq(planDefinition.getIdentifier()));
 		verify(queuingHelper,times(1)).addToQueue(anyString(),any(TriggerType.class),anyString());
 	}
 	
