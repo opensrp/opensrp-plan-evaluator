@@ -15,6 +15,7 @@ import org.smartregister.domain.Jurisdiction;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
 import org.smartregister.pathevaluator.dao.ClientDao;
+import org.smartregister.pathevaluator.dao.EventDao;
 import org.smartregister.pathevaluator.dao.LocationDao;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
@@ -36,6 +37,8 @@ public class ActionHelper {
 	private TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 
 	private StockDao stockDao = PathEvaluatorLibrary.getInstance().getStockProvider().getStockDao();
+	
+	private EventDao eventDao = PathEvaluatorLibrary.getInstance().getEventProvider().getEventDao();
 
 	/**
 	 * Gets the resource type for the action
@@ -58,7 +61,7 @@ public class ActionHelper {
 	 * @param jurisdiction
 	 * @return resources that tasks should be generated against
 	 */
-	public List<? extends Resource> getSubjectResources(Action action, Jurisdiction jurisdiction) {
+	public List<? extends Resource> getSubjectResources(Action action, Jurisdiction jurisdiction,String planIdentifier) {
 		ResourceType resourceType = getResourceType(action);
 		switch (resourceType) {
 			case JURISDICTION:
@@ -79,6 +82,9 @@ public class ActionHelper {
 
 			case DEVICE:
 				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
+				
+			case QUESTIONAIRRE_RESPONSE:
+				return eventDao.findEventsByJurisdictionIdAndPlan(jurisdiction.getCode(), planIdentifier);
 
 			default:
 				return null;
@@ -125,6 +131,7 @@ public class ActionHelper {
 					return stockDao.getStockById(stockIdValue);
 				}
 				return stockDao.getStockById(entity);
+				
 			case GLOBAL_TASK:
 				if (questionnaireResponse != null) {
 					FHIRPathStringValue entityStringValue = PathEvaluatorLibrary.getInstance().evaluateStringExpression(
@@ -134,6 +141,9 @@ public class ActionHelper {
 					        : questionnaireResponse.getSubject().getReference().getValue();
 					return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(entityId);
 				}
+				
+			case QUESTIONAIRRE_RESPONSE:
+				return eventDao.findEventsByEntityIdAndPlan(entity, planIdentifier);
 			default:
 				return null;
 		}
