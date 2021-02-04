@@ -82,7 +82,8 @@ public class ActionHelper {
 				return clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 
 			case TASK:
-				return taskDao.findTasksByJurisdiction(jurisdiction.getCode());
+			case GLOBAL_TASK:
+				return taskDao.findTasksByJurisdiction(jurisdiction.getCode(),planIdentifier);
 
 			case DEVICE:
 				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
