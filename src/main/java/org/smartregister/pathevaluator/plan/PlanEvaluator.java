@@ -18,6 +18,7 @@ import org.smartregister.pathevaluator.dao.QueuingHelper;
 import org.smartregister.pathevaluator.task.TaskHelper;
 import org.smartregister.pathevaluator.trigger.TriggerHelper;
 
+import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
 import com.ibm.fhir.model.resource.Task;
@@ -158,17 +159,23 @@ public class PlanEvaluator {
 		otherPlans.forEach(planId -> {
 			PlanDefinition otherPlanDefinition = planDao.findPlanByIdentifier(planId);
 			if (otherPlanDefinition != null) {
-				evaluatePlan(otherPlanDefinition, triggerEvent, jurisdiction, questionnaireResponse, false);
+				evaluatePlan(otherPlanDefinition, TriggerType.PLAN_ACTIVATION, jurisdiction, questionnaireResponse, false);
 			}
 		});
 	}
 	
 	public void evaluateResource(Resource resource, QuestionnaireResponse questionnaireResponse, Action action,
 	        String planIdentifier, String jurisdictionCode, TriggerType triggerEvent) {
-		if (conditionHelper.evaluateActionConditions(
-		    questionnaireResponse == null  ? resource
-		            : questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build(),
-		    action, planIdentifier, triggerEvent)) {
+		Resource target;
+		if (questionnaireResponse != null && TriggerType.EVENT_SUBMISSION.equals(triggerEvent)) {
+			target = questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build();
+		} else if (questionnaireResponse != null && resource instanceof DomainResource) {
+			
+			target = ((DomainResource) resource).toBuilder().contained(questionnaireResponse).build();
+		} else {
+			target = resource;
+		}
+		if (conditionHelper.evaluateActionConditions(target, action, planIdentifier, triggerEvent)) {
 			if (action.getType().equals(Action.ActionType.UPDATE)) {
 				taskHelper.updateTask(resource, action, questionnaireResponse);
 			} else {
