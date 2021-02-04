@@ -117,7 +117,7 @@ public class PlanEvaluator {
 	 * @param questionnaireResponse {@link QuestionnaireResponse} just submitted
 	 */
 	
-	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
+	public void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
 		
 		planDefinition.getActions().forEach(action -> {
