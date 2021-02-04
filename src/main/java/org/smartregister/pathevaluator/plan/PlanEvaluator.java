@@ -106,7 +106,7 @@ public class PlanEvaluator {
 		jurisdictions.parallelStream().forEach(jurisdiction -> {
 			evaluatePlan(planDefinition, triggerEvent, jurisdiction, null);
 			locationDao.findChildLocationByJurisdiction(jurisdiction.getCode()).parallelStream().forEach(
-			    locationId -> queuingHelper.addToQueue(planDefinition.getIdentifier(), triggerEvent, locationId));
+			    locationId -> queuingHelper.addToQueue(planDefinition.getIdentifier(), triggerEvent, locationId,username));
 		});
 	}
 	
@@ -145,7 +145,7 @@ public class PlanEvaluator {
 						}
 					} else {
 						queuingHelper.addToQueue(resource.toString(), questionnaireResponse, action,
-						    planDefinition.getIdentifier(), jurisdiction.getCode(), triggerEvent);
+						    planDefinition.getIdentifier(), jurisdiction.getCode(), triggerEvent,username);
 						
 					}
 				});
