@@ -116,13 +116,9 @@ public class PlanEvaluator {
 	 * @param planDefinition the plan being evaluated
 	 * @param questionnaireResponse {@link QuestionnaireResponse} just submitted
 	 */
-	public void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
-	        QuestionnaireResponse questionnaireResponse) {
-		evaluatePlan(planDefinition, triggerEvent, jurisdiction, questionnaireResponse, true);
-	}
 	
 	private void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
-	        QuestionnaireResponse questionnaireResponse, boolean evaluateOtherPlans) {
+	        QuestionnaireResponse questionnaireResponse) {
 		
 		planDefinition.getActions().forEach(action -> {
 			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
@@ -143,7 +139,7 @@ public class PlanEvaluator {
 						//check on server side only and for only tasks
 						if (queuingHelper!=null && resource instanceof Task) {
 							String planId = ((Task) resource).getBasedOn().get(0).getReference().getValue();
-							if (evaluateOtherPlans && !planId.equals(planDefinition.getIdentifier())) {
+							if (!planId.equals(planDefinition.getIdentifier())) {
 								otherPlans.add(planId);
 							}
 						}
@@ -163,7 +159,7 @@ public class PlanEvaluator {
 		otherPlans.forEach(planId -> {
 			PlanDefinition otherPlanDefinition = planDao.findPlanByIdentifier(planId);
 			if (otherPlanDefinition != null) {
-				evaluatePlan(otherPlanDefinition, PLAN_ACTIVATION, jurisdiction, questionnaireResponse, false);
+				evaluatePlan(otherPlanDefinition, PLAN_ACTIVATION, jurisdiction, questionnaireResponse);
 			}
 		});
 	}
