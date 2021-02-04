@@ -1,5 +1,9 @@
 package org.smartregister.pathevaluator.plan;
 
+import static org.smartregister.pathevaluator.TriggerType.EVENT_SUBMISSION;
+import static org.smartregister.pathevaluator.TriggerType.PLAN_ACTIVATION;
+import static org.smartregister.pathevaluator.TriggerType.PLAN_JURISDICTION_MODIFICATION;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -67,8 +71,8 @@ public class PlanEvaluator {
 	 */
 	public void evaluatePlan(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
 		TriggerEventPayload triggerEvent = PlanHelper.evaluatePlanModification(planDefinition, existingPlanDefinition);
-		if (triggerEvent != null && (triggerEvent.getTriggerEvent().equals(TriggerType.PLAN_ACTIVATION)
-		        || triggerEvent.getTriggerEvent().equals(TriggerType.PLAN_JURISDICTION_MODIFICATION))) {
+		if (triggerEvent != null && (triggerEvent.getTriggerEvent().equals(PLAN_ACTIVATION)
+		        || triggerEvent.getTriggerEvent().equals(PLAN_JURISDICTION_MODIFICATION))) {
 			evaluatePlan(planDefinition, triggerEvent.getTriggerEvent(), triggerEvent.getJurisdictions());
 		}
 		
@@ -86,7 +90,7 @@ public class PlanEvaluator {
 		            "QuestionnaireResponse.item.where(linkId='locationId').answer")
 		        .element().as(QuestionnaireResponse.Item.Answer.class);
 		
-		evaluatePlan(planDefinition, TriggerType.EVENT_SUBMISSION,
+		evaluatePlan(planDefinition, EVENT_SUBMISSION,
 		    new Jurisdiction(location.getValue().as(com.ibm.fhir.model.type.String.class).getValue()),
 		    questionnaireResponse);
 	}
@@ -124,7 +128,7 @@ public class PlanEvaluator {
 			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
 			    questionnaireResponse)) {
 				List<? extends Resource> resources;
-				if (questionnaireResponse != null) {
+				if (questionnaireResponse != null && EVENT_SUBMISSION.equals(triggerEvent)) {
 					resources = actionHelper.getSubjectResources(action, questionnaireResponse,
 					    planDefinition.getIdentifier());
 				} else {
@@ -133,7 +137,7 @@ public class PlanEvaluator {
 				}
 				List<String> otherPlans = new ArrayList<>();
 				resources.forEach(resource -> {
-					if (TriggerType.EVENT_SUBMISSION.equals(triggerEvent)) {
+					if (EVENT_SUBMISSION.equals(triggerEvent)) {
 						evaluateResource(resource, questionnaireResponse, action, planDefinition.getIdentifier(),
 						    jurisdiction.getCode(), triggerEvent);
 						//check on server side only and for only tasks
@@ -159,7 +163,7 @@ public class PlanEvaluator {
 		otherPlans.forEach(planId -> {
 			PlanDefinition otherPlanDefinition = planDao.findPlanByIdentifier(planId);
 			if (otherPlanDefinition != null) {
-				evaluatePlan(otherPlanDefinition, TriggerType.PLAN_ACTIVATION, jurisdiction, questionnaireResponse, false);
+				evaluatePlan(otherPlanDefinition, PLAN_ACTIVATION, jurisdiction, questionnaireResponse, false);
 			}
 		});
 	}
@@ -167,7 +171,7 @@ public class PlanEvaluator {
 	public void evaluateResource(Resource resource, QuestionnaireResponse questionnaireResponse, Action action,
 	        String planIdentifier, String jurisdictionCode, TriggerType triggerEvent) {
 		Resource target;
-		if (questionnaireResponse != null && TriggerType.EVENT_SUBMISSION.equals(triggerEvent)) {
+		if (questionnaireResponse != null && EVENT_SUBMISSION.equals(triggerEvent)) {
 			target = questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build();
 		} else if (questionnaireResponse != null && resource instanceof DomainResource) {
 			
