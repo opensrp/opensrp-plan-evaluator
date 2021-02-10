@@ -64,6 +64,9 @@ public class Stock extends BaseDataObject {
 	@JsonProperty
 	private Map<String, String> customProperties = new HashMap();
 
+	@JsonProperty
+	private ProductCatalogue product;
+
 	public Stock() {
 		this.version = System.currentTimeMillis();
 	}
@@ -217,6 +220,14 @@ public class Stock extends BaseDataObject {
 
 	public void setCustomProperties(Map<String, String> customProperties) {
 		this.customProperties = customProperties;
+	}
+
+	public ProductCatalogue getProduct() {
+		return product;
+	}
+
+	public void setProduct(ProductCatalogue product) {
+		this.product = product;
 	}
 
 	@Override
