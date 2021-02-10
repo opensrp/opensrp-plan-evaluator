@@ -118,13 +118,13 @@ public class PlanEvaluatorTest {
 		});
 		when(triggerHelper.evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan, null)).thenReturn(true);
 		when(locationDao.findChildLocationByJurisdiction(anyString())).thenReturn(jurisdictionList);
-		Mockito.doNothing().when(queuingHelper).addToQueue(anyString(),any(TriggerType.class),anyString());
+		Mockito.doNothing().when(queuingHelper).addToQueue(anyString(),any(TriggerType.class),anyString(),eq(username));
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
 		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size();
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan,
 		    null);
 		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class),eq(planDefinition.getIdentifier()));
-		verify(queuingHelper,times(1)).addToQueue(anyString(),any(TriggerType.class),anyString());
+		verify(queuingHelper,times(1)).addToQueue(anyString(),any(TriggerType.class),anyString(),eq(username));
 	}
 	
 	@Test
