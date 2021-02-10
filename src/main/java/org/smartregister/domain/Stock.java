@@ -85,7 +85,7 @@ public class Stock extends BaseDataObject {
 	}
 
 	public Stock(String identifier, String vaccineTypeId, String transactionType, String providerid, int value,
-			StockObjectMetadata stockObjectMetadata, Inventory inventory, ProductCatalogue product) {
+			StockObjectMetadata stockObjectMetadata, Inventory inventory) {
 		this.identifier = identifier;
 		this.vaccineTypeId = vaccineTypeId;
 		this.transactionType = transactionType;
@@ -100,7 +100,6 @@ public class Stock extends BaseDataObject {
 		this.serialNumber = inventory.getSerialNumber();
 		this.locationId = inventory.getServicePointId();
 		this.providerid = inventory.getProviderId();
-		this.product = product;
 	}
 
 	public String getIdentifier() {
