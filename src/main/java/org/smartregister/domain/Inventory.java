@@ -26,7 +26,7 @@ public class Inventory {
 	private String unicefSection;
 
 	@JsonProperty
-	private int quantity;
+	private Integer quantity;
 
 	@JsonProperty
 	private Date deliveryDate;
