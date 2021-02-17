@@ -88,17 +88,20 @@ public class TaskHelper {
 		TaskDao taskDao = PathEvaluatorLibrary.getInstance().getTaskProvider().getTaskDao();
 		Task task = taskDao.getTaskByIdentifier(resource.getId());
 
-		Resource taskResource = resource;
+		if (task != null) {
 
-		if (questionnaireResponse != null) {
-			taskResource = questionnaireResponse.toBuilder()
-					.contained(resource)
-					.build();
+			Resource taskResource = resource;
+
+			if (questionnaireResponse != null) {
+				taskResource = questionnaireResponse.toBuilder()
+						.contained(resource)
+						.build();
+			}
+
+			evaluateDynamicValues(taskResource, action, task);
+
+			taskDao.updateTask(task);
 		}
-
-		evaluateDynamicValues(taskResource, action, task);
-		
-		taskDao.updateTask(task);
 	}
 	
 	private void evaluateDynamicValues(Resource resource, Action action, Task task) {
