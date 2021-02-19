@@ -49,7 +49,7 @@ public class StockConverter {
 
 		String serialNumber = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
 				stockAndProductDetails.getStock().getSerialNumber() != null &&
-				!StringUtils.isBlank(stockAndProductDetails.getStock().getSerialNumber()) ?
+				StringUtils.isNotBlank(stockAndProductDetails.getStock().getSerialNumber()) ?
 				String.of(stockAndProductDetails.getStock().getSerialNumber()) : null;
 		FHIRDeviceStatus fhirDeviceStatus = FHIRDeviceStatus.ACTIVE;
 		deviceBuilder.owner(owner).location(location).serialNumber(serialNumber)
