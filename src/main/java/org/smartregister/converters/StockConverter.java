@@ -48,7 +48,6 @@ public class StockConverter {
 		Reference location = Reference.builder().reference(String.of("Location/" + locationId)).build();
 
 		String serialNumber = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
-				stockAndProductDetails.getStock().getSerialNumber() != null &&
 				StringUtils.isNotBlank(stockAndProductDetails.getStock().getSerialNumber()) ?
 				String.of(stockAndProductDetails.getStock().getSerialNumber()) : null;
 		FHIRDeviceStatus fhirDeviceStatus = FHIRDeviceStatus.ACTIVE;
