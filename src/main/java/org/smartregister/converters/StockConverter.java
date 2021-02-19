@@ -8,6 +8,7 @@ import com.ibm.fhir.model.type.String;
 import com.ibm.fhir.model.type.code.BundleType;
 import com.ibm.fhir.model.type.code.FHIRDeviceStatus;
 import com.ibm.fhir.model.type.code.SupplyDeliveryStatus;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.ISODateTimeFormat;
 import org.smartregister.domain.StockAndProductDetails;
 
@@ -47,7 +48,8 @@ public class StockConverter {
 		Reference location = Reference.builder().reference(String.of("Location/" + locationId)).build();
 
 		String serialNumber = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
-				stockAndProductDetails.getStock().getSerialNumber() != null ?
+				stockAndProductDetails.getStock().getSerialNumber() != null &&
+				!StringUtils.isBlank(stockAndProductDetails.getStock().getSerialNumber()) ?
 				String.of(stockAndProductDetails.getStock().getSerialNumber()) : null;
 		FHIRDeviceStatus fhirDeviceStatus = FHIRDeviceStatus.ACTIVE;
 		deviceBuilder.owner(owner).location(location).serialNumber(serialNumber)

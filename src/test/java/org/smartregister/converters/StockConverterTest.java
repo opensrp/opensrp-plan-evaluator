@@ -114,4 +114,72 @@ public class StockConverterTest {
 
 	}
 
+	@Test
+	public void testConvertToBundleResourceV2() {  //When serial number is empty
+
+		StockAndProductDetails stockAndProductDetails = new StockAndProductDetails();
+		Stock stock = gson.fromJson(STOCK_JSON, Stock.class);
+		stock.setSerialNumber("");
+		stock.setId("7e278a0d-a4eb-4d23-aea0-836d813836a5");
+		ProductCatalogue productCatalogue = new ProductCatalogue();
+		productCatalogue.setProductName("School supplies");
+		productCatalogue.setIsAttractiveItem(true);
+		productCatalogue.setMaterialNumber("MX-1234");
+		productCatalogue.setAvailability("Yes available");
+		productCatalogue.setCondition("Not in a good condition");
+		productCatalogue.setAppropriateUsage("Yes");
+		productCatalogue.setAccountabilityPeriod(12);
+		productCatalogue.setUniqueId(1l);
+		stockAndProductDetails.setProductCatalogue(productCatalogue);
+		stockAndProductDetails.setStock(stock);
+
+		Bundle bundle = StockConverter.convertStockToBundleResource(stockAndProductDetails);
+		assertNotNull(bundle);
+		assertEquals("7e278a0d-a4eb-4d23-aea0-836d813836a5", bundle.getId());
+		assertEquals(BundleType.COLLECTION, bundle.getType());
+		assertEquals(2, bundle.getEntry().size());
+		assertEquals("https://fhir.smartregister.org/device/" + productCatalogue.getUniqueId(),
+				bundle.getEntry().get(0).getFullUrl().getValue());
+		assertEquals("7e278a0d-a4eb-4d23-aea0-836d813836a5", bundle.getEntry().get(0).getResource().getId());
+		assertEquals(FHIRDeviceStatus.ACTIVE.getValue(),
+				((Device) bundle.getEntry().get(0).getResource()).getStatus().getValue());
+		assertEquals(null, ((Device) bundle.getEntry().get(0).getResource()).getSerialNumber());
+		assertEquals("Organization/Health",
+				((Device) bundle.getEntry().get(0).getResource()).getOwner().getReference().getValue());
+		assertEquals("Location/90397",
+				((Device) bundle.getEntry().get(0).getResource()).getLocation().getReference().getValue());
+
+		assertEquals("https://fhir.smartregister.org/supplyDelivery/" + stock.getId(),
+				bundle.getEntry().get(1).getFullUrl().getValue());
+		assertEquals("111",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getIdentifier().get(0).getValue().getValue());
+		assertEquals(SupplyDeliveryStatus.COMPLETED.getValue(),
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getStatus().getValue());
+		assertEquals("http://terminology.hl7.org/CodeSystem/supply-item-type",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getType().getCoding().get(0).getSystem()
+						.getValue());
+		assertEquals("device",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getType().getCoding().get(0).getCode().getValue());
+		assertEquals(BigDecimal.TEN,
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSuppliedItem().getQuantity().getValue()
+						.getValue());
+		assertEquals(1, ((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSuppliedItem().getItem().as(
+				CodeableConcept.class).getCoding().size());
+		assertEquals("School supplies",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSuppliedItem().getItem().as(
+						CodeableConcept.class).getCoding().get(0).getCode().getValue());
+		assertEquals("School supplies",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSuppliedItem().getItem().as(
+						CodeableConcept.class).getCoding().get(0).getDisplay().getValue());
+		assertEquals("2020-06-06", ((SupplyDelivery) bundle.getEntry().get(1).getResource()).getOccurrence().as(
+				com.ibm.fhir.model.type.DateTime.class).getValue().toString());
+		assertEquals("Organization/ADB",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSupplier().getReference().getValue());
+		assertEquals("Organization/ADB",
+				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getSupplier().getDisplay().getValue());
+		System.out.println(bundle);
+
+	}
+
+
 }
