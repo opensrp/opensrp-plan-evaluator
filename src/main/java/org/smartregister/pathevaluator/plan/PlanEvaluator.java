@@ -7,7 +7,9 @@ import static org.smartregister.pathevaluator.TriggerType.PLAN_JURISDICTION_MODI
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
@@ -31,6 +33,8 @@ import com.ibm.fhir.model.resource.Task;
  * @author Samuel Githengi created on 06/09/20
  */
 public class PlanEvaluator {
+	
+	private static Logger logger = Logger.getLogger(PlanEvaluator.class.getSimpleName());
 	
 	private ActionHelper actionHelper;
 	
@@ -119,7 +123,7 @@ public class PlanEvaluator {
 	
 	public void evaluatePlan(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
-		
+		logger.info(String.format("Evaluating plans %s using trigger %s " , planDefinition.getIdentifier(),triggerEvent));
 		planDefinition.getActions().forEach(action -> {
 			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
 			    questionnaireResponse)) {
@@ -156,6 +160,7 @@ public class PlanEvaluator {
 	
 	private void evaluateOtherPlans(List<String> otherPlans, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
+		logger.info(String.format("Evaluating other  plans %s " , StringUtils.join(otherPlans,",")));
 		otherPlans.forEach(planId -> {
 			PlanDefinition otherPlanDefinition = planDao.findPlanByIdentifier(planId);
 			if (otherPlanDefinition != null) {
