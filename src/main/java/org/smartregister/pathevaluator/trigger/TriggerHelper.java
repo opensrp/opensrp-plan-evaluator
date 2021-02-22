@@ -3,6 +3,7 @@
  */
 package org.smartregister.pathevaluator.trigger;
 
+import static org.smartregister.pathevaluator.TriggerType.EVENT_SUBMISSION;
 import static org.smartregister.pathevaluator.TriggerType.PLAN_ACTIVATION;
 import static org.smartregister.pathevaluator.TriggerType.PLAN_JURISDICTION_MODIFICATION;
 
@@ -52,7 +53,7 @@ public class TriggerHelper {
 			if ((PLAN_ACTIVATION == triggerEvent || PLAN_JURISDICTION_MODIFICATION == triggerEvent)
 			        && PLAN_ACTIVATION.getValue().equalsIgnoreCase(trigger.getName())) {
 				return true;
-			} else if (trigger.getExpression() != null) {
+			} else if (trigger.getExpression() != null && EVENT_SUBMISSION == triggerEvent  ) {
 				if (trigger.getExpression().getSubjectCodableConcept() == null) {
 					valid = pathEvaluatorLibrary.evaluateBooleanExpression(questionnaireResponse,
 					    trigger.getExpression().getExpression());
