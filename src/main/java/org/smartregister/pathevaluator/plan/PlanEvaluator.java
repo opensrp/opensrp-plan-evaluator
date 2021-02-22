@@ -4,9 +4,10 @@ import static org.smartregister.pathevaluator.TriggerType.EVENT_SUBMISSION;
 import static org.smartregister.pathevaluator.TriggerType.PLAN_ACTIVATION;
 import static org.smartregister.pathevaluator.TriggerType.PLAN_JURISDICTION_MODIFICATION;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -135,7 +136,7 @@ public class PlanEvaluator {
 					resources = actionHelper.getSubjectResources(action, jurisdiction, planDefinition.getIdentifier());
 
 				}
-				List<String> otherPlans = new ArrayList<>();
+				Set<String> otherPlans = new HashSet<>();
 				resources.forEach(resource -> {
 					if (EVENT_SUBMISSION.equals(triggerEvent)) {
 						evaluateResource(resource, questionnaireResponse, action, planDefinition.getIdentifier(),
@@ -160,7 +161,7 @@ public class PlanEvaluator {
 		});
 	}
 	
-	private void evaluateOtherPlans(List<String> otherPlans, TriggerType triggerEvent, Jurisdiction jurisdiction,
+	private void evaluateOtherPlans(Set<String> otherPlans, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
 		logger.info(String.format("Evaluating other plans %s " , StringUtils.join(otherPlans,",")));
 		otherPlans.forEach(planId -> {
