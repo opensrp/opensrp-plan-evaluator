@@ -153,14 +153,16 @@ public class PlanEvaluator {
 						
 					}
 				});
-				evaluateOtherPlans(otherPlans, triggerEvent, jurisdiction, questionnaireResponse);
+				if (!otherPlans.isEmpty()) {
+					evaluateOtherPlans(otherPlans, triggerEvent, jurisdiction, questionnaireResponse);
+				}
 			}
 		});
 	}
 	
 	private void evaluateOtherPlans(List<String> otherPlans, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
-		logger.info(String.format("Evaluating other  plans %s " , StringUtils.join(otherPlans,",")));
+		logger.info(String.format("Evaluating other plans %s " , StringUtils.join(otherPlans,",")));
 		otherPlans.forEach(planId -> {
 			PlanDefinition otherPlanDefinition = planDao.findPlanByIdentifier(planId);
 			if (otherPlanDefinition != null) {
