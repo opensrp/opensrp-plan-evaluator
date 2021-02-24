@@ -102,6 +102,7 @@ public class TaskHelper {
 
 			taskDao.updateTask(task);
 		}
+		logger.info("updated task " + task.toString());
 	}
 	
 	private void evaluateDynamicValues(Resource resource, Action action, Task task) {

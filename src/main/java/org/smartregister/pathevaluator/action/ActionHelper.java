@@ -22,11 +22,15 @@ import org.smartregister.pathevaluator.dao.TaskDao;
 import org.smartregister.pathevaluator.dao.StockDao;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Samuel Githengi created on 06/15/20
  */
 public class ActionHelper {
+	
+	private static Logger logger = Logger.getLogger(ActionHelper.class.getSimpleName());
 	
 	public static String RESIDENCE_EXPRESSION="$this.contained.identifier.where(id='residence' and type.coding.code ='attribute').value";
 
@@ -78,7 +82,8 @@ public class ActionHelper {
 				return clientDao.findFamilyMemberyByJurisdiction(jurisdiction.getCode());
 
 			case TASK:
-				return taskDao.findTasksByJurisdiction(jurisdiction.getCode());
+			case GLOBAL_TASK:
+				return taskDao.findTasksByJurisdiction(jurisdiction.getCode(),planIdentifier);
 
 			case DEVICE:
 				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
@@ -87,7 +92,8 @@ public class ActionHelper {
 				return eventDao.findEventsByJurisdictionIdAndPlan(jurisdiction.getCode(), planIdentifier);
 
 			default:
-				return null;
+				logger.log(Level.WARNING,"unmapped resource type "+resourceType);
+				return Collections.emptyList();
 		}
 	}
 	
@@ -145,7 +151,8 @@ public class ActionHelper {
 			case QUESTIONAIRRE_RESPONSE:
 				return eventDao.findEventsByEntityIdAndPlan(entity, planIdentifier);
 			default:
-				return null;
+				logger.log(Level.WARNING,"unmapped resource type "+ resourceType);
+				return Collections.emptyList();
 		}
 	}
 	
@@ -217,7 +224,8 @@ public class ActionHelper {
 			case DEVICE:
 				return PathEvaluatorLibrary.getInstance().getStockProvider().getStocksAgainstServicePointId(resource.getId()); //TODO
 			default:
-				return null;
+				logger.log(Level.WARNING,"unmapped resource type "+ conditionResourceType);
+				return Collections.emptyList();
 		}
 	}
 	
