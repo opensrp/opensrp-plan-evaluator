@@ -177,8 +177,7 @@ public class PlanEvaluator {
 		Resource target;
 		if (questionnaireResponse != null && EVENT_SUBMISSION.equals(triggerEvent)) {
 			target = questionnaireResponse.toBuilder().contained(Collections.singleton(resource)).build();
-		} else if (questionnaireResponse != null && resource instanceof DomainResource) {
-			
+		} else if (questionnaireResponse != null && resource instanceof DomainResource) {	
 			target = ((DomainResource) resource).toBuilder().contained(questionnaireResponse).build();
 		} else {
 			target = resource;
