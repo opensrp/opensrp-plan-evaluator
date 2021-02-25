@@ -46,5 +46,5 @@ public interface TaskDao {
 	 */
 	org.smartregister.domain.Task updateTask(org.smartregister.domain.Task task);
 
-	List<Task> findTasksByJurisdiction(String jurisdiction);
+	List<Task> findTasksByJurisdiction(String jurisdiction, String planIdentifier);
 }

@@ -6,9 +6,9 @@ import org.smartregister.pathevaluator.TriggerType;
 
 public interface QueuingHelper {
 
-	void addToQueue(String planId, TriggerType triggerType, String locationId);
+	void addToQueue(String planId, TriggerType triggerType, String locationId, String username);
 
 	void addToQueue(String resource, QuestionnaireResponse questionnaireResponse,
-					Action action, String planIdentifier, String jurisdictionCode, TriggerType triggerEvent);
+					Action action, String planIdentifier, String jurisdictionCode, TriggerType triggerEvent, String username);
 
 }
