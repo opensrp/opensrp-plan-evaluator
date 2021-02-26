@@ -19,15 +19,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.smartregister.pathevaluator.dao.*;
 
 
-import com.ibm.fhir.model.resource.DomainResource;
-import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.path.FHIRPathBooleanValue;
 import com.ibm.fhir.path.FHIRPathDateValue;
-import com.ibm.fhir.path.FHIRPathElementNode;
-import com.ibm.fhir.path.FHIRPathNode;
-import com.ibm.fhir.path.FHIRPathStringValue;
-import com.ibm.fhir.path.evaluator.FHIRPathEvaluator;
-import com.ibm.fhir.path.exception.FHIRPathException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,9 +37,7 @@ public class PathEvaluatorLibrary {
 	private static Logger logger = Logger.getLogger(PathEvaluatorLibrary.class.getSimpleName());
 	
 	private static PathEvaluatorLibrary instance;
-	
-	private FHIRPathEvaluator fhirPathEvaluator;
-	
+
 	private LocationProvider locationProvider;
 	
 	private ClientProvider clientProvider;
@@ -61,7 +51,6 @@ public class PathEvaluatorLibrary {
 	private PlanDao planDao;
 	
 	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
-		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
 		locationProvider = new LocationProvider(locationDao);
 		clientProvider = new ClientProvider(clientDao);
 		taskProvider = new TaskProvider(taskDao);
@@ -102,7 +91,7 @@ public class PathEvaluatorLibrary {
 		}
 		String escapedExpression =unescapeHtml(expression);
 		try {
-			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, escapedExpression);
+			Collection<FHIRPathNode> nodes = FHIRPathEvaluator.evaluator().evaluate(resource, escapedExpression);
 			return nodes != null && nodes.iterator().hasNext()
 			        ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean()
 			        : false;
@@ -134,7 +123,7 @@ public class PathEvaluatorLibrary {
 	public FHIRPathElementNode evaluateElementExpression(DomainResource resource, String expression) {
 		
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().asElementNode() : null;
 		}
 		catch (FHIRPathException e) {
@@ -145,7 +134,7 @@ public class PathEvaluatorLibrary {
 	
 	public FHIRPathStringValue evaluateStringExpression(Resource resource, String expression) {
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().as(FHIRPathStringValue.class) : null;
 		} catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
@@ -164,7 +153,7 @@ public class PathEvaluatorLibrary {
 	
 	public String extractStringFromBundle(Bundle bundle, String expression) {
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(bundle, expression).iterator();
 			return iterator.hasNext() ? convertElementNodeValToStr(iterator.next().asElementNode()) : null;
 		} catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
@@ -184,7 +173,7 @@ public class PathEvaluatorLibrary {
 	public List<String> extractStringsFromBundle(Bundle bundle, String expression) {
 		List<String> strs = new ArrayList<>();
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(bundle, expression).iterator();
 			while (iterator.hasNext()) {
 				strs.add(convertElementNodeValToStr(iterator.next().asElementNode()));
 			}
@@ -206,11 +195,11 @@ public class PathEvaluatorLibrary {
 	public FHIRPathDateValue evaluateDateExpression(Resource resource, String expression) {
 		
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().as(FHIRPathDateValue.class) : null;
 		}
 		catch (FHIRPathException e) {
-			logger.log(Level.SEVERE, "Error execuring expression " + expression, e);
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
 			return null;
 		}
 	}
@@ -227,7 +216,7 @@ public class PathEvaluatorLibrary {
 	public List<Element> extractElementsFromBundle(Bundle bundle, String expression) {
 		List<Element> elements = new ArrayList<>();
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(bundle, expression).iterator();
 			while (iterator.hasNext()) {
 				elements.add(iterator.next().asElementNode().element());
 			}
@@ -248,7 +237,7 @@ public class PathEvaluatorLibrary {
 	 */
 	public Resource extractResourceFromBundle(Bundle bundle, String expression) {
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(bundle, expression).iterator();
 			return iterator.hasNext() ? iterator.next().asResourceNode().resource() : null;
 		} catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
