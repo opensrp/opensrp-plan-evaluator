@@ -137,7 +137,7 @@ public class PathEvaluatorLibrary {
 			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().as(FHIRPathStringValue.class) : null;
 		} catch (FHIRPathException e) {
-			logger.log(Level.SEVERE, "Error executing expression " + expression + " - "+resource, e);
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
 			return null;
 		}
 	}
