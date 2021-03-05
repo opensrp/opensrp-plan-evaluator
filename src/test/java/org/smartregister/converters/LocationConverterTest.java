@@ -25,6 +25,8 @@ public class LocationConverterTest {
 
 	private String locationPropertyJson = "{\"name\":\"MKB_5\",\"status\":\"Pending Review\",\"version\":0,\"parentId\":\"2953\",\"geographicLevel\":2}";
 
+	private String locationPropertyJson2 = "{\"name\":\"MKB_5\",\"status\":\"Not Eligible\",\"version\":0,\"parentId\":\"2953\",\"geographicLevel\":2}";
+
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(LocationProperty.class, new PropertiesConverter())
 			.setDateFormat("yyyy-MM-dd'T'HHmm").create();
 
@@ -95,6 +97,34 @@ public class LocationConverterTest {
 		Location location = LocationConverter.convertPhysicalLocationToLocationResource(physicalLocation);
 		assertNotNull(location);
 		assertEquals(StringUtils.toRootLowerCase(physicalLocation.getProperties().getStatus().name()),
+				location.getStatus().getValueAsEnumConstant().value());
+		assertEquals(physicalLocation.getProperties().getParentId(), location.getPartOf().getReference().getValue());
+		assertEquals(physicalLocation.getProperties().getName(), location.getName().getValue());
+		assertEquals(String.valueOf(physicalLocation.getProperties().getVersion()),
+				location.getMeta().getVersionId().getValue());
+		Long locationServerVersion = location.getMeta().getLastUpdated().getValue().toInstant().toEpochMilli();
+		assertEquals(physicalLocation.getServerVersion(), locationServerVersion);
+		assertEquals("instance", location.getMode().getValue());
+		assertEquals("bu", location.getPhysicalType().getCoding().get(0).getCode().getValue());
+		assertEquals(physicalLocation.getProperties().getCustomProperties().size() + 1, location.getIdentifier().size());
+		assertEquals("hasGeometry", location.getIdentifier().get(0).getSystem().getValue());
+		assertEquals("false", location.getIdentifier().get(0).getValue().getValue());
+		System.out.println(location);
+	}
+
+	@Test
+	public void testConvertToFihrLocationV4() {
+		PhysicalLocation physicalLocation;
+		physicalLocation = gson.fromJson(locationJson2, PhysicalLocation.class);
+
+		LocationProperty locationProperty = gson.fromJson(locationPropertyJson2, LocationProperty.class);
+		Map<String, String> customProperties = new HashMap<>();
+		locationProperty.setCustomProperties(customProperties);
+		physicalLocation.setProperties(locationProperty);
+
+		Location location = LocationConverter.convertPhysicalLocationToLocationResource(physicalLocation);
+		assertNotNull(location);
+		assertEquals("suspended",
 				location.getStatus().getValueAsEnumConstant().value());
 		assertEquals(physicalLocation.getProperties().getParentId(), location.getPartOf().getReference().getValue());
 		assertEquals(physicalLocation.getProperties().getName(), location.getName().getValue());
