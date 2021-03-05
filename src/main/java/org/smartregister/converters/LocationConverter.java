@@ -30,9 +30,16 @@ public class LocationConverter {
 		if (physicalLocation.getProperties().getStatus().equals(PropertyStatus.PENDING_REVIEW)) {
 			physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
 		}
-		LocationStatus locationStatus = LocationStatus.builder()
-		        .value(StringUtils.toRootLowerCase(physicalLocation.getProperties().getStatus().name())).build();
-		
+		LocationStatus locationStatus;
+
+		if (physicalLocation.getProperties().getStatus().equals(PropertyStatus.NOT_ELIGIBLE)) {
+			locationStatus = LocationStatus.builder()
+					.value(LocationStatus.ValueSet.SUSPENDED).build();
+		} else {
+			locationStatus = LocationStatus.builder()
+					.value(StringUtils.toRootLowerCase(physicalLocation.getProperties().getStatus().name())).build();
+		}
+
 		Reference partOf = Reference.builder()
 		        .reference(String.builder().value(physicalLocation.getProperties().getParentId()).build()).build();
 		if (StringUtils.isNotBlank(physicalLocation.getProperties().getName())) {
