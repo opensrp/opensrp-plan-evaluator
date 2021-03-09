@@ -1,6 +1,7 @@
 package org.smartregister.pathevaluator.plan;
 
 import static org.smartregister.pathevaluator.TriggerType.EVENT_SUBMISSION;
+import static org.smartregister.pathevaluator.TriggerType.PERIODIC;
 import static org.smartregister.pathevaluator.TriggerType.PLAN_ACTIVATION;
 import static org.smartregister.pathevaluator.TriggerType.PLAN_JURISDICTION_MODIFICATION;
 
@@ -138,7 +139,7 @@ public class PlanEvaluator {
 				}
 				Set<String> otherPlans = new HashSet<>();
 				resources.forEach(resource -> {
-					if (EVENT_SUBMISSION.equals(triggerEvent)) {
+					if (EVENT_SUBMISSION.equals(triggerEvent) || PERIODIC.equals(triggerEvent)) {
 						evaluateResource(resource, questionnaireResponse, action, planDefinition.getIdentifier(),
 						    jurisdiction.getCode(), triggerEvent);
 						//check on server side only and for only tasks

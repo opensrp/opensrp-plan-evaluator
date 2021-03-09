@@ -4,11 +4,17 @@
 package org.smartregister.pathevaluator.trigger;
 
 import static org.smartregister.pathevaluator.TriggerType.EVENT_SUBMISSION;
+import static org.smartregister.pathevaluator.TriggerType.PERIODIC;
 import static org.smartregister.pathevaluator.TriggerType.PLAN_ACTIVATION;
 import static org.smartregister.pathevaluator.TriggerType.PLAN_JURISDICTION_MODIFICATION;
 
+import java.sql.Time;
+import java.util.List;
 import java.util.Set;
 
+import org.joda.time.DateTime;
+import org.smartregister.domain.Timing;
+import org.smartregister.domain.TimingRepeat;
 import org.smartregister.domain.Trigger;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.ResourceType;
@@ -30,6 +36,8 @@ public class TriggerHelper {
 	private ActionHelper actionHelper;
 	
 	private PathEvaluatorLibrary pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
+
+	public static final int TIMING_OFFSET_SECONDS = 3600;
 	
 	/**
 	 * Checks if trigger conditions for an action are met
@@ -67,6 +75,29 @@ public class TriggerHelper {
 				}
 				if (valid) {
 					return true;
+				}
+			} else if (PERIODIC.value().equals(trigger.getType()) && trigger.getTimingTiming() != null) {
+				Timing timing = trigger.getTimingTiming();
+				List<DateTime> eventLists = timing.getEvent();
+
+				for (DateTime dateTime: eventLists) {
+					if (dateTime.isBefore(DateTime.now())) {
+						TimingRepeat repeat = timing.getRepeat();
+						if (repeat != null && repeat.getFrequency() == 1 && repeat.getPeriodUnit().equals(TimingRepeat.DurationCode.d)) {
+							List<Time> timesOfDay = repeat.getTimeOfDay();
+							DateTime today = DateTime.now();
+							Time timeNow = Time.valueOf(today.hourOfDay().get() + ":" + today.minuteOfHour().get() + ":" + today.secondOfMinute().get());
+
+							// Compare the time to make sure that we are at that time or within the offset +/-
+							for (Time timeOfDay: timesOfDay) {
+								long millisDifference = Math.abs(timeNow.getTime() - timeOfDay.getTime());
+
+								if (millisDifference <= (TIMING_OFFSET_SECONDS * 1000)) {
+									return true;
+								}
+							}
+						}
+					}
 				}
 			}
 		}
