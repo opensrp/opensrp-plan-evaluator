@@ -49,6 +49,8 @@ public class PathEvaluatorLibrary {
 	private StockProvider stockProvider;
 	
 	private PlanDao planDao;
+
+	private int scheduledActivationErrorMarginSeconds = 3600;
 	
 	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
 		locationProvider = new LocationProvider(locationDao);
@@ -259,5 +261,13 @@ public class PathEvaluatorLibrary {
 	 */
 	public void setPlanDao(PlanDao planDao) {
 		this.planDao = planDao;
+	}
+
+	public int getScheduledActivationErrorMarginSeconds() {
+		return scheduledActivationErrorMarginSeconds;
+	}
+
+	public void setScheduledActivationErrorMarginSeconds(int scheduledActivationErrorMarginSeconds) {
+		this.scheduledActivationErrorMarginSeconds = scheduledActivationErrorMarginSeconds;
 	}
 }

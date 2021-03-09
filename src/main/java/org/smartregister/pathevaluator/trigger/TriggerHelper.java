@@ -37,7 +37,7 @@ public class TriggerHelper {
 	
 	private PathEvaluatorLibrary pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
 
-	public static final int TIMING_OFFSET_SECONDS = 3600;
+	public static final int TIMING_OFFSET_SECONDS = PathEvaluatorLibrary.getInstance().getScheduledActivationErrorMarginSeconds();
 	
 	/**
 	 * Checks if trigger conditions for an action are met
