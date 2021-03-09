@@ -10,8 +10,9 @@ public enum TriggerType {
 	
 	PLAN_ACTIVATION("plan-activation"),
 	PLAN_JURISDICTION_MODIFICATION("plan-jurisdiction-modification"),
-	EVENT_SUBMISSION("event-submission");
-	
+	EVENT_SUBMISSION("event-submission"),
+	PERIODIC("periodic");
+
 	private String value;
 	
 	private TriggerType(String value) {
