@@ -38,6 +38,8 @@ public class TriggerHelper {
 	private PathEvaluatorLibrary pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
 
 	public static final int TIMING_OFFSET_SECONDS = PathEvaluatorLibrary.getInstance().getScheduledActivationErrorMarginSeconds();
+
+	private DateTime timeNow;
 	
 	/**
 	 * Checks if trigger conditions for an action are met
@@ -81,11 +83,11 @@ public class TriggerHelper {
 				List<DateTime> eventLists = timing.getEvent();
 
 				for (DateTime dateTime: eventLists) {
-					if (dateTime.isBefore(DateTime.now())) {
+					if (dateTime.isBefore(now())) {
 						TimingRepeat repeat = timing.getRepeat();
 						if (repeat != null && repeat.getFrequency() == 1 && repeat.getPeriodUnit().equals(TimingRepeat.DurationCode.d)) {
 							List<Time> timesOfDay = repeat.getTimeOfDay();
-							DateTime today = DateTime.now();
+							DateTime today = now();
 							Time timeNow = Time.valueOf(today.hourOfDay().get() + ":" + today.minuteOfHour().get() + ":" + today.secondOfMinute().get());
 
 							// Compare the time to make sure that we are at that time or within the offset +/-
@@ -102,6 +104,14 @@ public class TriggerHelper {
 			}
 		}
 		return valid;
+	}
+
+	protected DateTime now() {
+		return timeNow != null ? timeNow : DateTime.now();
+	}
+
+	protected void setNow(DateTime timeNow) {
+		this.timeNow = timeNow;
 	}
 	
 }
