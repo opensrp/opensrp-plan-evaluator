@@ -9,7 +9,6 @@ import lombok.ToString;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
-import java.sql.Time;
 import java.util.List;
 
 @Getter
