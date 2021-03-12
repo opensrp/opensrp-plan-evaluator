@@ -127,41 +127,46 @@ public class PlanEvaluator {
 	        QuestionnaireResponse questionnaireResponse) {
 		logger.info(String.format("Evaluating plans %s using trigger %s " , planDefinition.getIdentifier(),triggerEvent));
 		planDefinition.getActions().forEach(action -> {
-			if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
-			    questionnaireResponse)) {
-				List<? extends Resource> resources;
-				if (questionnaireResponse != null && EVENT_SUBMISSION.equals(triggerEvent)) {
-					resources = actionHelper.getSubjectResources(action, questionnaireResponse,
-					    planDefinition.getIdentifier());
-				} else {
-					resources = actionHelper.getSubjectResources(action, jurisdiction, planDefinition.getIdentifier());
-
-				}
-				Set<String> otherPlans = new HashSet<>();
-				resources.forEach(resource -> {
-					if (EVENT_SUBMISSION.equals(triggerEvent) || PERIODIC.equals(triggerEvent)) {
-						evaluateResource(resource, questionnaireResponse, action, planDefinition.getIdentifier(),
-						    jurisdiction.getCode(), triggerEvent);
-						//check on server side only and for only tasks
-						if (queuingHelper!=null && resource instanceof Task) {
-							String planId = ((Task) resource).getBasedOn().get(0).getReference().getValue();
-							if (!planId.equals(planDefinition.getIdentifier())) {
-								otherPlans.add(planId);
-							}
-						}
-					} else {
-						queuingHelper.addToQueue(resource.toString(), questionnaireResponse, action,
-						    planDefinition.getIdentifier(), jurisdiction.getCode(), triggerEvent,username);
-						
-					}
-				});
-				if (!otherPlans.isEmpty()) {
-					evaluateOtherPlans(otherPlans, triggerEvent, jurisdiction, questionnaireResponse);
-				}
-			}
+			evaluatePlanAction(planDefinition, triggerEvent, jurisdiction, questionnaireResponse, action);
 		});
 	}
-	
+
+	public void evaluatePlanAction(PlanDefinition planDefinition, TriggerType triggerEvent, Jurisdiction jurisdiction,
+			QuestionnaireResponse questionnaireResponse, Action action) {
+		if (triggerHelper.evaluateTrigger(action.getTrigger(), triggerEvent, planDefinition.getIdentifier(),
+				questionnaireResponse)) {
+			List<? extends Resource> resources;
+			if (questionnaireResponse != null && EVENT_SUBMISSION.equals(triggerEvent)) {
+				resources = actionHelper.getSubjectResources(action, questionnaireResponse,
+				    planDefinition.getIdentifier());
+			} else {
+				resources = actionHelper.getSubjectResources(action, jurisdiction, planDefinition.getIdentifier());
+
+			}
+			Set<String> otherPlans = new HashSet<>();
+			resources.forEach(resource -> {
+				if (EVENT_SUBMISSION.equals(triggerEvent) || PERIODIC.equals(triggerEvent)) {
+					evaluateResource(resource, questionnaireResponse, action, planDefinition.getIdentifier(),
+					    jurisdiction.getCode(), triggerEvent);
+					//check on server side only and for only tasks
+					if (queuingHelper!=null && resource instanceof Task) {
+						String planId = ((Task) resource).getBasedOn().get(0).getReference().getValue();
+						if (!planId.equals(planDefinition.getIdentifier())) {
+							otherPlans.add(planId);
+						}
+					}
+				} else {
+					queuingHelper.addToQueue(resource.toString(), questionnaireResponse, action,
+					    planDefinition.getIdentifier(), jurisdiction.getCode(), triggerEvent,username);
+
+				}
+			});
+			if (!otherPlans.isEmpty()) {
+				evaluateOtherPlans(otherPlans, triggerEvent, jurisdiction, questionnaireResponse);
+			}
+		}
+	}
+
 	private void evaluateOtherPlans(Set<String> otherPlans, TriggerType triggerEvent, Jurisdiction jurisdiction,
 	        QuestionnaireResponse questionnaireResponse) {
 		logger.info(String.format("Evaluating other plans %s " , StringUtils.join(otherPlans,",")));
