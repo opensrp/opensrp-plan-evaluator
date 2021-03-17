@@ -356,5 +356,16 @@ public class ActionHelperTest {
 		assertNotNull(bundles);
 		verify(stockDao).getStockById(anyString());
 	}
+
+	@Test
+	public void testGetSubjectResources() {
+		Jurisdiction jurisdiction = new Jurisdiction("jurisdiction-code");
+		Action action = new Action();
+		action.setSubjectCodableConcept(new SubjectConcept(ResourceType.GLOBAL_TASK.value()));
+
+		actionHelper.getSubjectResources(action, jurisdiction, null);
+
+		verify(taskDao).findTasksByJurisdiction(jurisdiction.getCode());
+	}
 	
 }

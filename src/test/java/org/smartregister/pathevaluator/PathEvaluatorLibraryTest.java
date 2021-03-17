@@ -214,6 +214,14 @@ public class PathEvaluatorLibraryTest {
 		Assert.assertNotNull(pathEvaluatorLibrary.getStockProvider().getStockDao());
 	}
 
+	@Test
+	public void testSetScheduledActivationErrorMarginSeconds() {
+		int actualMargin = 6788;
+
+		pathEvaluatorLibrary.setScheduledActivationErrorMarginSeconds(actualMargin);
+		Assert.assertEquals(actualMargin, pathEvaluatorLibrary.getScheduledActivationErrorMarginSeconds());
+	}
+
 	private void verifyCorrectStringIsExtracted(String resourceId, String expectedString) throws Exception {
 		String str = pathEvaluatorLibrary.extractStringFromBundle(getDeviceDefinitionBundle(), String.format(
 		    "$this.entry.resource.where(identifier.where(value='%s')).capability.where(type.where(text='instructions')).description.text",
