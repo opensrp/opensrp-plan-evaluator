@@ -213,7 +213,7 @@ public class PlanEvaluatorIntegrationTest {
 		Assert.assertEquals("Create Follow up tasks when PNC is not completed in 48 hours", actualTask.getDescription());
 		Assert.assertEquals("5b0afeb7-cc30-4cf4-a632-2222c1d99289", actualTask.getFocus());
 		Assert.assertEquals("7d23d4d7-d53d-4413-8631-02291d338da9", actualTask.getForEntity());
-		Assert.assertEquals(1591218000000L, actualTask.getExecutionPeriod().getStart().getMillis());
-		Assert.assertEquals(1633035600000L, actualTask.getExecutionPeriod().getEnd().getMillis());
+		Assert.assertEquals(planDefinition.getActions().get(0).getTimingPeriod().getStart().getMillis(), actualTask.getExecutionPeriod().getStart().getMillis());
+		Assert.assertEquals(planDefinition.getActions().get(0).getTimingPeriod().getEnd().getMillis(), actualTask.getExecutionPeriod().getEnd().getMillis());
 	}
 }
