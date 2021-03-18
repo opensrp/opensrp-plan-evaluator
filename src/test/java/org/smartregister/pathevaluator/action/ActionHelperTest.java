@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.powermock.reflect.Whitebox;
@@ -358,14 +359,17 @@ public class ActionHelperTest {
 	}
 
 	@Test
-	public void testGetSubjectResources() {
+	public void testGetSubjectResourcesWithGlobalTaskShouldCallFindTasksByJurisdictionWithJurisdictionCodeOnly() {
 		Jurisdiction jurisdiction = new Jurisdiction("jurisdiction-code");
 		Action action = new Action();
 		action.setSubjectCodableConcept(new SubjectConcept(ResourceType.GLOBAL_TASK.value()));
 
 		actionHelper.getSubjectResources(action, jurisdiction, null);
 
-		verify(taskDao).findTasksByJurisdiction(jurisdiction.getCode());
+		ArgumentCaptor<String> jurisdictionCodeCaptor = ArgumentCaptor.forClass(String.class);
+		verify(taskDao).findTasksByJurisdiction(jurisdictionCodeCaptor.capture());
+
+		Assert.assertEquals(jurisdiction.getCode(), jurisdictionCodeCaptor.getValue());
 	}
 	
 }
