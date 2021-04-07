@@ -190,7 +190,7 @@ public class PlanEvaluatorIntegrationTest {
 
 		List<com.ibm.fhir.model.resource.Task> tasks = new ArrayList<>();
 		tasks.add(fhirTask);
-		Mockito.doReturn(tasks).when(taskDao).findTasksByJurisdiction(jurisdictionCode, planCode);
+		Mockito.doReturn(tasks).when(taskDao).findTasksByJurisdiction(jurisdictionCode);
 
 		// Set the mock time to 04:13
 		TriggerHelper triggerHelper = WhiteboxImpl.getInternalState(planEvaluator, "triggerHelper");
