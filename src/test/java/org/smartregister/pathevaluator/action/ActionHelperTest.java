@@ -359,10 +359,10 @@ public class ActionHelperTest {
 	}
 
 	@Test
-	public void testGetSubjectResourcesWithGlobalTaskShouldCallFindTasksByJurisdictionWithJurisdictionCodeOnly() {
+	public void testGetSubjectResourcesWithJurisdictionalTaskShouldCallFindTasksByJurisdictionWithJurisdictionCodeOnly() {
 		Jurisdiction jurisdiction = new Jurisdiction("jurisdiction-code");
 		Action action = new Action();
-		action.setSubjectCodableConcept(new SubjectConcept(ResourceType.GLOBAL_TASK.value()));
+		action.setSubjectCodableConcept(new SubjectConcept(ResourceType.JURISDICTIONAL_TASK.value()));
 
 		actionHelper.getSubjectResources(action, jurisdiction, null);
 
