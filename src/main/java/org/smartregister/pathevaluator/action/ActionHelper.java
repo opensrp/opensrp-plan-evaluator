@@ -85,6 +85,9 @@ public class ActionHelper {
 			case GLOBAL_TASK:
 				return taskDao.findTasksByJurisdiction(jurisdiction.getCode(),planIdentifier);
 
+			case JURISDICTIONAL_TASK:
+				return taskDao.findTasksByJurisdiction(jurisdiction.getCode());
+
 			case DEVICE:
 				return stockDao.findInventoryItemsInAJurisdiction(jurisdiction.getCode());
 				
@@ -147,6 +150,12 @@ public class ActionHelper {
 					        : questionnaireResponse.getSubject().getReference().getValue();
 					return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(entityId);
 				}
+
+			case JURISDICTIONAL_TASK:
+				// Jurisdictional.Task for EVENT_SUBMISSION trigger type has not been implemented since it is not in use
+				// This is open for implementation and will not break any existing code
+				logger.log(Level.WARNING,"unmapped resource type "+ resourceType);
+				return Collections.emptyList();
 				
 			case QUESTIONAIRRE_RESPONSE:
 				return eventDao.findEventsByEntityIdAndPlan(entity, planIdentifier);
@@ -220,6 +229,12 @@ public class ActionHelper {
 
 			case GLOBAL_TASK:
 				return PathEvaluatorLibrary.getInstance().getTaskProvider().getAllTasks(resource.getId());
+
+			case JURISDICTIONAL_TASK:
+				// Jurisdictional.Task as a condition resource type for the action.condition.subjectCodableConcept has not been implemented since it is not in use
+				// This is open for implementation and will not break any existing code
+				logger.log(Level.WARNING,"unmapped resource type "+ conditionResourceType);
+				return Collections.emptyList();
 
 			case DEVICE:
 				return PathEvaluatorLibrary.getInstance().getStockProvider().getStocksAgainstServicePointId(resource.getId()); //TODO

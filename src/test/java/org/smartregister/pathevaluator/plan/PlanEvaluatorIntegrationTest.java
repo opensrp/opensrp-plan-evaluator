@@ -7,14 +7,19 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.smartregister.pathevaluator.TriggerType.PLAN_ACTIVATION;
 
+import java.sql.Time;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.openpojo.random.generator.time.util.ReflectionHelper;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Assert;
@@ -23,11 +28,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.powermock.reflect.Whitebox;
+import org.powermock.reflect.internal.WhiteboxImpl;
 import org.smartregister.converters.EventConverter;
 import org.smartregister.converters.TaskConverter;
 import org.smartregister.domain.Event;
+import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Task;
 import org.smartregister.domain.Task.TaskStatus;
@@ -41,12 +49,14 @@ import org.smartregister.pathevaluator.dao.PlanDao;
 import org.smartregister.pathevaluator.dao.QueuingHelper;
 import org.smartregister.pathevaluator.dao.StockDao;
 import org.smartregister.pathevaluator.dao.TaskDao;
+import org.smartregister.pathevaluator.trigger.TriggerHelper;
 import org.smartregister.utils.DateTypeConverter;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import org.smartregister.utils.TimingRepeatTimeTypeConverter;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PlanEvaluatorIntegrationTest {
@@ -76,8 +86,11 @@ public class PlanEvaluatorIntegrationTest {
 	@Mock
 	private QueuingHelper queuingHelper;
 	
-	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
-	        .registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
+	public static Gson gson = new GsonBuilder()
+			.registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+	        .registerTypeAdapter(LocalDate.class, new DateTypeConverter())
+	        .registerTypeAdapter(Time.class, new TimingRepeatTimeTypeConverter())
+			.create();
 	
 	@Before
 	public void setUp() {
@@ -159,6 +172,48 @@ public class PlanEvaluatorIntegrationTest {
 		}
 		verify(planEvaluator).evaluatePlan(eq(planDefinition), eq(TriggerType.EVENT_SUBMISSION), any(), eq(eventQuestionnaire));
 		verify(planEvaluator).evaluatePlan(eq(planDefinition2), eq(TriggerType.PLAN_ACTIVATION), any(), eq(eventQuestionnaire));
-		
+	}
+
+	@Test
+	public void evaluatePlanShouldCreateFollowUpPlanIfTaskIsOverdue() {
+		// Mock the time to 04:13
+		String timeInString = "2021-03-22T04:13:00Z";
+		DateTime thirteenPast4 = DateTime.parse(timeInString);
+
+		String jurisdictionCode = "jurisdiction-code";
+		String planCode = "d18f15ec-afaf-42f3-ba96-d207c456645b";
+		PlanDefinition planDefinition = gson.fromJson(TestData.SUPERVISOR_PNC_VISIT_FOLLOW_UP_PLAN_JSON, PlanDefinition.class);
+
+		Task task = gson.fromJson(TestData.PNC_DAY_49_VISIT_TASK_JSON, Task.class);
+		com.ibm.fhir.model.resource.Task fhirTask = TaskConverter.convertTasktoFihrResource(task);
+		Jurisdiction jurisdiction = new Jurisdiction(jurisdictionCode);
+
+		List<com.ibm.fhir.model.resource.Task> tasks = new ArrayList<>();
+		tasks.add(fhirTask);
+		Mockito.doReturn(tasks).when(taskDao).findTasksByJurisdiction(jurisdictionCode);
+
+		// Set the mock time to 04:13
+		TriggerHelper triggerHelper = WhiteboxImpl.getInternalState(planEvaluator, "triggerHelper");
+		WhiteboxImpl.setInternalState(triggerHelper, "timeNow", thirteenPast4);
+
+		// Call the method under test
+		planEvaluator.evaluatePlan(planDefinition, TriggerType.PERIODIC, jurisdiction, null);
+
+		ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
+		Mockito.verify(taskDao).saveTask(taskArgumentCaptor.capture(), Mockito.nullable(QuestionnaireResponse.class));
+
+		Task actualTask = taskArgumentCaptor.getValue();
+
+		Assert.assertEquals(TaskStatus.READY, actualTask.getStatus());
+		Assert.assertEquals("PNC Follow Up", actualTask.getCode());
+		Assert.assertEquals("d18f15ec-afaf-42f3-ba96-d207c456645b", actualTask.getPlanIdentifier());
+		Assert.assertEquals("jurisdiction-code", actualTask.getGroupIdentifier());
+		Assert.assertEquals(username, actualTask.getOwner());
+		Assert.assertEquals(username, actualTask.getRequester());
+		Assert.assertEquals("Create Follow up tasks when PNC is not completed in 48 hours", actualTask.getDescription());
+		Assert.assertEquals("5b0afeb7-cc30-4cf4-a632-2222c1d99289", actualTask.getFocus());
+		Assert.assertEquals("7d23d4d7-d53d-4413-8631-02291d338da9", actualTask.getForEntity());
+		Assert.assertEquals(planDefinition.getActions().get(0).getTimingPeriod().getStart().getMillis(), actualTask.getExecutionPeriod().getStart().getMillis());
+		Assert.assertEquals(planDefinition.getActions().get(0).getTimingPeriod().getEnd().getMillis(), actualTask.getExecutionPeriod().getEnd().getMillis());
 	}
 }
