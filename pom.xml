@@ -6,13 +6,13 @@
 
 	<artifactId>opensrp-plan-evaluator</artifactId>
 	<packaging>jar</packaging>
-	<version>1.5.0-SNAPSHOT</version>
+	<version>1.5.1-SNAPSHOT</version>
 	<name>OpenSRP  Plan Evaluator</name>
 	<description>OpenSRP  Plan Evaluator Library</description>
 	<url>https://github.com/OpenSRP/opensrp-plan-evaluator</url>
 
 	<properties>
-		<fhir.version>4.2.3</fhir.version>
+		<fhir.version>4.7.0</fhir.version>
 		<lombok.version>1.18.12</lombok.version>
 		<jackson.version>2.10.5.1</jackson.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -67,10 +67,6 @@
 	</developers>
 
 	<repositories>
-		<repository>
-			<id>ibm-fhir</id>
-			<url>https://dl.bintray.com/ibm-watson-health/ibm-fhir-server-releases</url>
-		</repository>
 		<repository>
 			<id>snapshots-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
