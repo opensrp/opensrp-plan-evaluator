@@ -8,6 +8,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.smartregister.domain.Note;
 
 import com.ibm.fhir.model.resource.Task;
+import com.ibm.fhir.model.resource.Task.Restriction;
 import com.ibm.fhir.model.type.Annotation;
 import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.DateTime;
@@ -17,10 +18,12 @@ import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.model.type.Markdown;
 import com.ibm.fhir.model.type.Meta;
 import com.ibm.fhir.model.type.Period;
+import com.ibm.fhir.model.type.PositiveInt;
 import com.ibm.fhir.model.type.Reference;
 import com.ibm.fhir.model.type.String;
 import com.ibm.fhir.model.type.Uri;
 import com.ibm.fhir.model.type.code.TaskIntent;
+import com.ibm.fhir.model.type.code.TaskPriority;
 import com.ibm.fhir.model.type.code.TaskStatus;
 
 public class TaskConverter {
@@ -39,8 +42,10 @@ public class TaskConverter {
 		if (StringUtils.isNotBlank(domainTask.getLocation())) {
 			builder.location(Reference.builder().reference(String.of(domainTask.getLocation())).build());
 		}
-		//		TaskPriority priority = TaskPriority.builder().id("priority").value(java.lang.String.valueOf(domainTask.getPriority())).build();
-		//TODO : Need to set priority as its an enum in FIHR
+		
+		if (domainTask.getPriority() != null) {
+			builder.priority(TaskPriority.builder().value(StringUtils.toRootLowerCase(domainTask.getPriority().name())).build());
+		}
 		
 		Reference focus = Reference.builder().reference(String.builder().value(domainTask.getFocus()).build()).build();
 		
@@ -82,12 +87,12 @@ public class TaskConverter {
 		java.lang.String lastModifiedString = ISODateTimeFormat.dateTime().print(domainTask.getLastModified());
 		DateTime lastModified = DateTime.builder().value(lastModifiedString).build();
 		
-		java.lang.String startString = ISODateTimeFormat.dateTime().print(domainTask.getExecutionStartDate());
+		java.lang.String startString = ISODateTimeFormat.dateTime().print(domainTask.getExecutionPeriod().getStart());
 		DateTime start = DateTime.builder().value(startString).build();
 		Period.Builder period = Period.builder().start(start);
 		
-		if (domainTask.getExecutionEndDate() != null) {
-			java.lang.String end = ISODateTimeFormat.dateTime().print(domainTask.getExecutionEndDate());
+		if (domainTask.getExecutionPeriod().getEnd() != null) {
+			java.lang.String end = ISODateTimeFormat.dateTime().print(domainTask.getExecutionPeriod().getEnd());
 			period.end(DateTime.builder().value(end).build());
 		}
 		
@@ -98,6 +103,22 @@ public class TaskConverter {
 			java.lang.String version = java.lang.String.valueOf(domainTask.getServerVersion());
 			Id versionId = Id.builder().value(version).build();
 			builder.meta(Meta.builder().versionId(versionId).build());
+		}
+		
+		if (domainTask.getRestriction() != null) {
+			Restriction.Builder restriction = Restriction.builder()
+			        .repetitions(PositiveInt.of(domainTask.getRestriction().getRepetitions()));
+			Period.Builder periodBuilder = Period.builder();
+			if (domainTask.getRestriction().getPeriod().getStart() != null) {
+				periodBuilder.start(
+				    DateTime.of(ISODateTimeFormat.dateTime().print(domainTask.getRestriction().getPeriod().getStart())));
+			}
+			if (domainTask.getRestriction().getPeriod().getEnd() != null) {
+				periodBuilder.end(
+				    DateTime.of(ISODateTimeFormat.dateTime().print(domainTask.getRestriction().getPeriod().getEnd())));
+			}
+			restriction.period(periodBuilder.build());
+			builder.restriction(restriction.build());
 		}
 		
 		/** @formatter:off **/
@@ -115,6 +136,7 @@ public class TaskConverter {
 				.basedOn(planIdentifier)
 				.groupIdentifier(groupIdentifier)
 				.intent(TaskIntent.PLAN)  //required property
+				.id(domainTask.getIdentifier())
 				.build();
 		/** @formatter:on **/
 		return fihrTask;

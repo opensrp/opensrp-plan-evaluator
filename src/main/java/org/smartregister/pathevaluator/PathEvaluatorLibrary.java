@@ -16,14 +16,10 @@ import com.ibm.fhir.path.exception.FHIRPathException;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.text.StringEscapeUtils;
-import org.smartregister.pathevaluator.dao.ClientDao;
-import org.smartregister.pathevaluator.dao.ClientProvider;
-import org.smartregister.pathevaluator.dao.EventDao;
-import org.smartregister.pathevaluator.dao.EventProvider;
-import org.smartregister.pathevaluator.dao.LocationDao;
-import org.smartregister.pathevaluator.dao.LocationProvider;
-import org.smartregister.pathevaluator.dao.TaskDao;
-import org.smartregister.pathevaluator.dao.TaskProvider;
+import org.smartregister.pathevaluator.dao.*;
+
+
+import com.ibm.fhir.path.FHIRPathDateValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,9 +37,7 @@ public class PathEvaluatorLibrary {
 	private static Logger logger = Logger.getLogger(PathEvaluatorLibrary.class.getSimpleName());
 	
 	private static PathEvaluatorLibrary instance;
-	
-	private FHIRPathEvaluator fhirPathEvaluator;
-	
+
 	private LocationProvider locationProvider;
 	
 	private ClientProvider clientProvider;
@@ -51,17 +45,27 @@ public class PathEvaluatorLibrary {
 	private TaskProvider taskProvider;
 	
 	private EventProvider eventProvider;
+
+	private StockProvider stockProvider;
 	
-	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
-		fhirPathEvaluator = FHIRPathEvaluator.evaluator();
+	private PlanDao planDao;
+
+	private int scheduledActivationErrorMarginSeconds = 3600;
+	
+	private PathEvaluatorLibrary(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
 		locationProvider = new LocationProvider(locationDao);
 		clientProvider = new ClientProvider(clientDao);
 		taskProvider = new TaskProvider(taskDao);
 		eventProvider = new EventProvider(eventDao);
+		stockProvider = new StockProvider(stockDao);
 	}
 	
+	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao, StockDao stockDao) {
+		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao, stockDao);
+	}
+
 	public static void init(LocationDao locationDao, ClientDao clientDao, TaskDao taskDao, EventDao eventDao) {
-		instance = new PathEvaluatorLibrary(locationDao, clientDao, taskDao, eventDao);
+		init(locationDao, clientDao, taskDao, eventDao, null);
 	}
 	
 	/**
@@ -87,9 +91,9 @@ public class PathEvaluatorLibrary {
 		if (resource == null) {
 			return false;
 		}
-		String escapedExpression = StringEscapeUtils.unescapeHtml4(expression);
+		String escapedExpression =unescapeHtml(expression);
 		try {
-			Collection<FHIRPathNode> nodes = fhirPathEvaluator.evaluate(resource, escapedExpression);
+			Collection<FHIRPathNode> nodes = FHIRPathEvaluator.evaluator().evaluate(resource, escapedExpression);
 			return nodes != null && nodes.iterator().hasNext()
 			        ? nodes.iterator().next().as(FHIRPathBooleanValue.class)._boolean()
 			        : false;
@@ -102,6 +106,15 @@ public class PathEvaluatorLibrary {
 		}
 	}
 	
+	private String unescapeHtml(String expression) {
+		 String escapedExpression = StringEscapeUtils.unescapeHtml4(expression);
+		 if(escapedExpression.equals(StringEscapeUtils.unescapeHtml4(escapedExpression))) {
+			 return escapedExpression;
+		 }else {
+			 return unescapeHtml(escapedExpression);
+		 }
+	}
+	
 	/**
 	 * Evaluates a FHIR Path expression on a resource
 	 * 
@@ -112,7 +125,7 @@ public class PathEvaluatorLibrary {
 	public FHIRPathElementNode evaluateElementExpression(DomainResource resource, String expression) {
 		
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().asElementNode() : null;
 		}
 		catch (FHIRPathException e) {
@@ -121,9 +134,9 @@ public class PathEvaluatorLibrary {
 		}
 	}
 	
-	public FHIRPathStringValue evaluateStringExpression(DomainResource resource, String expression) {
+	public FHIRPathStringValue evaluateStringExpression(Resource resource, String expression) {
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(resource, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(resource, expression).iterator();
 			return iterator.hasNext() ? iterator.next().as(FHIRPathStringValue.class) : null;
 		} catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
@@ -142,7 +155,7 @@ public class PathEvaluatorLibrary {
 	
 	public String extractStringFromBundle(Bundle bundle, String expression) {
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(bundle, expression).iterator();
 			return iterator.hasNext() ? convertElementNodeValToStr(iterator.next().asElementNode()) : null;
 		} catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
@@ -162,7 +175,7 @@ public class PathEvaluatorLibrary {
 	public List<String> extractStringsFromBundle(Bundle bundle, String expression) {
 		List<String> strs = new ArrayList<>();
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(bundle, expression).iterator();
 			while (iterator.hasNext()) {
 				strs.add(convertElementNodeValToStr(iterator.next().asElementNode()));
 			}
@@ -181,6 +194,19 @@ public class PathEvaluatorLibrary {
 		return fhirPathElementNode.getValue().asStringValue().string();
 	}
 	
+	public FHIRPathDateValue evaluateDateExpression(Resource resource, String expression) {
+		
+		try {
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(resource, expression).iterator();
+			return iterator.hasNext() ? iterator.next().as(FHIRPathDateValue.class) : null;
+		}
+		catch (FHIRPathException e) {
+			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
+			return null;
+		}
+	}
+	
+
 	/**
 	 * Evaluates a FHIR Path {@param expression} on a {@param bundle} and returns a List of {@link Element}s
 	 * or null if the query fails or doesn't have results
@@ -192,7 +218,7 @@ public class PathEvaluatorLibrary {
 	public List<Element> extractElementsFromBundle(Bundle bundle, String expression) {
 		List<Element> elements = new ArrayList<>();
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(bundle, expression).iterator();
 			while (iterator.hasNext()) {
 				elements.add(iterator.next().asElementNode().element());
 			}
@@ -213,11 +239,35 @@ public class PathEvaluatorLibrary {
 	 */
 	public Resource extractResourceFromBundle(Bundle bundle, String expression) {
 		try {
-			Iterator<FHIRPathNode> iterator = fhirPathEvaluator.evaluate(bundle, expression).iterator();
+			Iterator<FHIRPathNode> iterator = FHIRPathEvaluator.evaluator().evaluate(bundle, expression).iterator();
 			return iterator.hasNext() ? iterator.next().asResourceNode().resource() : null;
 		} catch (FHIRPathException e) {
 			logger.log(Level.SEVERE, "Error executing expression " + expression, e);
 			return null;
 		}
+	}
+
+	/**
+	 * Resets stockDao by stockProvider
+	 * @param stockDao
+	 */
+	public void setStockDao(StockDao stockDao) {
+		this.stockProvider = new StockProvider(stockDao);
+	}
+	
+	
+	/**
+	 * @param planDao the planDao to set
+	 */
+	public void setPlanDao(PlanDao planDao) {
+		this.planDao = planDao;
+	}
+
+	public int getScheduledActivationErrorMarginSeconds() {
+		return scheduledActivationErrorMarginSeconds;
+	}
+
+	public void setScheduledActivationErrorMarginSeconds(int scheduledActivationErrorMarginSeconds) {
+		this.scheduledActivationErrorMarginSeconds = scheduledActivationErrorMarginSeconds;
 	}
 }

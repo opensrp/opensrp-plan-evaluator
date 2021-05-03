@@ -17,6 +17,9 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 
 	@JsonProperty
 	private String identifier;
+
+	@JsonProperty
+	private String description;
 	
 	@JsonProperty
 	private String version;
@@ -34,7 +37,7 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 	private LocalDate date;
 	
 	@JsonProperty
-	private ExecutionPeriod effectivePeriod;
+	private Period effectivePeriod;
 	
 	@JsonProperty
 	private List<UseContext> useContext;
@@ -103,11 +106,11 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 		this.date = date;
 	}
 	
-	public ExecutionPeriod getEffectivePeriod() {
+	public Period getEffectivePeriod() {
 		return effectivePeriod;
 	}
 	
-	public void setEffectivePeriod(ExecutionPeriod effectivePeriod) {
+	public void setEffectivePeriod(Period effectivePeriod) {
 		this.effectivePeriod = effectivePeriod;
 	}
 	
@@ -159,12 +162,20 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 		this.experimental = experimental;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	@Override
 	public int compareTo(PlanDefinition o) {
 		return getName().equals(o.getName()) ? getName().compareTo(o.getIdentifier()) : getName().compareTo(o.getName());
 	}
 
-	public static class UseContext {
+	public static class UseContext implements Serializable {
 		
 		private String code;
 		

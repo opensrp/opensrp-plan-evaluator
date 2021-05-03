@@ -32,17 +32,21 @@ public class EventConverter {
 			items.add(childLocationId);
 		}
 		
-		QuestionnaireResponse.Item.Answer teamIdAnswer = QuestionnaireResponse.Item.Answer.builder()
-		        .value(String.builder().value(event.getTeamId()).build()).build();
-		QuestionnaireResponse.Item teamId = QuestionnaireResponse.Item.builder()
-		        .linkId(String.builder().value("teamId").build()).answer(teamIdAnswer).build();
-		items.add(teamId);
+		if (StringUtils.isNotBlank(event.getTeamId())) {
+			QuestionnaireResponse.Item.Answer teamIdAnswer = QuestionnaireResponse.Item.Answer.builder()
+			        .value(String.builder().value(event.getTeamId()).build()).build();
+			QuestionnaireResponse.Item teamId = QuestionnaireResponse.Item.builder()
+			        .linkId(String.builder().value("teamId").build()).answer(teamIdAnswer).build();
+			items.add(teamId);
+		}
 		
-		QuestionnaireResponse.Item.Answer teamAnswer = QuestionnaireResponse.Item.Answer.builder()
-		        .value(String.builder().value(event.getTeam()).build()).build();
-		QuestionnaireResponse.Item team = QuestionnaireResponse.Item.builder().linkId(String.builder().value("team").build())
-		        .answer(teamAnswer).build();
-		items.add(team);
+		if (StringUtils.isNotBlank(event.getTeam())) {
+			QuestionnaireResponse.Item.Answer teamAnswer = QuestionnaireResponse.Item.Answer.builder()
+			        .value(String.builder().value(event.getTeam()).build()).build();
+			QuestionnaireResponse.Item team = QuestionnaireResponse.Item.builder()
+			        .linkId(String.builder().value("team").build()).answer(teamAnswer).build();
+			items.add(team);
+		}
 		
 		Reference providerId = Reference.builder().id("providerId")
 		        .reference(String.builder().value(event.getProviderId()).build()).build();

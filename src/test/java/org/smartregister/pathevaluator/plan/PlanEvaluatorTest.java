@@ -80,7 +80,7 @@ public class PlanEvaluatorTest {
 
 	@Before
 	public void setUp() {
-		PathEvaluatorLibrary.init(null, null, null, null);
+		PathEvaluatorLibrary.init(null, null, null, null, null);
 		planEvaluator = new PlanEvaluator(username);
 		Whitebox.setInternalState(planEvaluator, "actionHelper", actionHelper);
 		Whitebox.setInternalState(planEvaluator, "conditionHelper", conditionHelper);
@@ -95,7 +95,7 @@ public class PlanEvaluatorTest {
 		PlanDefinition planDefinition = TestData.createPlan();
 		PlanDefinition planDefinition2 = null;
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
-		verify(actionHelper, never()).getSubjectResources(any(), any(Jurisdiction.class));
+		verify(actionHelper, never()).getSubjectResources(any(), any(Jurisdiction.class),eq(planDefinition.getIdentifier()));
 	}
 	
 	@Test
@@ -109,7 +109,7 @@ public class PlanEvaluatorTest {
 		List<Patient> patients = Collections.singletonList(TestData.createPatient());
 		Action action = planDefinition.getActions().get(0);
 		Jurisdiction jurisdiction = planDefinition.getJurisdiction().get(0);
-		when(actionHelper.getSubjectResources(action, jurisdiction)).thenAnswer(new Answer<List<Patient>>() {
+		when(actionHelper.getSubjectResources(action, jurisdiction,planDefinition.getIdentifier())).thenAnswer(new Answer<List<Patient>>() {
 			
 			@Override
 			public List<Patient> answer(InvocationOnMock invocation) throws Throwable {
@@ -118,13 +118,13 @@ public class PlanEvaluatorTest {
 		});
 		when(triggerHelper.evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan, null)).thenReturn(true);
 		when(locationDao.findChildLocationByJurisdiction(anyString())).thenReturn(jurisdictionList);
-		Mockito.doNothing().when(queuingHelper).addToQueue(anyString(),any(TriggerType.class),anyString());
+		Mockito.doNothing().when(queuingHelper).addToQueue(anyString(),any(TriggerType.class),anyString(),eq(username));
 		planEvaluator.evaluatePlan(planDefinition, planDefinition2);
 		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size();
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.PLAN_ACTIVATION, plan,
 		    null);
-		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class));
-		verify(queuingHelper,times(1)).addToQueue(anyString(),any(TriggerType.class),anyString());
+		verify(actionHelper, times(evaluations)).getSubjectResources(any(), any(Jurisdiction.class),eq(planDefinition.getIdentifier()));
+		verify(queuingHelper,times(1)).addToQueue(anyString(),any(TriggerType.class),anyString(),eq(username));
 	}
 	
 	@Test
@@ -139,7 +139,7 @@ public class PlanEvaluatorTest {
 		List<Patient> patients = Collections.singletonList(TestData.createPatient());
 		Action action = planDefinition.getActions().get(0);
 		String entity = questionnaire.getSubject().getReference().getValue();
-		when(actionHelper.getSubjectResources(action, entity)).thenAnswer(new Answer<List<Patient>>() {
+		when(actionHelper.getSubjectResources(action, questionnaire, planDefinition.getIdentifier())).thenAnswer(new Answer<List<Patient>>() {
 			
 			@Override
 			public List<Patient> answer(InvocationOnMock invocation) throws Throwable {
@@ -154,7 +154,7 @@ public class PlanEvaluatorTest {
 		int evaluations = planDefinition.getActions().size() * planDefinition.getJurisdiction().size();
 		verify(triggerHelper, times(evaluations)).evaluateTrigger(action.getTrigger(), TriggerType.EVENT_SUBMISSION, plan,
 		    questionnaire);
-		verify(actionHelper).getSubjectResources(action, "098787kml-jsks09");
+		verify(actionHelper).getSubjectResources(action, questionnaire, planDefinition.getIdentifier());
 		
 		verify(conditionHelper).evaluateActionConditions(questionnaireCaptor.capture(), eq(action), eq(plan),
 		    eq(TriggerType.EVENT_SUBMISSION));

@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -62,7 +63,7 @@ public class ConditionHelperTest {
 	
 	@BeforeClass
 	public static void bootstrap() {
-		PathEvaluatorLibrary.init(null, null, null, null);
+		PathEvaluatorLibrary.init(null, null, null, null, null);
 	}
 	
 	@Before
@@ -90,7 +91,7 @@ public class ConditionHelperTest {
 		action.getCondition().add(condition);
 		assertFalse(conditionHelper.evaluateActionConditions(patient, action, null, TriggerType.PLAN_ACTIVATION));
 	}
-	
+
 	@Test
 	public void testEvaluateActionConditionWithSubject() {
 		condition = condition.toBuilder()

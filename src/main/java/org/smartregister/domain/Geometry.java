@@ -1,9 +1,13 @@
 package org.smartregister.domain;
 
+import java.io.Serializable;
+
 import com.google.gson.JsonArray;
 import com.google.gson.annotations.SerializedName;
 
-public class Geometry {
+public class Geometry implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public enum GeometryType {
 		@SerializedName("Point")

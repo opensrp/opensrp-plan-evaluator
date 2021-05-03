@@ -1,5 +1,6 @@
 package org.smartregister.domain;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import com.google.gson.annotations.SerializedName;
@@ -14,9 +15,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Action {
+public class Action implements Serializable {
 
-    public enum ActionType {
+	private static final long serialVersionUID = 1L;
+
+	public enum ActionType {
         @SerializedName("create") CREATE,
         @SerializedName("update") UPDATE,
         @SerializedName("remove") REMOVE,
@@ -33,7 +36,7 @@ public class Action {
 
     private String code;
 
-    private ExecutionPeriod timingPeriod;
+    private Period timingPeriod;
 
     private String reason;
 
@@ -57,7 +60,7 @@ public class Action {
     @NoArgsConstructor
     @Getter
     @Setter
-    public static class SubjectConcept {
+    public static class SubjectConcept implements Serializable {
         private String text;
     }
 }

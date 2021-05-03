@@ -1,8 +1,12 @@
 package org.smartregister.domain;
 
+import java.io.Serializable;
+
 import org.joda.time.DateTime;
 
-public class Note {
+public class Note implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String authorString;
 
