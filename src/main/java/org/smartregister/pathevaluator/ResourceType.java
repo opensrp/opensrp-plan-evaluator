@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.smartregister.pathevaluator;
 
@@ -9,7 +9,7 @@ import org.smartregister.domain.Action.SubjectConcept;
  * @author Samuel Githengi created on 06/15/20
  */
 public enum ResourceType {
-	
+
 	JURISDICTION("Jurisdiction"),
 	LOCATION("Location"),
 	FAMILY("Family"),
@@ -18,7 +18,8 @@ public enum ResourceType {
 	QUESTIONAIRRE_RESPONSE("QuestionnaireResponse"),
 	GLOBAL_TASK("Global.Task"),
 	JURISDICTIONAL_TASK("Jurisdictional.Task"),
-	DEVICE("Device");
+	DEVICE("Device"),
+	LOCATION_STOCK("Location.Stock");
 
 	private String value;
 	

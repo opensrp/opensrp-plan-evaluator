@@ -94,6 +94,9 @@ public class ActionHelper {
 			case QUESTIONAIRRE_RESPONSE:
 				return eventDao.findEventsByJurisdictionIdAndPlan(jurisdiction.getCode(), planIdentifier);
 
+			case LOCATION_STOCK:
+				return locationDao.findLocationAndStocksByJurisdiction(jurisdiction.getCode());
+
 			default:
 				logger.log(Level.WARNING,"unmapped resource type "+resourceType);
 				return Collections.emptyList();

@@ -5,7 +5,9 @@ package org.smartregister.pathevaluator.dao;
 
 import java.util.List;
 
+import com.ibm.fhir.model.resource.Bundle;
 import com.ibm.fhir.model.resource.Location;
+import com.ibm.fhir.model.resource.Resource;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -37,5 +39,6 @@ public interface LocationDao {
 	List<Location> findLocationByJurisdiction(String jurisdiction);
 
 	List<String> findChildLocationByJurisdiction(String id);
-	
+
+	List<Bundle> findLocationAndStocksByJurisdiction(String jurisdiction);
 }
