@@ -40,5 +40,10 @@ public interface LocationDao {
 
 	List<String> findChildLocationByJurisdiction(String id);
 
+	/**
+	 * Gets the locations/structures with its stock in a particular jurisdiction
+	 * @param jurisdiction the jurisdiction Id
+	 * @return a Bundle
+	 */
 	List<Bundle> findLocationAndStocksByJurisdiction(String jurisdiction);
 }
