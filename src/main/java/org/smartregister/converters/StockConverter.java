@@ -20,12 +20,30 @@ import com.ibm.fhir.model.type.code.SupplyDeliveryStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.ISODateTimeFormat;
 import org.smartregister.domain.StockAndProductDetails;
+import org.smartregister.utils.ApplicationConstants;
+import org.smartregister.utils.ApplicationProperties;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class StockConverter {
+
+	private static final java.lang.String PO_NUMBER = "PO Number";
+
+	private static final java.lang.String DEVICE = "device";
+
+	private static final java.lang.String UNICEF_SECTION = "UNICEF section";
+
+	private static final java.lang.String SUPPLY_DELIVERY = "supplyDelivery";
+
+	private static final java.lang.String CODE_SYSTEM = "CodeSystem";
+
+	private static final java.lang.String SUPPLY_ITEM_TYPE = "supply-item-type";
+
+	private static final java.lang.String ORGANIZATION = "Organization";
+
+	private static final java.lang.String LOCATION = "Location";
 
 	public static Bundle convertStockToBundleResource(StockAndProductDetails stockAndProductDetails) {
 
@@ -38,15 +56,17 @@ public class StockConverter {
 
 		java.lang.String unicefSection = stockAndProductDetails.getStock() != null
 				&& stockAndProductDetails.getStock().getCustomProperties() != null ?
-				stockAndProductDetails.getStock().getCustomProperties().get("UNICEF section") : "";
+				stockAndProductDetails.getStock().getCustomProperties().get(UNICEF_SECTION) : "";
 
 		java.lang.String locationId = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
 				stockAndProductDetails.getStock().getLocationId() != null ?
 				stockAndProductDetails.getStock().getLocationId() :
 				"";
 
-		Reference owner = Reference.builder().reference(String.of("Organization/" + unicefSection)).build();
-		Reference location = Reference.builder().reference(String.of("Location/" + locationId)).build();
+		Reference owner = Reference.builder().reference(String.of(
+				java.lang.String.format("%s/%s", ORGANIZATION, unicefSection))).build();
+		Reference location = Reference.builder().reference(String.of(
+				java.lang.String.format("%s/%s", LOCATION, locationId))).build();
 
 		String serialNumber = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
 				StringUtils.isNotBlank(stockAndProductDetails.getStock().getSerialNumber()) ?
@@ -61,7 +81,9 @@ public class StockConverter {
 						stockAndProductDetails.getProductCatalogue().getUniqueId() != null ?
 						java.lang.String.valueOf(stockAndProductDetails.getProductCatalogue().getUniqueId()) : "";
 
-		java.lang.String deviceUriString = "https://fhir.smartregister.org/device/" + productId;
+		java.lang.String deviceUriString = java.lang.String.format("%s/%s/%s",
+				ApplicationProperties.getInstance().getProperty(ApplicationConstants.PropertiesConstants.FHIR_SERVER_URL),
+				DEVICE, productId);
 		Uri deviceUri = Uri.builder().value(deviceUriString).build();
 		Bundle.Entry deviceEntry = Bundle.Entry.builder().fullUrl(deviceUri).resource(deviceBuilder.build()).build();
 		entryList.add(deviceEntry);
@@ -82,8 +104,9 @@ public class StockConverter {
 
 		Code deviceItemCode;
 		Coding deviceItemCoding;
-		Uri system = Uri.builder().value("http://terminology.hl7.org/CodeSystem/supply-item-type").build();
-		Code deviceCode = Code.builder().value("device").build();
+		Uri system = Uri.builder().value(java.lang.String.format("%s/%s/%s", ApplicationProperties.getInstance().getProperty(
+				ApplicationConstants.PropertiesConstants.HL7_TERMINOLOGY_URL), CODE_SYSTEM, SUPPLY_ITEM_TYPE)).build();
+		Code deviceCode = Code.builder().value(DEVICE).build();
 		Coding coding = Coding.builder().code(deviceCode).system(system).build();
 		CodeableConcept typeCodeableConcept = CodeableConcept.builder().coding(coding).build();
 		SupplyDelivery.Builder supplyDeliveryBuilder = SupplyDelivery.builder();
@@ -95,7 +118,7 @@ public class StockConverter {
 
 		java.lang.String donor = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
 				stockAndProductDetails.getStock().getDonor() != null ?
-				"Organization/" + stockAndProductDetails.getStock().getDonor() :
+				java.lang.String.format("%s/%s", ORGANIZATION, stockAndProductDetails.getStock().getDonor()) :
 				null;
 
 		String donorString = donor != null ? String.of(donor) : null;
@@ -129,7 +152,7 @@ public class StockConverter {
 
 		java.lang.String poNumber = stockAndProductDetails.getStock() != null
 				&& stockAndProductDetails.getStock().getCustomProperties() != null ?
-				stockAndProductDetails.getStock().getCustomProperties().get("PO Number") : "";
+				stockAndProductDetails.getStock().getCustomProperties().get(PO_NUMBER) : "";
 
 		String poNumberString = poNumber != null ? String.of(poNumber) : null;
 
@@ -150,7 +173,9 @@ public class StockConverter {
 				.status(SupplyDeliveryStatus.COMPLETED)
 				.supplier(supplier).type(typeCodeableConcept).occurrence(occurrenceDateTime).build();
 
-		java.lang.String supplyDeliveryUriString = "https://fhir.smartregister.org/supplyDelivery/" + stockId;
+		java.lang.String supplyDeliveryUriString = java.lang.String.format("%s/%s/%s",
+				ApplicationProperties.getInstance().getProperty(ApplicationConstants.PropertiesConstants.FHIR_SERVER_URL),
+				SUPPLY_DELIVERY, stockId);
 
 		Uri supplyDeliveryUri = Uri.builder().value(supplyDeliveryUriString).build();
 
