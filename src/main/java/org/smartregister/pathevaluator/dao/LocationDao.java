@@ -5,6 +5,7 @@ package org.smartregister.pathevaluator.dao;
 
 import java.util.List;
 
+import com.ibm.fhir.model.resource.Bundle;
 import com.ibm.fhir.model.resource.Location;
 
 /**
@@ -37,5 +38,11 @@ public interface LocationDao {
 	List<Location> findLocationByJurisdiction(String jurisdiction);
 
 	List<String> findChildLocationByJurisdiction(String id);
-	
+
+	/**
+	 * Gets the locations/structures with its stock in a particular jurisdiction
+	 * @param jurisdiction the jurisdiction Id
+	 * @return a Bundle
+	 */
+	List<Bundle> findLocationAndStocksByJurisdiction(String jurisdiction);
 }
