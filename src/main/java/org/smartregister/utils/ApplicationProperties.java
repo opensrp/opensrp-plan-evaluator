@@ -1,7 +1,7 @@
 package org.smartregister.utils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,9 +16,9 @@ public class ApplicationProperties {
 
 	public ApplicationProperties(String propertyFileName) {
 		try {
-			FileInputStream fileInputStream = new FileInputStream(propertyFileName);
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propertyFileName);
 			this.properties = new Properties();
-			this.properties.load(fileInputStream);
+			this.properties.load(inputStream);
 		}
 		catch (IOException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Error Reading Application Properties", e);
