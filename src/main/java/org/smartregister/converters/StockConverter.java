@@ -19,11 +19,13 @@ import com.ibm.fhir.model.type.code.FHIRDeviceStatus;
 import com.ibm.fhir.model.type.code.SupplyDeliveryStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.ISODateTimeFormat;
+import org.smartregister.domain.Stock;
 import org.smartregister.domain.StockAndProductDetails;
 import org.smartregister.utils.ApplicationConstants;
 import org.smartregister.utils.ApplicationProperties;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +46,8 @@ public class StockConverter {
 	private static final java.lang.String ORGANIZATION = "Organization";
 
 	private static final java.lang.String LOCATION = "Location";
+
+	private static final java.lang.String IS_PAST_ACCOUNTABILITY_DATE = "isPastAccountabilityDate";
 
 	public static Bundle convertStockToBundleResource(StockAndProductDetails stockAndProductDetails) {
 
@@ -101,6 +105,7 @@ public class StockConverter {
 		Element deviceItemElement = null;
 		java.lang.String deliveryDateInString;
 		Element occurrenceDateTime;
+		Collection<Identifier> identifiers = new ArrayList<>();
 
 		Code deviceItemCode;
 		Coding deviceItemCoding;
@@ -157,11 +162,11 @@ public class StockConverter {
 		String poNumberString = poNumber != null ? String.of(poNumber) : null;
 
 		if (poNumberString != null) {
-			poNumberIdentifier = Identifier.builder().value(poNumberString).build();
-		}
-
-		if (poNumberIdentifier != null) {
-			supplyDeliveryBuilder.identifier(poNumberIdentifier);
+			poNumberIdentifier = Identifier.builder().system(Uri.builder().value(PO_NUMBER.replace(" ", "")).build())
+					.value(poNumberString).build();
+			if (poNumberIdentifier != null) {
+				identifiers.add(poNumberIdentifier);
+			}
 		}
 
 		java.lang.String stockId = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
@@ -169,9 +174,23 @@ public class StockConverter {
 				java.lang.String.valueOf(stockAndProductDetails.getStock().getId()) :
 				"";
 
+		Identifier identifier;
+		if (stockAndProductDetails != null && stockAndProductDetails.getStock() != null) {
+			Stock stock = stockAndProductDetails.getStock();
+			if (stock.getAccountabilityEndDate() != null) {
+				Date accountabilityDate = stock.getAccountabilityEndDate();
+				boolean isInPast = accountabilityDate.before(new Date());
+				identifier = Identifier.builder().system(Uri.builder().value(IS_PAST_ACCOUNTABILITY_DATE).build())
+						.value(String.builder().value(java.lang.String.valueOf(isInPast)).build())
+						.build();
+				identifiers.add(identifier);
+			}
+		}
 		SupplyDelivery supplyDelivery = supplyDeliveryBuilder.id(stockId).suppliedItem(suppliedItem)
 				.status(SupplyDeliveryStatus.COMPLETED)
-				.supplier(supplier).type(typeCodeableConcept).occurrence(occurrenceDateTime).build();
+				.supplier(supplier).type(typeCodeableConcept)
+				.occurrence(occurrenceDateTime)
+				.identifier(identifiers).build();
 
 		java.lang.String supplyDeliveryUriString = java.lang.String.format("%s/%s/%s",
 				ApplicationProperties.getInstance().getProperty(ApplicationConstants.PropertiesConstants.FHIR_SERVER_URL),
