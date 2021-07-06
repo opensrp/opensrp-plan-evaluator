@@ -14,12 +14,14 @@ import org.junit.Test;
 import org.smartregister.domain.ProductCatalogue;
 import org.smartregister.domain.Stock;
 import org.smartregister.domain.StockAndProductDetails;
+import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class StockConverterTest {
 
@@ -84,8 +86,9 @@ public class StockConverterTest {
 
 		assertEquals("https://fhir.smartregister.org/supplyDelivery/" + stock.getId(),
 				bundle.getEntry().get(1).getFullUrl().getValue());
-		assertEquals("111",
-				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getIdentifier().get(0).getValue().getValue());
+		assertTrue(PathEvaluatorLibrary.getInstance()
+				.evaluateBooleanExpression(bundle,
+						"Bundle.entry.resource.ofType(SupplyDelivery).identifier.where(system='PONumber' and value='111').exists()"));
 		assertEquals(SupplyDeliveryStatus.COMPLETED.getValue(),
 				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getStatus().getValue());
 		assertEquals("http://terminology.hl7.org/CodeSystem/supply-item-type",
@@ -151,8 +154,9 @@ public class StockConverterTest {
 
 		assertEquals("https://fhir.smartregister.org/supplyDelivery/" + stock.getId(),
 				bundle.getEntry().get(1).getFullUrl().getValue());
-		assertEquals("111",
-				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getIdentifier().get(0).getValue().getValue());
+		assertTrue(PathEvaluatorLibrary.getInstance()
+				.evaluateBooleanExpression(bundle,
+						"Bundle.entry.resource.ofType(SupplyDelivery).identifier.where(system='PONumber' and value='111').exists()"));
 		assertEquals(SupplyDeliveryStatus.COMPLETED.getValue(),
 				((SupplyDelivery) bundle.getEntry().get(1).getResource()).getStatus().getValue());
 		assertEquals("http://terminology.hl7.org/CodeSystem/supply-item-type",
@@ -180,6 +184,5 @@ public class StockConverterTest {
 		System.out.println(bundle);
 
 	}
-
 
 }
