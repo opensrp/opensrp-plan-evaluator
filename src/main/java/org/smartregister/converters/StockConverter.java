@@ -164,9 +164,7 @@ public class StockConverter {
 		if (poNumberString != null) {
 			poNumberIdentifier = Identifier.builder().system(Uri.builder().value(PO_NUMBER.replace(" ", "")).build())
 					.value(poNumberString).build();
-			if (poNumberIdentifier != null) {
-				identifiers.add(poNumberIdentifier);
-			}
+			identifiers.add(poNumberIdentifier);
 		}
 
 		java.lang.String stockId = stockAndProductDetails != null && stockAndProductDetails.getStock() != null &&
@@ -174,13 +172,12 @@ public class StockConverter {
 				java.lang.String.valueOf(stockAndProductDetails.getStock().getId()) :
 				"";
 
-		Identifier identifier;
 		if (stockAndProductDetails != null && stockAndProductDetails.getStock() != null) {
 			Stock stock = stockAndProductDetails.getStock();
 			if (stock.getAccountabilityEndDate() != null) {
 				Date accountabilityDate = stock.getAccountabilityEndDate();
 				boolean isInPast = accountabilityDate.before(new Date());
-				identifier = Identifier.builder().system(Uri.builder().value(IS_PAST_ACCOUNTABILITY_DATE).build())
+				Identifier identifier = Identifier.builder().system(Uri.builder().value(IS_PAST_ACCOUNTABILITY_DATE).build())
 						.value(String.builder().value(java.lang.String.valueOf(isInPast)).build())
 						.build();
 				identifiers.add(identifier);
