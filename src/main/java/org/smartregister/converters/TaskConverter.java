@@ -74,9 +74,12 @@ public class TaskConverter {
 		if (StringUtils.isNotBlank(domainTask.getRequester())) {
 			builder.requester(Reference.builder().reference(String.of(domainTask.getRequester())).build());
 		}
-		
-		Reference owner = Reference.builder().reference(String.builder().value(domainTask.getOwner()).build()).build();
-		
+
+		Reference owner = null;
+		if (StringUtils.isNotBlank(domainTask.getOwner())) {
+			owner = Reference.builder().reference(String.builder().value(domainTask.getOwner()).build()).build();
+		}
+
 		if (StringUtils.isNotBlank(domainTask.getReasonReference())) {
 			builder.statusReason(CodeableConcept.builder().text(String.of(domainTask.getReasonReference())).build());
 		}
