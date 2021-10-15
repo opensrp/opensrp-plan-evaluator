@@ -139,4 +139,27 @@ public class LocationConverterTest {
 		assertEquals("false", location.getIdentifier().get(0).getValue().getValue());
 		System.out.println(location);
 	}
+
+	@Test
+	public void testConvertToFihrLocationWithEmptyNameEnValue() {
+		PhysicalLocation physicalLocation;
+		physicalLocation = gson.fromJson(parentJson, PhysicalLocation.class);
+		physicalLocation.getProperties().getCustomProperties().put("name_en","");
+		Location location = LocationConverter.convertPhysicalLocationToLocationResource(physicalLocation);
+		assertNotNull(location);
+		assertEquals(StringUtils.toRootLowerCase(physicalLocation.getProperties().getStatus().name()),
+				location.getStatus().getValueAsEnumConstant().value());
+		assertEquals(physicalLocation.getProperties().getParentId(), location.getPartOf().getReference().getValue());
+		assertEquals(physicalLocation.getProperties().getName(), location.getName().getValue());
+		assertEquals(String.valueOf(physicalLocation.getProperties().getVersion()),
+				location.getMeta().getVersionId().getValue());
+		Long locationServerVersion = location.getMeta().getLastUpdated().getValue().toInstant().toEpochMilli();
+		assertEquals(physicalLocation.getServerVersion(), locationServerVersion);
+		assertEquals("instance", location.getMode().getValue());
+		assertEquals("bu", location.getPhysicalType().getCoding().get(0).getCode().getValue());
+		assertEquals(physicalLocation.getProperties().getCustomProperties().size() + 1, location.getIdentifier().size());
+		assertEquals("hasGeometry", location.getIdentifier().get(0).getSystem().getValue());
+		assertEquals("true", location.getIdentifier().get(0).getValue().getValue());
+		System.out.println(location);
+	}
 }
