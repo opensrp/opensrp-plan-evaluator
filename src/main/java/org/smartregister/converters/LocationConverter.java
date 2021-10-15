@@ -61,7 +61,7 @@ public class LocationConverter {
 			builder.meta(meta);
 		}
 		
-		if (physicalLocation.getProperties().getCustomProperties().get("name_en") != null) {
+		if (StringUtils.isNotBlank(physicalLocation.getProperties().getCustomProperties().get("name_en"))) {
 			builder.alias(String.of(physicalLocation.getProperties().getCustomProperties().get("name_en")));
 		}
 		
@@ -70,6 +70,9 @@ public class LocationConverter {
 		
 		for (Map.Entry<java.lang.String, java.lang.String> entry : physicalLocation.getProperties().getCustomProperties()
 		        .entrySet()) {
+			if (StringUtils.isBlank(entry.getValue())) {
+				continue;
+			}
 			identifier = Identifier.builder().system(Uri.builder().value(entry.getKey()).build())
 			        .value(String.builder().value(entry.getValue()).build()).build();
 			identifiers.add(identifier);
