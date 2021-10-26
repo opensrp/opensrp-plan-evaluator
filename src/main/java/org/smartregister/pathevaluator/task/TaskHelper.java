@@ -163,7 +163,8 @@ public class TaskHelper {
 			QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) resource;
 			for (QuestionnaireResponse.Item item : questionnaireResponse.getItem()) {
 				if (StringUtils.isNotBlank(item.getLinkId().getValue()) && item.getLinkId().getValue().equals("eventId")) {
-					String eventId = item.getAnswer() != null && !item.getAnswer().isEmpty() ? item.getAnswer().get(0).getValue().toString() : null;
+					String eventId = item.getAnswer() != null && !item.getAnswer().isEmpty() ?
+							item.getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class).getValue() : null;
 					reasonReference = eventId;
 					break;
 				}
