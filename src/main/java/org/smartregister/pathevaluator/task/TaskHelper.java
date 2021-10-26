@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
@@ -71,6 +72,7 @@ public class TaskHelper {
 			}
 			task.setRequester(username);
 			task.setOwner(username);
+			task.setReasonReference(getReasonReference(resource));
 			taskDao.saveTask(task, questionnaireResponse);
 			logger.info("Created task " + task.toString());
 		}
@@ -154,5 +156,19 @@ public class TaskHelper {
 			logger.log(Level.SEVERE, "Exception occurred while updating properties" + e, e);
 		}
 	}
-	
+
+	private String getReasonReference(Resource resource) {
+		String reasonReference = null;
+		if (resource instanceof QuestionnaireResponse) {
+			QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) resource;
+			for (QuestionnaireResponse.Item item : questionnaireResponse.getItem()) {
+				if (StringUtils.isNotBlank(item.getLinkId().getValue()) && item.getLinkId().getValue().equals("eventId")) {
+					String eventId = item.getAnswer() != null && !item.getAnswer().isEmpty() ? item.getAnswer().get(0).getValue().toString() : null;
+					reasonReference = eventId;
+					break;
+				}
+			}
+		}
+		return reasonReference;
+	}
 }
