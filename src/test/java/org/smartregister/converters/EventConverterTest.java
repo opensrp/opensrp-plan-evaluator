@@ -172,6 +172,7 @@ public class EventConverterTest {
 		assertEquals(
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue(), event.getTeam());
+		assertEquals(questionnaireResponse.getItem().get(4).getLinkId().getValue(), "eventId");
 		assertEquals(
 				questionnaireResponse.getItem().get(4).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue(), event.getId());

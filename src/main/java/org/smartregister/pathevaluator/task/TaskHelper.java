@@ -20,6 +20,7 @@ import org.smartregister.pathevaluator.dao.TaskDao;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
+import org.smartregister.utils.ApplicationConstants;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -162,7 +163,7 @@ public class TaskHelper {
 		if (resource instanceof QuestionnaireResponse) {
 			QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) resource;
 			for (QuestionnaireResponse.Item item : questionnaireResponse.getItem()) {
-				if (StringUtils.isNotBlank(item.getLinkId().getValue()) && item.getLinkId().getValue().equals("eventId")) {
+				if (StringUtils.isNotBlank(item.getLinkId().getValue()) && item.getLinkId().getValue().equals(ApplicationConstants.EventConstants.EVENT_ID)) {
 					String eventId = item.getAnswer() != null && !item.getAnswer().isEmpty() ?
 							item.getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class).getValue() : null;
 					reasonReference = eventId;
