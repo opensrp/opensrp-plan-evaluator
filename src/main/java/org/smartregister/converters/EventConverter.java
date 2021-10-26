@@ -47,7 +47,15 @@ public class EventConverter {
 			        .linkId(String.builder().value("team").build()).answer(teamAnswer).build();
 			items.add(team);
 		}
-		
+
+		if (StringUtils.isNotBlank(event.getId())) {
+			QuestionnaireResponse.Item.Answer eventIdAnswer = QuestionnaireResponse.Item.Answer.builder()
+					.value(String.builder().value(event.getId()).build()).build();
+			QuestionnaireResponse.Item eventId = QuestionnaireResponse.Item.builder()
+					.linkId(String.builder().value("eventId").build()).answer(eventIdAnswer).build();
+			items.add(eventId);
+		}
+
 		Reference providerId = Reference.builder().id("providerId")
 		        .reference(String.builder().value(event.getProviderId()).build()).build();
 		Reference baseEntityId = Reference.builder().id("baseEntityId")
