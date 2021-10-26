@@ -60,7 +60,7 @@ public class EventConverterTest {
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue(), event.getTeam());
 		int itemsSize = 0;
-		itemsSize = 4 + event.getIdentifiers().size() + event.getObs().size() + sizeOfDetailsWithNonEmptyValues(
+		itemsSize = 5 + event.getIdentifiers().size() + event.getObs().size() + sizeOfDetailsWithNonEmptyValues(
 				event.getDetails());
 		assertEquals(questionnaireResponse.getItem().size(), itemsSize);
 		System.out.println(questionnaireResponse);
