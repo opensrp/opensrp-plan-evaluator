@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.DynamicValue;
@@ -19,6 +20,7 @@ import org.smartregister.pathevaluator.dao.TaskDao;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import com.ibm.fhir.model.resource.Resource;
+import org.smartregister.utils.ApplicationConstants;
 
 /**
  * @author Samuel Githengi created on 06/15/20
@@ -71,6 +73,7 @@ public class TaskHelper {
 			}
 			task.setRequester(username);
 			task.setOwner(username);
+			task.setReasonReference(getReasonReference(resource));
 			taskDao.saveTask(task, questionnaireResponse);
 			logger.info("Created task " + task.toString());
 		}
@@ -154,5 +157,20 @@ public class TaskHelper {
 			logger.log(Level.SEVERE, "Exception occurred while updating properties" + e, e);
 		}
 	}
-	
+
+	private String getReasonReference(Resource resource) {
+		String reasonReference = null;
+		if (resource instanceof QuestionnaireResponse) {
+			QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) resource;
+			for (QuestionnaireResponse.Item item : questionnaireResponse.getItem()) {
+				if (StringUtils.isNotBlank(item.getLinkId().getValue()) && item.getLinkId().getValue().equals(ApplicationConstants.EventConstants.EVENT_ID)) {
+					String eventId = item.getAnswer() != null && !item.getAnswer().isEmpty() ?
+							item.getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class).getValue() : null;
+					reasonReference = eventId;
+					break;
+				}
+			}
+		}
+		return reasonReference;
+	}
 }

@@ -7,6 +7,7 @@ import com.ibm.fhir.model.type.code.QuestionnaireResponseStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
+import org.smartregister.utils.ApplicationConstants;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +48,15 @@ public class EventConverter {
 			        .linkId(String.builder().value("team").build()).answer(teamAnswer).build();
 			items.add(team);
 		}
-		
+
+		if (StringUtils.isNotBlank(event.getId())) {
+			QuestionnaireResponse.Item.Answer eventIdAnswer = QuestionnaireResponse.Item.Answer.builder()
+					.value(String.builder().value(event.getId()).build()).build();
+			QuestionnaireResponse.Item eventId = QuestionnaireResponse.Item.builder()
+					.linkId(String.builder().value(ApplicationConstants.EventConstants.EVENT_ID).build()).answer(eventIdAnswer).build();
+			items.add(eventId);
+		}
+
 		Reference providerId = Reference.builder().id("providerId")
 		        .reference(String.builder().value(event.getProviderId()).build()).build();
 		Reference baseEntityId = Reference.builder().id("baseEntityId")

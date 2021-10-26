@@ -60,7 +60,7 @@ public class EventConverterTest {
 				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
 						.getValue(), event.getTeam());
 		int itemsSize = 0;
-		itemsSize = 4 + event.getIdentifiers().size() + event.getObs().size() + sizeOfDetailsWithNonEmptyValues(
+		itemsSize = 5 + event.getIdentifiers().size() + event.getObs().size() + sizeOfDetailsWithNonEmptyValues(
 				event.getDetails());
 		assertEquals(questionnaireResponse.getItem().size(), itemsSize);
 		System.out.println(questionnaireResponse);
@@ -136,6 +136,51 @@ public class EventConverterTest {
 
 		QuestionnaireResponse.Item existingLLIHNs = node.element().as(QuestionnaireResponse.Item.class);
 		assertEquals(String.valueOf(7), existingLLIHNs.getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class).getValue());
+	}
+
+	@Test
+	public void testConvertEventToQuestionnaireResponseShouldPopulateEventId() {
+		Event event;
+		event = gson.fromJson(EVENT_JSON, Event.class);
+		event.setChildLocationId("child-location-id");
+		event.setEventType("event-type");
+		event.setEntityType("entity-type");
+		event.setLocationId("location-id");
+		event.setProviderId("provider-id");
+		event.setBaseEntityId("base-entity-id");
+		event.setTeam("team");
+		event.setTeamId("team-id");
+		QuestionnaireResponse questionnaireResponse = EventConverter.convertEventToEncounterResource(event);
+		assertNotNull(questionnaireResponse);
+		assertEquals(questionnaireResponse.getSubject().getReference().getValue(), event.getBaseEntityId());
+		assertEquals(questionnaireResponse.getStatus().getValueAsEnumConstant().value(), "completed");
+		assertEquals(questionnaireResponse.getAuthor().getReference().getValue(), event.getProviderId());
+		assertEquals(questionnaireResponse.getMeta().getVersionId().getValue(), String.valueOf(event.getServerVersion()));
+		assertEquals(questionnaireResponse.getItem().get(0).getLinkId().getValue(), "locationId");
+		assertEquals(
+				questionnaireResponse.getItem().get(0).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
+						.getValue(), event.getLocationId());
+		assertEquals(questionnaireResponse.getItem().get(1).getLinkId().getValue(), "childLocationId");
+		assertEquals(
+				questionnaireResponse.getItem().get(1).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
+						.getValue(), event.getChildLocationId());
+		assertEquals(questionnaireResponse.getItem().get(2).getLinkId().getValue(), "teamId");
+		assertEquals(
+				questionnaireResponse.getItem().get(2).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
+						.getValue(), event.getTeamId());
+		assertEquals(questionnaireResponse.getItem().get(3).getLinkId().getValue(), "team");
+		assertEquals(
+				questionnaireResponse.getItem().get(3).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
+						.getValue(), event.getTeam());
+		assertEquals(questionnaireResponse.getItem().get(4).getLinkId().getValue(), "eventId");
+		assertEquals(
+				questionnaireResponse.getItem().get(4).getAnswer().get(0).getValue().as(com.ibm.fhir.model.type.String.class)
+						.getValue(), event.getId());
+		int itemsSize = 0;
+		itemsSize = 5 + event.getIdentifiers().size() + event.getObs().size() + sizeOfDetailsWithNonEmptyValues(
+				event.getDetails());
+		assertEquals(questionnaireResponse.getItem().size(), itemsSize);
+		System.out.println(questionnaireResponse);
 	}
 
 	private int sizeOfDetailsWithNonEmptyValues(Map<String, String> details) {

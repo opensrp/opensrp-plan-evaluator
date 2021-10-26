@@ -225,4 +225,27 @@ public class TaskHelperTest {
 		assertEquals("Complete", updatedTask.getBusinessStatus());
 
 	}
+
+	@Test
+	public void testGenerateTaskWhenResourceIsQuestionResponseShouldPopulateTaskReasonReference() {
+		String planIdentifier = UUID.randomUUID().toString();
+		String jurisdiction = "12123";
+		String userName = "opensrp";
+		String eventId = "event-Id-1";
+		Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+				.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
+
+		Event event = gson.fromJson(TestData.MOSQUITTO_COLLECTION_EVENT, Event.class);
+		event.setId(eventId);
+		QuestionnaireResponse eventQuestionnaire = EventConverter.convertEventToEncounterResource(event);
+
+		// Call the method under test
+		taskHelper.generateTask(eventQuestionnaire,action,planIdentifier,jurisdiction,userName,null);
+
+		// Perform verifications and assertions
+		verify(taskDao, times(1)).saveTask(taskCaptor.capture(),any());
+		Task generatedTask = taskCaptor.getValue();
+		assertEquals(eventId, generatedTask.getReasonReference());
+
+	}
 }

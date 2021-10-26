@@ -8,4 +8,8 @@ public interface ApplicationConstants {
 		String HL7_TERMINOLOGY_URL = "hl7.terminology.url";
 	}
 
+	interface EventConstants {
+		String EVENT_ID = "eventId";
+	}
+
 }
