@@ -1,3 +1,20 @@
+CLIENT TO PATIENT RESOURCE MAPPING
+
+| DOMAIN CLASS  |FHIR RESOURCE  |
+|--|--|
+| birthdate  |birthDate  |
+| gender  |gender  |
+| firstName  |name.given[0]  |
+| middleName  |name.given[1]  |
+| lastName  |name.family  |
+| fullName  |name.text  |
+| deathdate  |deceased.deceasedDateTime  |
+| clientType |identifier.clientType  |
+| relationships  |Identifiers with codeable concept code relationship |
+| identifiers  |identifiers  |
+| attributes  |Identifiers with codeable concept code relationship |
+| baseEntityId  |id  |
+
 Opensrp client record
 ```
 {
@@ -98,3 +115,4 @@ Fhir Patient representation
 
 
 ```
+
