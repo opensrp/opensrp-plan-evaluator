@@ -1,3 +1,20 @@
+OPENSRP LOCATION TO FHIR LOCATION RESOURCE MAPPING
+
+| DOMAIN CLASS  |FHIR RESOURCE  |
+|--|--|
+| id  |id  |
+| geometry  |(not represented)  |
+| properties.status  |status  |
+| properties.parentId  |partOf  |
+| properties.name  |name  |
+| properties.geographicalLevel  |  |
+| properties.OpenMRS_Id  |identifier.[{"system": "OpenMRS_Id","value": ""}  |
+| properties.externalId  |identifier.[{"system": "externalId","value": ""}   |
+| properties.name_en  |alias  |
+| properties.version  |meta.versionId  |
+| isJurisdiction  |true = physicalType.jdn , false=physicalType:bu  |
+
+
 Sample Opensrp location (structure) record
 
 ```
