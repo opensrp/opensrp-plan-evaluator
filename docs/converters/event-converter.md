@@ -1,3 +1,15 @@
+OPENSRP EVENT TO FHIR QUESTIONNAIRESPONSE RESOURCE MAPPING
+
+| DOMAIN CLASS  |FHIR RESOURCE  |
+|--|--|
+| eventType  |questionnaire  |
+| entityType  |serviceType  |
+| version  |meta.versionId  |
+| businessStatus  |status  |
+| baseEntityId  |subject.reference  |
+| providerId  |author.reference  |
+| locationId  |linkId:locationId.answer  |
+
 Sample Opensrp event record
 
 ```
