@@ -8,7 +8,9 @@ OPENSRP EVENT TO FHIR QUESTIONNAIRESPONSE RESOURCE MAPPING
 | businessStatus  |status  |
 | baseEntityId  |subject.reference  |
 | providerId  |author.reference  |
-| locationId  |linkId:locationId.answer  |
+| locationId  |linkId:"locationId".item.answer  |
+| teamId  |linkId:"teamId".item.answer  |
+| team  |linkId:"team".item.answer  |
 
 Sample Opensrp event record
 
