@@ -207,6 +207,7 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 		 * use.
 		 */
 		@SerializedName("draft")
+		@JsonProperty("draft")
 		DRAFT("draft"),
 		
 		/**
@@ -215,6 +216,7 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 		 * This resource is ready for normal use.
 		 */
 		@SerializedName("active")
+		@JsonProperty("active")
 		ACTIVE("active"),
 		
 		/**
@@ -223,6 +225,7 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 		 * This resource has been withdrawn or superseded and should no longer be used.
 		 */
 		@SerializedName("retired")
+		@JsonProperty("retired")
 		RETIRED("retired"),
 		
 		/**
@@ -231,6 +234,7 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 		 * This resource is completed for normal use.
 		 */
 		@SerializedName("complete")
+		@JsonProperty("complete")
 		COMPLETED("complete"),
 		
 		/**
@@ -241,6 +245,7 @@ public class PlanDefinition implements Comparable<PlanDefinition> , Serializable
 		 * is presumed to apply, it's just not known which one.
 		 */
 		@SerializedName("unknown")
+		@JsonProperty("unknown")
 		UNKNOWN("unknown");
 		
 		private final String value;
