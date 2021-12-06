@@ -6,7 +6,7 @@
 
 	<artifactId>opensrp-plan-evaluator</artifactId>
 	<packaging>jar</packaging>
-	<version>1.6.5-SNAPSHOT</version>
+	<version>1.6.6-SNAPSHOT</version>
 	<name>OpenSRP  Plan Evaluator</name>
 	<description>OpenSRP  Plan Evaluator Library</description>
 	<url>https://github.com/OpenSRP/opensrp-plan-evaluator</url>
@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.10</version>
+			<version>3.12.0</version>
 		</dependency>
 		<dependency>
             <groupId>org.jacoco</groupId>
