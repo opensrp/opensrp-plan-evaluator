@@ -7,6 +7,7 @@ import com.ibm.fhir.model.type.CodeableConcept;
 import com.ibm.fhir.model.type.Identifier;
 import com.ibm.fhir.path.FHIRPathElementNode;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import org.smartregister.domain.Client;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
@@ -27,8 +28,10 @@ public class ClientConverterTest {
 	@Test
 	public void testConvertToPatientResource() {
 		Client client = gson.fromJson(CLIENT_JSON, Client.class);
-		client.setBirthdate(new DateTime(0l));
-		client.setDeathdate(new DateTime(0l));
+		DateTimeZone zoneUTC = DateTimeZone.UTC;
+		DateTime epochDateTime = new DateTime(0l, zoneUTC);
+		client.setBirthdate(epochDateTime);
+		client.setDeathdate(epochDateTime);
 		client.setFirstName("John");
 		client.setMiddleName("Lewis");
 		client.setLastName("Johny");
@@ -67,8 +70,10 @@ public class ClientConverterTest {
 	@Test
 	public void testConvertToPatientResourceV2() {
 		Client client = gson.fromJson(CLIENT_JSON_2, Client.class);
-		client.setBirthdate(new DateTime(0l));
-		client.setDeathdate(new DateTime(0l));
+		DateTimeZone zoneUTC = DateTimeZone.UTC;
+		DateTime epochDateTime = new DateTime(0l, zoneUTC);
+		client.setBirthdate(epochDateTime);
+		client.setDeathdate(epochDateTime);
 		client.setFirstName("John");
 		client.setMiddleName("Lewis");
 		client.setLastName("Johny");
