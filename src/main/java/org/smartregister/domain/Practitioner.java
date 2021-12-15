@@ -1,6 +1,8 @@
 package org.smartregister.domain;
 
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
 
 /**
@@ -19,6 +21,12 @@ public class Practitioner implements Serializable {
     private String userId;
 
     private String username;
+
+    private DateTime dateCreated;
+
+    private DateTime dateEdited;
+
+    private long serverVersion;
 
     public String getIdentifier() {
         return identifier;
@@ -60,4 +68,27 @@ public class Practitioner implements Serializable {
         this.username = username;
     }
 
+    public DateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(DateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public DateTime getDateEdited() {
+        return dateEdited;
+    }
+
+    public void setDateEdited(DateTime dateEdited) {
+        this.dateEdited = dateEdited;
+    }
+
+    public long getServerVersion() {
+        return serverVersion;
+    }
+
+    public void setServerVersion(long serverVersion) {
+        this.serverVersion = serverVersion;
+    }
 }
