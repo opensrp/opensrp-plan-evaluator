@@ -12,7 +12,7 @@
 	<url>https://github.com/OpenSRP/opensrp-plan-evaluator</url>
 
 	<properties>
-		<fhir.version>4.7.0</fhir.version>
+		<fhir.version>4.11.1</fhir.version>
 		<lombok.version>1.18.12</lombok.version>
 		<jackson.version>2.10.5.1</jackson.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
