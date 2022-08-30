@@ -34,7 +34,7 @@ jobs:
           SETTINGS_FILE: ${{ secrets.SETTINGS_XML }}
 
       - name: Generate & upload library snapshot artifact JAR (Java Archive) file
-        run: mvn clean deploy -Dmaven.test.skip=true --no-transfer-progress
+        run: mvn clean deploy -Dmaven.test.skip=true --no-transfer-progress -Dmaven.javadoc.skip=true
 
       - name: Github Release
         uses: softprops/action-gh-release@v1
