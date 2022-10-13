@@ -1,0 +1,86 @@
+name: Trivy Security Scan on opensrp-plan-evaluator repository
+on:
+  push:
+    branches: 
+      - trivy-ci-scan
+  pull_request:
+  schedule:
+    - cron: '0 3 * * 1,4'
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Trivy vulnerability scanner in repo mode - SARIF
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'sarif'
+          output: 'trivy-opensrp-plan-evaluator-repo-results.sarif'          
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-opensrp-plan-evaluator-repo-results.sarif'
+          
+      - name: Run Trivy vulnerability scanner in repo mode - JSON
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          format: json
+          output: 'trivy-opensrp-plan-evaluator-results.json'  
+          
+      - name: Create summary of trivy issues on Repository
+        run: |
+          summary=$(jq -r '.Results[] | select(.Vulnerabilities) | .Vulnerabilities | group_by(.Severity) | map({Severity: .[0].Severity, Count: length}) | .[] | [.Severity, .Count] | join(": ")' trivy-opensrp-plan-evaluator-results.json | awk 'NR > 1 { printf(" | ") } {printf "%s",$0}')
+          if [ -z $summary ]
+          then
+            summary="0 Issues"
+          fi
+          echo "SUMMARY=$summary" >> $GITHUB_ENV
+      
+      - name: Generate trivy HTML report on Repository for download
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          format: 'template'
+          template: '@/contrib/html.tpl'
+          output: 'trivy-opensrp-plan-evaluator-repo-report.html'
+
+      - name: Upload Trivy results as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "trivy-opensrp-plan-evaluator-repo-report.html"
+          path: './trivy-opensrp-plan-evaluator-repo-report.html'
+          retention-days: 30
+
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v1.22.0
+        with:
+          payload: |
+            {
+              "text": "Trivy scan results for ${{ github.repository }} repository",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Trivy scan results for ${{ github.repository }} Repository: ${{ env.SUMMARY }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "View result artifact: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}. Artifact is only valid for 30 days."
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
