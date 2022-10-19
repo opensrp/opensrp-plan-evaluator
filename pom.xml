@@ -14,7 +14,7 @@
 	<properties>
 		<fhir.version>4.7.0</fhir.version>
 		<lombok.version>1.18.12</lombok.version>
-		<jackson.version>2.10.5.1</jackson.version>
+		<jackson.version>2.12.7.1</jackson.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
 
@@ -96,7 +96,7 @@
 	<dependency>
 		<groupId>org.apache.commons</groupId>
 		<artifactId>commons-text</artifactId>
-		<version>1.8</version>
+		<version>1.10.0</version>
 	</dependency>
 
 		<!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
